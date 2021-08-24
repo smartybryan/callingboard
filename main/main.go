@@ -1,6 +1,10 @@
 package main
 
-import "github.org/smartybryan/callorg/data"
+import (
+	"fmt"
+
+	"github.org/smartybryan/callorg/types"
+)
 
 const (
 	RawCallingDataFilePath = "/Users/bryan/callorg/rawcallings.txt"
@@ -11,8 +15,17 @@ const (
 
 
 func main() {
-	callings := data.NewCallings(MaxCallings)
+	wardCallings := types.NewCallings(MaxCallings)
+	_ = wardCallings.ParseCallingsFromRawData(RawCallingDataFilePath)
 
+	totalCallings := 0
+	for _, organization := range wardCallings.OrganizationOrder {
+		fmt.Printf("%s\n", organization)
+		for _, calling := range wardCallings.CallingMap[organization] {
+			fmt.Printf("\t%s\t%s\t%s\t%t\n", calling.Name, calling.Holder, calling.Sustained, calling.CustomCalling)
+			totalCallings++
+		}
+	}
 
+	fmt.Printf("Total callings: %d\n", totalCallings)
 }
-
