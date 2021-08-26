@@ -1,7 +1,8 @@
-package types
+package classes
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"strings"
 	"time"
@@ -41,7 +42,7 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 	withinOrganization := false
 
 	for idx := 0; idx < len(fileLines); idx++ {
-		if strings.HasPrefix(fileLines[idx], "Position\tName") {
+		if strings.HasPrefix(fileLines[idx], "Position") {
 			currentOrganization = Organization(fileLines[idx-1])
 			this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
 			idx++
@@ -66,7 +67,7 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 
 		calling := Calling{Name: fileLines[idx]}
 		if strings.HasPrefix(calling.Name, "*") {
-			calling.Name = calling.Name[2:]
+			calling.Name = strings.TrimSpace(calling.Name[1:])
 			calling.CustomCalling = true
 		}
 
@@ -96,6 +97,22 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 	return nil
 }
 
+func (this *Callings) SaveCallings(path string) error {
+	jsonBytes, err := json.Marshal(this)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, jsonBytes, 0660)
+}
+
+func (this *Callings) LoadCallings(path string) error {
+	jsonBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(jsonBytes, this)
+}
+
 func getOrganizationPrefixFromCalling(callingName string) Organization {
 	for _, organization := range SharedCallingOrganizations {
 		if strings.HasPrefix(callingName, string(organization)) {
@@ -115,10 +132,8 @@ var MultiUseOrganizations = map[Organization]struct{}{
 
 var SharedCallingOrganizations = []Organization{
 	"Elders Quorum",
-	"Priesthood",
 	"Primary",
 	"Relief Society",
 	"Sunday School",
 }
 
-//TODO: fix music - see how music is currrently broken down and determine why Priesthood music is way down at the bottoms
