@@ -15,13 +15,6 @@ type Callings struct {
 	OrganizationOrder []Organization
 }
 
-type Calling struct {
-	Name          string
-	Holder        string
-	CustomCalling bool
-	Sustained     time.Time
-}
-
 func NewCallings(numCallings int) Callings {
 	return Callings{CallingMap: make(map[Organization][]Calling, numCallings)}
 }
@@ -97,7 +90,7 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 	return nil
 }
 
-func (this *Callings) SaveCallings(path string) error {
+func (this *Callings) Save(path string) error {
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
 		return err
@@ -105,7 +98,7 @@ func (this *Callings) SaveCallings(path string) error {
 	return os.WriteFile(path, jsonBytes, 0660)
 }
 
-func (this *Callings) LoadCallings(path string) error {
+func (this *Callings) Load(path string) error {
 	jsonBytes, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -120,6 +113,19 @@ func getOrganizationPrefixFromCalling(callingName string) Organization {
 		}
 	}
 	return ""
+}
+
+///////////////////////////////////////////////////////
+
+type Calling struct {
+	Name          string
+	Holder        string
+	CustomCalling bool
+	Sustained     time.Time
+}
+
+func (this *Calling) DaysInCalling() int {
+	return int(time.Now().Sub(this.Sustained).Hours() / 24)
 }
 
 var MultiUseOrganizations = map[Organization]struct{}{

@@ -2,6 +2,7 @@ package classes
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"sort"
 	"strings"
@@ -64,6 +65,22 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 	return nil
 }
 
+func (this *Members) Save(path string) error {
+	jsonBytes, err := json.Marshal(this)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, jsonBytes, 0660)
+}
+
+func (this *Members) Load(path string) error {
+	jsonBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(jsonBytes, this)
+}
+
 func (this *Members) SortedKeys() []MemberName {
 	var names []MemberName
 
@@ -105,3 +122,22 @@ func (this *Member) Age() int {
 	return age
 }
 
+func (this *Member) AgeByEndOfYear() int {
+	age := this.Age()
+	_, bm, bd := this.Birthday.Date()
+	_, tm, td := time.Now().Date()
+
+	if bm < tm {
+		return age
+	}
+
+	if bm > tm {
+		return age + 1
+	}
+
+	if bd <= td {
+		return age
+	}
+
+	return age + 1
+}
