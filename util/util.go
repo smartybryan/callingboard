@@ -15,7 +15,7 @@ func PrintableTimeInCalling(daysInCalling int) string {
 	months := (daysInCalling - (365*years))/30
 	days := daysInCalling - ((365 * years) + (30 * months))
 
-	if months == 0 && days > 0 {
+	if months == 0 && days > 30 {
 		months++
 	}
 
