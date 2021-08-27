@@ -22,13 +22,16 @@ func (this *CallingsFixture) Setup() {
 }
 
 func (this *CallingsFixture) TestDaysInCalling() {
-	calling1 := Calling{
+	cy, cm, cd := time.Now().Date()
+	calling := Calling{
 		Name:          "Head Honcho",
 		Holder:        "User, Joe",
 		CustomCalling: false,
-		Sustained:     time.Date(2019, 10, 5, 0, 0, 0, 0, time.UTC),
 	}
-	expected := int(time.Now().Sub(calling1.Sustained).Hours() / 24)
 
-	this.So(calling1.DaysInCalling(), should.Equal, expected)
+	calling.Sustained = time.Date(cy - 1, cm, cd, 0, 0, 0, 0, time.UTC)
+	this.So(calling.DaysInCalling(), should.BeBetween, 363, 368)
+
+	calling.Sustained = time.Date(cy - 1, cm, cd - 5, 0, 0, 0, 0, time.UTC)
+	this.So(calling.DaysInCalling(), should.BeBetween, 368, 373)
 }
