@@ -18,9 +18,6 @@ type CallingsFixture struct {
 	callings Callings
 }
 
-func (this *CallingsFixture) Setup() {
-}
-
 func (this *CallingsFixture) TestDaysInCalling() {
 	cy, cm, cd := time.Now().Date()
 	calling := Calling{
@@ -29,9 +26,18 @@ func (this *CallingsFixture) TestDaysInCalling() {
 		CustomCalling: false,
 	}
 
-	calling.Sustained = time.Date(cy - 1, cm, cd, 0, 0, 0, 0, time.UTC)
+	calling.Sustained = time.Date(cy-1, cm, cd, 0, 0, 0, 0, time.UTC)
 	this.So(calling.DaysInCalling(), should.BeBetween, 363, 368)
 
-	calling.Sustained = time.Date(cy - 1, cm, cd - 5, 0, 0, 0, 0, time.UTC)
+	calling.Sustained = time.Date(cy-1, cm, cd-5, 0, 0, 0, 0, time.UTC)
 	this.So(calling.DaysInCalling(), should.BeBetween, 368, 373)
+}
+
+func (this *CallingsFixture) TestMembersWithCallings() {
+	callings := NewCallings(5)
+	callings.CallingMap["org1"] = []Calling{
+		{Holder: "Washington, George"}, {Holder: "Lincoln, Abraham"}, {Holder: "Washington, George"},
+	}
+
+	this.So(callings.MembersWithCallings(), should.Resemble, []MemberName{"Lincoln, Abraham", "Washington, George"})
 }

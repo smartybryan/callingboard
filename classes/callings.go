@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"os"
+	"sort"
 	"strings"
 	"time"
 )
@@ -65,10 +66,10 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 		}
 
 		if fileLines[idx+1] == "Calling Vacant" {
-			calling.Holder = fileLines[idx+1]
+			calling.Holder = MemberName(fileLines[idx+1])
 			idx++
 		} else {
-			calling.Holder = fileLines[idx+1]
+			calling.Holder = MemberName(fileLines[idx+1])
 			sustained, err := time.Parse("2 Jan 2006", fileLines[idx+2])
 			if err == nil {
 				calling.Sustained = sustained
@@ -88,6 +89,23 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 	}
 
 	return nil
+}
+
+func (this *Callings) MembersWithCallings() (names []MemberName) {
+	nameMap := make(map[MemberName]struct{}, 200)
+	for _, callings := range (*this).CallingMap {
+		for _, calling := range callings {
+			nameMap[calling.Holder] = struct{}{}
+		}
+	}
+
+	for name, _ := range nameMap {
+		names = append(names, name)
+	}
+	sort.SliceStable(names, func(i, j int) bool {
+		return names[i] < names[j]
+	})
+	return names
 }
 
 func (this *Callings) Save(path string) error {
@@ -119,7 +137,7 @@ func getOrganizationPrefixFromCalling(callingName string) Organization {
 
 type Calling struct {
 	Name          string
-	Holder        string
+	Holder        MemberName
 	CustomCalling bool
 	Sustained     time.Time
 }

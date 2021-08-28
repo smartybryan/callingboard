@@ -53,7 +53,7 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 		}
 		birthday, _ := time.Parse("2 Jan 2006", memberRecord[3])
 		member := Member{
-			Name:     memberRecord[0],
+			Name:     MemberName(memberRecord[0]),
 			Gender:   memberRecord[1],
 			Birthday: birthday,
 			Unbaptized: unbaptized,
@@ -63,6 +63,33 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 	}
 
 	return nil
+}
+
+func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
+	for name, member := range *this {
+		if !member.Unbaptized && member.Age() >= minAge && member.Age() <= maxAge {
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+func (this *Members) AdultsWithoutACallng(callings Callings) (members []Member) {
+	//names := this.GetMembers(18, 99)
+
+	return members
+}
+
+func (this *Members) AdultsEligibleForACalling() (members []Member) {
+	//names := this.GetMembers(18, 99)
+
+	return members
+}
+
+func (this *Members) YouthEligibleForACalling() (members []Member) {
+	//names := this.GetMembers(11, 17)
+
+	return members
 }
 
 func (this *Members) Save(path string) error {
@@ -97,7 +124,7 @@ func (this *Members) SortedKeys() []MemberName {
 //////////////////////////////////////////////////////
 
 type Member struct {
-	Name       string
+	Name       MemberName
 	Gender     string
 	Birthday   time.Time
 	Unbaptized bool
