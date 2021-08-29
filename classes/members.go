@@ -1,11 +1,9 @@
 package classes
 
 import (
-	"bufio"
 	"encoding/json"
 	"os"
 	"sort"
-	"strings"
 	"time"
 )
 
@@ -14,55 +12,6 @@ type Members map[MemberName]Member
 
 func NewMembers(numMembers int) Members {
 	return make(map[MemberName]Member, numMembers)
-}
-
-func (this *Members) ParseMembersFromRawData(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-
-	var fileLines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		fileLines = append(fileLines, strings.TrimSpace(scanner.Text()))
-	}
-
-	withinMembers := false
-	for idx := 0; idx < len(fileLines); idx++ {
-		if !withinMembers {
-			if strings.HasPrefix(fileLines[idx], "Name") {
-				withinMembers = true
-			}
-			continue
-		}
-
-		if strings.HasPrefix(fileLines[idx], "Count") {
-			return nil
-		}
-
-		memberRecord := strings.Split(fileLines[idx], "\t")
-		if len(memberRecord) < 3 {
-			continue
-		}
-
-		unbaptized :=  false
-		if memberRecord[0][0] == '*' {
-			unbaptized = true
-			memberRecord[0] = memberRecord[0][1:]
-		}
-		birthday, _ := time.Parse("2 Jan 2006", memberRecord[3])
-		member := Member{
-			Name:     MemberName(memberRecord[0]),
-			Gender:   memberRecord[1],
-			Birthday: birthday,
-			Unbaptized: unbaptized,
-		}
-
-		(*this)[MemberName(member.Name)] = member
-	}
-
-	return nil
 }
 
 func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
@@ -74,22 +23,16 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
 	return names
 }
 
-func (this *Members) AdultsWithoutACallng(callings Callings) (members []Member) {
-	//names := this.GetMembers(18, 99)
-
-	return members
+func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
+	return SetDifference(this.GetMembers(18, 99), callings.MembersWithCallings())
 }
 
-func (this *Members) AdultsEligibleForACalling() (members []Member) {
-	//names := this.GetMembers(18, 99)
-
-	return members
+func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
+	return this.GetMembers(18, 99)
 }
 
-func (this *Members) YouthEligibleForACalling() (members []Member) {
-	//names := this.GetMembers(11, 17)
-
-	return members
+func (this *Members) YouthEligibleForACalling() (members []MemberName) {
+	return this.GetMembers(11, 17)
 }
 
 func (this *Members) Save(path string) error {

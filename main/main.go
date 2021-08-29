@@ -17,8 +17,12 @@ const (
 	MaxMembers = 500
 )
 
-
 func main() {
+	parseAndPrintCallings()
+	parseAndPrintMembers()
+}
+
+func parseAndPrintCallings() {
 	wardCallings := classes.NewCallings(MaxCallings)
 	err := wardCallings.ParseCallingsFromRawData(RawCallingDataFilePath)
 	if err != nil {
@@ -45,11 +49,11 @@ func main() {
 		}
 	}
 	fmt.Printf("Total callings: %d\n", totalCallings)
+}
 
-	///////////////////////////////////////////////
-
+func parseAndPrintMembers() {
 	membership := classes.NewMembers(MaxMembers)
-	err = membership.ParseMembersFromRawData(RawMembersDataFilePath)
+	err := membership.ParseMembersFromRawData(RawMembersDataFilePath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -72,5 +76,4 @@ func main() {
 			memberRecord.Name, memberRecord.Gender, util.PrintableDate(memberRecord.Birthday),
 			memberRecord.Age(), memberRecord.AgeByEndOfYear(), memberRecord.Unbaptized)
 	}
-
 }

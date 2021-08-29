@@ -30,23 +30,45 @@ func (this *MembersFixture) TestAgeFunctions() {
 }
 
 func (this *MembersFixture) TestGetMembers() {
-	members := NewMembers(5)
-	members["Last1, First1"] = createMember("Last1, First1", 15)
-	members["Last2, First2"] = createMember("Last2, First2", 20)
-	members["Last3, First3"] = createMember("Last3, First3", 55)
+	members := createTestMembers()
 
 	this.So(len(members.GetMembers(11, 17)), should.Equal, 1)
 	this.So(len(members.GetMembers(18, 99)), should.Equal, 2)
 	this.So(members.GetMembers(18, 99), should.Resemble, []MemberName{"Last2, First2", "Last3, First3"})
 }
 
-/*
-func (this *Members) AdultsWithoutACallng(callings Callings) (members []Member) {
-func (this *Members) AdultsEligibleForACalling() (members []Member) {
-func (this *Members) YouthEligibleForACalling() (members []Member) {
-*/
+func (this *MembersFixture) TestAdultsWithoutACalling() {
+	members := createTestMembers()
+	callings := createTestCallings()
+
+	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []MemberName{"Last2, First2"})
+}
+
+func (this *MembersFixture) TestEligibleForACalling() {
+	members := createTestMembers()
+
+	this.So(len(members.AdultsEligibleForACalling()), should.Equal, 2)
+	this.So(len(members.YouthEligibleForACalling()), should.Equal, 1)
+}
 
 ////////////////////////////////////////////////////////
+
+func createTestMembers() Members {
+	members := NewMembers(5)
+	members["Last1, First1"] = createMember("Last1, First1", 15)
+	members["Last2, First2"] = createMember("Last2, First2", 20)
+	members["Last3, First3"] = createMember("Last3, First3", 55)
+	return members
+}
+
+func createTestCallings() Callings {
+	callings := NewCallings(5)
+	calling1 := createCalling("calling1","Last1, First1",2,6)
+	calling3 := createCalling("calling3", "Last3, First3",0,6)
+	callings.CallingMap["org1"] = []Calling{calling1, calling3}
+
+	return callings
+}
 
 func createMember(name string, age int) Member {
 	return Member{Name: MemberName(name), Birthday: setDate(-age, 0,0)}
