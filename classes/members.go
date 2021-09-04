@@ -20,6 +20,9 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
 			names = append(names, name)
 		}
 	}
+	sort.SliceStable(names, func(i, j int) bool {
+		return names[i] < names[j]
+	})
 	return names
 }
 
