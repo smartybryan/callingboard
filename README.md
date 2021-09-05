@@ -8,7 +8,8 @@ and track releasings and sustainings.
 
 TODO
 
-- Move a person from one calling to another.
-- Add a person to a calling and remove them from the available list if there.
-- Remove person from a calling. If they have no other callings, add them to an available list.
+- Add calling to organization
+- Delete calling from organization
+- Updated calling attributes
+- Keep a transaction log to enable undo
 - Build a diff summary between the base model and the proposed model.

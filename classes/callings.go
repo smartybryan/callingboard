@@ -23,7 +23,7 @@ func NewCallings(numCallings int) Callings {
 
 func (this *Callings) AddMemberToACalling(member MemberName, org Organization, calling string) error {
 	if !this.isValidOrganization(org) {
-		return errors.New(fmt.Sprintf("Calling organization %s does not exist", org))
+		return errors.New(fmt.Sprintf("Organization %s does not exist", org))
 	}
 
 	if this.doesMemberHoldCalling(member, org, calling) {
@@ -81,6 +81,15 @@ func (this *Callings) MembersWithCallings() (names []MemberName) {
 
 func (this *Callings) MoveMemberToAnotherCalling(
 	member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
+	err := this.RemoveMemberFromACalling(member, fromOrg, fromCalling)
+	if err != nil {
+		return err
+	}
+
+	err = this.AddMemberToACalling(member, toOrg, toCalling)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -96,8 +105,22 @@ func (this *Callings) OrganizationList() (organizationList []Organization) {
 }
 
 func (this *Callings) RemoveMemberFromACalling(member MemberName, org Organization, calling string) error {
-
-	return nil
+	if !this.isValidOrganization(org) {
+		return errors.New(fmt.Sprintf("Organization %s does not exist", org))
+	}
+	if this.doesMemberHoldCalling(member, org, calling) {
+		callingList := this.CallingMap[org]
+		for idx, calling := range callingList {
+			if calling.Holder == member {
+				calling.Holder = VACANT_CALLING
+				calling.Sustained = time.Time{}
+				callingList[idx] = calling
+				this.CallingMap[org] = callingList
+				return nil
+			}
+		}
+	}
+	return errors.New(fmt.Sprintf("Member does not hold a calling named %s", calling))
 }
 
 func (this *Callings) VacantCallingList(organization Organization) (callingList []Calling) {

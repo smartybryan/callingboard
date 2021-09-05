@@ -60,21 +60,59 @@ func (this *CallingsFixture) TestVacantCallingList() {
 func (this *CallingsFixture) TestAddMemberToACalling() {
 	callings := createTestCallings()
 
-	err := callings.AddMemberToACalling("Last99, First99", "org99", "bogusCallling")
+	// invalid org
+	err := callings.AddMemberToACalling("Last99, First99", "bogusorg", "calling3")
 	this.So(err, should.NotBeNil)
 
+	// update an existing vacant calling
 	err = callings.AddMemberToACalling("Last99, First99", "org1", "calling3")
 	this.So(err, should.BeNil)
 	this.So(callings.doesMemberHoldCalling("Last99, First99", "org1", "calling3"), should.BeTrue)
 
+	// create a new calling
 	err = callings.AddMemberToACalling("Last99, First99", "org1", "calling4")
 	this.So(err, should.BeNil)
 	this.So(callings.doesMemberHoldCalling("Last99, First99", "org1", "calling4"), should.BeTrue)
 }
 
-/*
+func (this *CallingsFixture) TestRemoveMemberFromACalling() {
+	callings := createTestCallings()
 
-func (this *Callings) MoveMemberToAnotherCalling(member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
-func (this *Callings) RemoveMemberFromACalling(member MemberName, org Organization, calling string) error {
+	// invalid org
+	err := callings.RemoveMemberFromACalling("Last2, First2", "bogusorg", "calling3")
+	this.So(err, should.NotBeNil)
 
-*/
+	// member doesn't hold calling
+	err = callings.RemoveMemberFromACalling("Last2, First2", "org1", "calling3")
+	this.So(err, should.NotBeNil)
+
+	// remove from calling happy path
+	err = callings.RemoveMemberFromACalling("Last2, First2", "org1", "calling2")
+	this.So(err, should.BeNil)
+	this.So(callings.doesMemberHoldCalling("Last2, First2", "org1", "calling2"), should.BeFalse)
+	this.So(callings.CallingMap["org1"][1].Holder, should.Equal, VACANT_CALLING)
+}
+
+func (this *CallingsFixture) TestMoveMemberToAnotherCalling() {
+	callings := createTestCallings()
+
+	// invalid toOrg
+	err := callings.MoveMemberToAnotherCalling("Last2, First2", "bogusorg", "calling3", "org1", "calling4")
+	this.So(err, should.NotBeNil)
+
+	// invalid fromOrg
+	err = callings.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling3", "bogusorg", "calling4")
+	this.So(err, should.NotBeNil)
+
+	// user doesn't hold fromCalling
+	err = callings.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling4", "org1", "calling3")
+	this.So(err, should.NotBeNil)
+
+	// move calling happy path
+	this.So(callings.doesMemberHoldCalling("Last2, First2", "org1", "calling2"), should.BeTrue)
+	this.So(callings.doesMemberHoldCalling("Last2, First2", "org2", "calling3"), should.BeFalse)
+	err = callings.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling2", "org2", "calling3")
+	this.So(err, should.BeNil)
+	this.So(callings.doesMemberHoldCalling("Last2, First2", "org1", "calling2"), should.BeFalse)
+	this.So(callings.doesMemberHoldCalling("Last2, First2", "org2", "calling3"), should.BeTrue)
+}
