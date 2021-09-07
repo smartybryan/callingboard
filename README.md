@@ -8,8 +8,6 @@ and track releasings and sustainings.
 
 TODO
 
-- Add calling to organization
-- Delete calling from organization
-- Updated calling attributes
+- Define a Project (base, transactions)
 - Keep a transaction log to enable undo
 - Build a diff summary between the base model and the proposed model.

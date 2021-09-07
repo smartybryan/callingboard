@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.org/smartybryan/callorg/classes"
+	"github.org/smartybryan/callorg/engine"
 	"github.org/smartybryan/callorg/util"
 )
 
@@ -23,7 +23,7 @@ func main() {
 }
 
 func parseAndPrintCallings() {
-	wardCallings := classes.NewCallings(MaxCallings)
+	wardCallings := engine.NewCallings(MaxCallings)
 	err := wardCallings.ParseCallingsFromRawData(RawCallingDataFilePath)
 	if err != nil {
 		fmt.Println(err)
@@ -52,7 +52,7 @@ func parseAndPrintCallings() {
 }
 
 func parseAndPrintMembers() {
-	membership := classes.NewMembers(MaxMembers)
+	membership := engine.NewMembers(MaxMembers)
 	err := membership.ParseMembersFromRawData(RawMembersDataFilePath)
 	if err != nil {
 		fmt.Println(err)

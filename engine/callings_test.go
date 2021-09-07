@@ -1,4 +1,4 @@
-package classes
+package engine
 
 import (
 	"testing"
@@ -116,3 +116,56 @@ func (this *CallingsFixture) TestMoveMemberToAnotherCalling() {
 	this.So(callings.doesMemberHoldCalling("Last2, First2", "org1", "calling2"), should.BeFalse)
 	this.So(callings.doesMemberHoldCalling("Last2, First2", "org2", "calling3"), should.BeTrue)
 }
+
+func (this *CallingsFixture) TestAddCalling() {
+	callings := createTestCallings()
+
+	// invalid org
+	err := callings.AddCalling("bogusorg", "calling4", false)
+	this.So(err, should.NotBeNil)
+
+	// happy path
+	err = callings.AddCalling("org1", "calling4", false)
+	this.So(err, should.BeNil)
+	this.So(callings.CallingMap["org1"][3].Name, should.Equal, "calling4")
+}
+
+func (this *CallingsFixture) TestRemoveCalling() {
+	callings := createTestCallings()
+
+	// invalid org
+	err := callings.RemoveCalling("bogusorg", "calling4")
+	this.So(err, should.NotBeNil)
+
+	// invalid calling
+	err = callings.RemoveCalling("org1", "calling4")
+	this.So(err, should.NotBeNil)
+
+	// happy path
+	err = callings.RemoveCalling("org1", "calling3")
+	this.So(err, should.BeNil)
+	this.So(len(callings.CallingMap["org1"]), should.Equal, 2)
+}
+
+func (this *CallingsFixture) TestUpdateCalling() {
+	callings := createTestCallings()
+
+	// invalid org
+	err := callings.UpdateCalling("bogusorg", "calling4",true)
+	this.So(err, should.NotBeNil)
+
+	// invalid calling
+	err = callings.UpdateCalling("org1", "calling4",true)
+	this.So(err, should.NotBeNil)
+
+	// happy path
+	err = callings.UpdateCalling("org1", "calling3",true)
+	this.So(err, should.BeNil)
+	this.So(callings.CallingMap["org1"][2].CustomCalling, should.BeTrue)
+}
+
+/*
+func AddCalling(org Organization, calling string) error {
+func RemoveCalling(org Organization, calling string) error {
+func UpdateCalling(org Organization, calling string) error {
+*/

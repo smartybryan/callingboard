@@ -1,4 +1,4 @@
-package classes
+package engine
 
 func SetDifference(mainSet, subtractSet []MemberName) (names []MemberName) {
 	for _, name := range mainSet {
