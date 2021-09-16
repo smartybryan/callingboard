@@ -3,41 +3,45 @@ package engine
 import "fmt"
 
 type Project struct {
-	Callings     Callings
-	Members      Members
-	Transactions []Transaction
-	UndoHistory  []Transaction
+	callings     Callings
+	members      Members
+	transactions []Transaction
+	undoHistory  []Transaction
 }
 
 func NewProject(callings Callings, members Members) *Project {
 	return &Project{
-		Callings:     callings,
-		Members:      members,
-		Transactions: make([]Transaction, 0, 100),
+		callings:     callings,
+		members:      members,
+		transactions: make([]Transaction, 0, 100),
 	}
 }
 
 func (this *Project) AddTransaction(operation string, parameters ...interface{}) {
-	this.Transactions = append(this.Transactions, Transaction{
+	this.transactions = append(this.transactions, Transaction{
 		Operation:  operation,
 		Parameters: parameters,
 	})
 }
 
 func (this *Project) PlayTransactions() {
-	for _, transaction := range this.Transactions {
+	for _, transaction := range this.transactions {
 		fmt.Printf("Op:%s, Params:%+v\n", transaction.Operation, transaction.Parameters)
 	}
 }
 
 func (this *Project) UndoTransaction() {
-	// TODO check boundaries
-	this.UndoHistory = append(this.UndoHistory, this.Transactions[len(this.Transactions)-1])
-	this.Transactions = this.Transactions[:len(this.Transactions)-1]
+	if len(this.transactions) == 0 {
+		return
+	}
+	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
+	this.transactions = this.transactions[:len(this.transactions)-1]
 }
 
 func (this *Project) RedoTransaction() {
-	// TODO check boundaries
-	this.Transactions = append(this.Transactions, this.UndoHistory[len(this.UndoHistory)-1])
-	this.UndoHistory = this.UndoHistory[:len(this.UndoHistory)-1]
+	if len(this.undoHistory) == 0 {
+		return
+	}
+	this.transactions = append(this.transactions, this.undoHistory[len(this.undoHistory)-1])
+	this.undoHistory = this.undoHistory[:len(this.undoHistory)-1]
 }
