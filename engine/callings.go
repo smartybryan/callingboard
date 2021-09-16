@@ -16,7 +16,9 @@ type Callings struct {
 }
 
 func NewCallings(numCallings int) Callings {
-	return Callings{CallingMap: make(map[Organization][]Calling, numCallings)}
+	return Callings{
+		CallingMap: make(map[Organization][]Calling, numCallings),
+	}
 }
 
 func (this *Callings) AddCalling(org Organization, calling string, custom bool) error {
@@ -191,6 +193,20 @@ func (this *Callings) Save(path string) error {
 		return err
 	}
 	return os.WriteFile(path, jsonBytes, 0660)
+}
+
+func (this *Callings) Copy() Callings {
+	newCallings := NewCallings(len(this.CallingMap) * 2)
+
+	for organization, callings := range this.CallingMap {
+		newCallings.CallingMap[organization] = callings
+	}
+
+	for _, organization := range this.OrganizationOrder {
+		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
+	}
+
+	return newCallings
 }
 
 func (this *Callings) Load(path string) error {

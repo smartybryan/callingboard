@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"reflect"
 	"testing"
 	"time"
 
@@ -164,8 +165,13 @@ func (this *CallingsFixture) TestUpdateCalling() {
 	this.So(callings.CallingMap["org1"][2].CustomCalling, should.BeTrue)
 }
 
-/*
-func AddCalling(org Organization, calling string) error {
-func RemoveCalling(org Organization, calling string) error {
-func UpdateCalling(org Organization, calling string) error {
-*/
+func (this *CallingsFixture) TestCopy() {
+	callings := createTestCallings()
+	callingsCopy := callings.Copy()
+
+	this.So(reflect.DeepEqual(callings, callingsCopy), should.BeTrue)
+
+	err := callings.AddCalling("org1", "calling5", false)
+	this.So(err, should.BeNil)
+	this.So(reflect.DeepEqual(callings, callingsCopy), should.BeFalse)
+}

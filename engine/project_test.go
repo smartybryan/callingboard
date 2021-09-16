@@ -8,17 +8,14 @@ import (
 )
 
 func TestProjectFixture(t *testing.T) {
-    gunit.Run(new(ProjectFixture), t)
+	gunit.Run(new(ProjectFixture), t)
 }
 
 type ProjectFixture struct {
-    *gunit.Fixture
+	*gunit.Fixture
 }
 
-func (this *ProjectFixture) Setup() {
-}
-
-func (this *ProjectFixture) TestUndoRedoTransactions() {
+func (this *ProjectFixture) TestTransactions() {
 	callings := createTestCallings()
 	members := createTestMembers()
 
@@ -49,6 +46,4 @@ func (this *ProjectFixture) TestUndoRedoTransactions() {
 
 	project.RedoTransaction()
 	this.So(len(project.transactions), should.Equal, 2)
-	
-	project.PlayTransactions()
 }

@@ -70,7 +70,8 @@ func createTestCallings() Callings {
 	calling3 := createCalling("calling3", VACANT_CALLING, 0, 6)
 	callings.CallingMap["org1"] = []Calling{calling1, calling2, calling3}
 	callings.CallingMap["org2"] = []Calling{calling3}
-
+	callings.OrganizationOrder = append(callings.OrganizationOrder, "org1")
+	callings.OrganizationOrder = append(callings.OrganizationOrder, "org2")
 	return callings
 }
 
