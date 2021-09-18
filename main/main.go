@@ -18,8 +18,23 @@ const (
 )
 
 func main() {
-	parseAndPrintCallings()
-	parseAndPrintMembers()
+	//parseAndPrintCallings()
+	//parseAndPrintMembers()
+
+	wardCallings := engine.NewCallings(MaxCallings)
+	err := wardCallings.Load(CallingDataFilePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	wardMembers := engine.NewMembers(MaxMembers)
+	err = wardMembers.Load(MembersDataFilePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+
+
 }
 
 func parseAndPrintCallings() {

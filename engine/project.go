@@ -1,20 +1,18 @@
 package engine
 
-import "fmt"
-
 type Project struct {
-	callings         Callings
+	Callings         *Callings
+	Members          *Members
 	originalCallings Callings
-	members          Members
 	transactions     []Transaction
 	undoHistory      []Transaction
 }
 
-func NewProject(callings Callings, members Members) *Project {
+func NewProject(callings *Callings, members *Members) *Project {
 	return &Project{
-		callings:         callings,
+		Callings:         callings,
 		originalCallings: callings.Copy(),
-		members:          members,
+		Members:          members,
 		transactions:     make([]Transaction, 0, 100),
 	}
 }
@@ -26,20 +24,13 @@ func (this *Project) AddTransaction(operation string, parameters ...interface{})
 	})
 }
 
-func (this *Project) PlayTransactions() {
-	this.callings = this.originalCallings.Copy()
-
-	for _, transaction := range this.transactions {
-		fmt.Printf("Op:%s, Params:%+v\n", transaction.Operation, transaction.Parameters)
-	}
-}
-
 func (this *Project) RedoTransaction() {
 	if len(this.undoHistory) == 0 {
 		return
 	}
 	this.transactions = append(this.transactions, this.undoHistory[len(this.undoHistory)-1])
 	this.undoHistory = this.undoHistory[:len(this.undoHistory)-1]
+	this.playTransactions()
 }
 
 func (this *Project) UndoTransaction() {
@@ -48,4 +39,21 @@ func (this *Project) UndoTransaction() {
 	}
 	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
 	this.transactions = this.transactions[:len(this.transactions)-1]
+	this.playTransactions()
+}
+
+func (this *Project) playTransactions() {
+	freshCallings := this.originalCallings.Copy()
+	this.Callings = &freshCallings
+
+	for _, transaction := range this.transactions {
+		switch transaction.Operation {
+		case "AddCalling":
+			_ = this.Callings.AddCalling(
+				transaction.Parameters[0].(Organization), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
+		case "AddMemberToACalling":
+			_ = this.Callings.AddMemberToACalling(
+				transaction.Parameters[0].(MemberName), transaction.Parameters[1].(Organization), transaction.Parameters[2].(string))
+		}
+	}
 }

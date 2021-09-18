@@ -8,6 +8,6 @@ and track releasings and sustainings.
 
 TODO
 
-- Define a Project (base, transactions)
-- Keep a transaction log to enable undo
+- Add stubs that modify callings into Project
+- Move AddTransaction into the Project calls above
 - Build a diff summary between the base model and the proposed model.
