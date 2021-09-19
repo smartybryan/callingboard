@@ -21,123 +21,6 @@ func NewCallings(numCallings int) Callings {
 	}
 }
 
-func (this *Callings) AddCalling(org Organization, calling string, custom bool) error {
-	if !this.isValidOrganization(org) {
-		return ERROR_UNKNOWN_ORGANIZATION
-	}
-
-	callingList := this.CallingMap[org]
-	newCalling := Calling{
-		Name:          calling,
-		Holder:        VACANT_CALLING,
-		CustomCalling: custom,
-		Sustained:     time.Time{},
-	}
-	callingList = append(callingList, newCalling)
-	this.CallingMap[org] = callingList
-
-	return nil
-}
-
-func (this *Callings) RemoveCalling(org Organization, calling string) error {
-	if !this.isValidOrganization(org) {
-		return ERROR_UNKNOWN_ORGANIZATION
-	}
-	callingList := this.CallingMap[org]
-	var newCallingList []Calling
-	for _, call := range callingList {
-		if call.Name != calling {
-			newCallingList = append(newCallingList, call)
-		}
-	}
-	if len(callingList) == len(newCallingList) {
-		return ERROR_UNKNOWN_CALLING
-	}
-	this.CallingMap[org] = newCallingList
-
-	return nil
-}
-
-func (this *Callings) UpdateCalling(org Organization, calling string, custom bool) error {
-	if !this.isValidOrganization(org) {
-		return ERROR_UNKNOWN_ORGANIZATION
-	}
-	callingList := this.CallingMap[org]
-	for idx, call := range callingList {
-		if call.Name == calling {
-			call.CustomCalling = custom
-			this.CallingMap[org][idx] = call
-			return nil
-		}
-	}
-
-	return ERROR_UNKNOWN_CALLING
-}
-
-func (this *Callings) AddMemberToACalling(member MemberName, org Organization, calling string) error {
-	if !this.isValidOrganization(org) {
-		return ERROR_UNKNOWN_ORGANIZATION
-	}
-
-	if this.doesMemberHoldCalling(member, org, calling) {
-		return nil
-	}
-
-	callingList := this.CallingMap[org]
-	for idx, call := range callingList {
-		if call.Name == calling && call.Holder == VACANT_CALLING {
-			call.Holder = member
-			callingList[idx] = call
-			this.CallingMap[org] = callingList
-			return nil
-		}
-	}
-	newCalling := Calling{
-		Name:          calling,
-		Holder:        member,
-		CustomCalling: false,
-		Sustained:     time.Time{},
-	}
-	callingList = append(callingList, newCalling)
-	this.CallingMap[org] = callingList
-
-	return nil
-}
-
-func (this *Callings) MoveMemberToAnotherCalling(
-	member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
-	err := this.RemoveMemberFromACalling(member, fromOrg, fromCalling)
-	if err != nil {
-		return err
-	}
-
-	err = this.AddMemberToACalling(member, toOrg, toCalling)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (this *Callings) RemoveMemberFromACalling(member MemberName, org Organization, calling string) error {
-	if !this.isValidOrganization(org) {
-		return ERROR_UNKNOWN_ORGANIZATION
-	}
-	if this.doesMemberHoldCalling(member, org, calling) {
-		callingList := this.CallingMap[org]
-		for idx, calling := range callingList {
-			if calling.Holder == member {
-				calling.Holder = VACANT_CALLING
-				calling.Sustained = time.Time{}
-				callingList[idx] = calling
-				this.CallingMap[org] = callingList
-				return nil
-			}
-		}
-	}
-	return ERROR_MEMBER_INVALID_CALLING
-}
-
 func (this *Callings) CallingList(organization Organization) (callingList []Calling) {
 	if callings, found := this.CallingMap[organization]; found {
 		for _, calling := range callings {
@@ -148,6 +31,20 @@ func (this *Callings) CallingList(organization Organization) (callingList []Call
 		return callingList[i].Name < callingList[j].Name
 	})
 	return callingList
+}
+
+func (this *Callings) Copy() Callings {
+	newCallings := NewCallings(len(this.CallingMap) * 2)
+
+	for organization, callings := range this.CallingMap {
+		newCallings.CallingMap[organization] = callings
+	}
+
+	for _, organization := range this.OrganizationOrder {
+		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
+	}
+
+	return newCallings
 }
 
 func (this *Callings) MembersWithCallings() (names []MemberName) {
@@ -187,6 +84,14 @@ func (this *Callings) VacantCallingList(organization Organization) (callingList 
 	return callingList
 }
 
+func (this *Callings) Load(path string) error {
+	jsonBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(jsonBytes, this)
+}
+
 func (this *Callings) Save(path string) error {
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
@@ -195,27 +100,7 @@ func (this *Callings) Save(path string) error {
 	return os.WriteFile(path, jsonBytes, 0660)
 }
 
-func (this *Callings) Copy() Callings {
-	newCallings := NewCallings(len(this.CallingMap) * 2)
-
-	for organization, callings := range this.CallingMap {
-		newCallings.CallingMap[organization] = callings
-	}
-
-	for _, organization := range this.OrganizationOrder {
-		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
-	}
-
-	return newCallings
-}
-
-func (this *Callings) Load(path string) error {
-	jsonBytes, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(jsonBytes, this)
-}
+///// private /////
 
 func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization, calling string) bool {
 	if !this.isValidOrganization(org) {
@@ -242,6 +127,125 @@ func getOrganizationPrefixFromCalling(callingName string) Organization {
 		}
 	}
 	return ""
+}
+
+///// model modification methods (called by Project) /////
+
+func (this *Callings) addCalling(org Organization, calling string, custom bool) error {
+	if !this.isValidOrganization(org) {
+		return ERROR_UNKNOWN_ORGANIZATION
+	}
+
+	callingList := this.CallingMap[org]
+	newCalling := Calling{
+		Name:          calling,
+		Holder:        VACANT_CALLING,
+		CustomCalling: custom,
+		Sustained:     time.Time{},
+	}
+	callingList = append(callingList, newCalling)
+	this.CallingMap[org] = callingList
+
+	return nil
+}
+
+func (this *Callings) removeCalling(org Organization, calling string) error {
+	if !this.isValidOrganization(org) {
+		return ERROR_UNKNOWN_ORGANIZATION
+	}
+	callingList := this.CallingMap[org]
+	var newCallingList []Calling
+	for _, call := range callingList {
+		if call.Name != calling {
+			newCallingList = append(newCallingList, call)
+		}
+	}
+	if len(callingList) == len(newCallingList) {
+		return ERROR_UNKNOWN_CALLING
+	}
+	this.CallingMap[org] = newCallingList
+
+	return nil
+}
+
+func (this *Callings) updateCalling(org Organization, calling string, custom bool) error {
+	if !this.isValidOrganization(org) {
+		return ERROR_UNKNOWN_ORGANIZATION
+	}
+	callingList := this.CallingMap[org]
+	for idx, call := range callingList {
+		if call.Name == calling {
+			call.CustomCalling = custom
+			this.CallingMap[org][idx] = call
+			return nil
+		}
+	}
+
+	return ERROR_UNKNOWN_CALLING
+}
+
+func (this *Callings) addMemberToACalling(member MemberName, org Organization, calling string) error {
+	if !this.isValidOrganization(org) {
+		return ERROR_UNKNOWN_ORGANIZATION
+	}
+
+	if this.doesMemberHoldCalling(member, org, calling) {
+		return nil
+	}
+
+	callingList := this.CallingMap[org]
+	for idx, call := range callingList {
+		if call.Name == calling && call.Holder == VACANT_CALLING {
+			call.Holder = member
+			callingList[idx] = call
+			this.CallingMap[org] = callingList
+			return nil
+		}
+	}
+	newCalling := Calling{
+		Name:          calling,
+		Holder:        member,
+		CustomCalling: false,
+		Sustained:     time.Time{},
+	}
+	callingList = append(callingList, newCalling)
+	this.CallingMap[org] = callingList
+
+	return nil
+}
+
+func (this *Callings) moveMemberToAnotherCalling(
+	member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
+	err := this.removeMemberFromACalling(member, fromOrg, fromCalling)
+	if err != nil {
+		return err
+	}
+
+	err = this.addMemberToACalling(member, toOrg, toCalling)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (this *Callings) removeMemberFromACalling(member MemberName, org Organization, calling string) error {
+	if !this.isValidOrganization(org) {
+		return ERROR_UNKNOWN_ORGANIZATION
+	}
+	if this.doesMemberHoldCalling(member, org, calling) {
+		callingList := this.CallingMap[org]
+		for idx, calling := range callingList {
+			if calling.Holder == member {
+				calling.Holder = VACANT_CALLING
+				calling.Sustained = time.Time{}
+				callingList[idx] = calling
+				this.CallingMap[org] = callingList
+				return nil
+			}
+		}
+	}
+	return ERROR_MEMBER_INVALID_CALLING
 }
 
 ///////////////////////////////////////////////////////

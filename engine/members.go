@@ -14,6 +14,14 @@ func NewMembers(numMembers int) Members {
 	return make(map[MemberName]Member, numMembers)
 }
 
+func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
+	return SetDifference(this.GetMembers(18, 99), callings.MembersWithCallings())
+}
+
+func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
+	return this.GetMembers(18, 99)
+}
+
 func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
 	for name, member := range *this {
 		if !member.Unbaptized && member.Age() >= minAge && member.Age() <= maxAge {
@@ -26,24 +34,8 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
 	return names
 }
 
-func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
-	return SetDifference(this.GetMembers(18, 99), callings.MembersWithCallings())
-}
-
-func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
-	return this.GetMembers(18, 99)
-}
-
 func (this *Members) YouthEligibleForACalling() (members []MemberName) {
 	return this.GetMembers(11, 17)
-}
-
-func (this *Members) Save(path string) error {
-	jsonBytes, err := json.Marshal(this)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(path, jsonBytes, 0660)
 }
 
 func (this *Members) Load(path string) error {
@@ -52,6 +44,14 @@ func (this *Members) Load(path string) error {
 		return err
 	}
 	return json.Unmarshal(jsonBytes, this)
+}
+
+func (this *Members) Save(path string) error {
+	jsonBytes, err := json.Marshal(this)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, jsonBytes, 0660)
 }
 
 func (this *Members) SortedKeys() []MemberName {

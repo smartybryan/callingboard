@@ -20,8 +20,8 @@ func (this *ProjectFixture) TestUndoRedoTransactions() {
 	members := createTestMembers()
 
 	project := NewProject(&callings, &members)
-	project.AddTransaction("op1", "p1", "p2")
-	project.AddTransaction("op2", "p3", "p4", true)
+	project.addTransaction("op1", "p1", "p2")
+	project.addTransaction("op2", "p3", "p4", true)
 	this.So(len(project.transactions), should.Equal, 2)
 
 	project.UndoTransaction()
@@ -53,13 +53,11 @@ func (this *ProjectFixture) TestPlayTransactions() {
 	members := createTestMembers()
 	project := NewProject(&callings, &members)
 
-	_ = project.Callings.AddCalling("org1", "calling4", false)
-	project.AddTransaction("AddCalling", Organization("org1"), "calling4", false)
+	_ = project.AddCalling("org1", "calling4", false)
 	this.So(project.Callings.CallingList("org1")[3].Name, should.Equal, "calling4")
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, VACANT_CALLING)
 
-	_ = project.Callings.AddMemberToACalling("Last3, First3","org1", "calling4")
-	project.AddTransaction("AddMemberToACalling", MemberName("Last3, First3"),Organization("org1"), "calling4")
+	_ = project.AddMemberToACalling("Last3, First3","org1", "calling4")
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, "Last3, First3")
 
 	project.UndoTransaction()
