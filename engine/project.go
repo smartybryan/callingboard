@@ -1,5 +1,9 @@
 package engine
 
+const (
+	DefaultNumCallings = 50
+)
+
 type Project struct {
 	Callings         *Callings
 	Members          *Members
@@ -15,6 +19,28 @@ func NewProject(callings *Callings, members *Members) *Project {
 		Members:          members,
 		transactions:     make([]Transaction, 0, 100),
 	}
+}
+
+func (this *Project) Diff() (newCallings Callings) {
+	newCallings = NewCallings(DefaultNumCallings)
+
+	for _, organization := range this.Callings.organizationOrder {
+		for _, modelCalling := range this.Callings.callingMap[organization] {
+			modelCallingFound := false
+			
+			for _, originalCalling := range this.originalCallings.callingMap[organization] {
+				if modelCalling.Name == originalCalling.Name {
+					modelCallingFound = true
+				}
+
+			}
+			if !modelCallingFound {
+				//TODO: a new calling was created in the model
+			}
+		}
+	}
+
+	return newCallings
 }
 
 func (this *Project) RedoTransaction() {

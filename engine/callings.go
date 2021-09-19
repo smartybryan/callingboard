@@ -11,18 +11,18 @@ import (
 type Organization string
 
 type Callings struct {
-	CallingMap        map[Organization][]Calling
-	OrganizationOrder []Organization
+	callingMap        map[Organization][]Calling
+	organizationOrder []Organization
 }
 
 func NewCallings(numCallings int) Callings {
 	return Callings{
-		CallingMap: make(map[Organization][]Calling, numCallings),
+		callingMap: make(map[Organization][]Calling, numCallings),
 	}
 }
 
 func (this *Callings) CallingList(organization Organization) (callingList []Calling) {
-	if callings, found := this.CallingMap[organization]; found {
+	if callings, found := this.callingMap[organization]; found {
 		for _, calling := range callings {
 			callingList = append(callingList, calling)
 		}
@@ -34,14 +34,14 @@ func (this *Callings) CallingList(organization Organization) (callingList []Call
 }
 
 func (this *Callings) Copy() Callings {
-	newCallings := NewCallings(len(this.CallingMap) * 2)
+	newCallings := NewCallings(len(this.callingMap) * 2)
 
-	for organization, callings := range this.CallingMap {
-		newCallings.CallingMap[organization] = callings
+	for organization, callings := range this.callingMap {
+		newCallings.callingMap[organization] = callings
 	}
 
-	for _, organization := range this.OrganizationOrder {
-		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
+	for _, organization := range this.organizationOrder {
+		newCallings.organizationOrder = append(newCallings.organizationOrder, organization)
 	}
 
 	return newCallings
@@ -49,7 +49,7 @@ func (this *Callings) Copy() Callings {
 
 func (this *Callings) MembersWithCallings() (names []MemberName) {
 	nameMap := make(map[MemberName]struct{}, 200)
-	for _, callings := range (*this).CallingMap {
+	for _, callings := range (*this).callingMap {
 		for _, calling := range callings {
 			nameMap[calling.Holder] = struct{}{}
 		}
@@ -65,7 +65,7 @@ func (this *Callings) MembersWithCallings() (names []MemberName) {
 }
 
 func (this *Callings) OrganizationList() (organizationList []Organization) {
-	for organization, _ := range this.CallingMap {
+	for organization, _ := range this.callingMap {
 		organizationList = append(organizationList, organization)
 	}
 	sort.SliceStable(organizationList, func(i, j int) bool {
@@ -106,7 +106,7 @@ func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization,
 	if !this.isValidOrganization(org) {
 		return false
 	}
-	callingList := this.CallingMap[org]
+	callingList := this.callingMap[org]
 	for _, call := range callingList {
 		if call.Name == calling && call.Holder == member {
 			return true
@@ -116,7 +116,7 @@ func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization,
 }
 
 func (this *Callings) isValidOrganization(org Organization) bool {
-	_, found := this.CallingMap[org]
+	_, found := this.callingMap[org]
 	return found
 }
 
@@ -136,7 +136,7 @@ func (this *Callings) addCalling(org Organization, calling string, custom bool) 
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
 
-	callingList := this.CallingMap[org]
+	callingList := this.callingMap[org]
 	newCalling := Calling{
 		Name:          calling,
 		Holder:        VACANT_CALLING,
@@ -144,7 +144,7 @@ func (this *Callings) addCalling(org Organization, calling string, custom bool) 
 		Sustained:     time.Time{},
 	}
 	callingList = append(callingList, newCalling)
-	this.CallingMap[org] = callingList
+	this.callingMap[org] = callingList
 
 	return nil
 }
@@ -153,7 +153,7 @@ func (this *Callings) removeCalling(org Organization, calling string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
-	callingList := this.CallingMap[org]
+	callingList := this.callingMap[org]
 	var newCallingList []Calling
 	for _, call := range callingList {
 		if call.Name != calling {
@@ -163,7 +163,7 @@ func (this *Callings) removeCalling(org Organization, calling string) error {
 	if len(callingList) == len(newCallingList) {
 		return ERROR_UNKNOWN_CALLING
 	}
-	this.CallingMap[org] = newCallingList
+	this.callingMap[org] = newCallingList
 
 	return nil
 }
@@ -172,11 +172,11 @@ func (this *Callings) updateCalling(org Organization, calling string, custom boo
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
-	callingList := this.CallingMap[org]
+	callingList := this.callingMap[org]
 	for idx, call := range callingList {
 		if call.Name == calling {
 			call.CustomCalling = custom
-			this.CallingMap[org][idx] = call
+			this.callingMap[org][idx] = call
 			return nil
 		}
 	}
@@ -193,12 +193,12 @@ func (this *Callings) addMemberToACalling(member MemberName, org Organization, c
 		return nil
 	}
 
-	callingList := this.CallingMap[org]
+	callingList := this.callingMap[org]
 	for idx, call := range callingList {
 		if call.Name == calling && call.Holder == VACANT_CALLING {
 			call.Holder = member
 			callingList[idx] = call
-			this.CallingMap[org] = callingList
+			this.callingMap[org] = callingList
 			return nil
 		}
 	}
@@ -209,7 +209,7 @@ func (this *Callings) addMemberToACalling(member MemberName, org Organization, c
 		Sustained:     time.Time{},
 	}
 	callingList = append(callingList, newCalling)
-	this.CallingMap[org] = callingList
+	this.callingMap[org] = callingList
 
 	return nil
 }
@@ -234,13 +234,13 @@ func (this *Callings) removeMemberFromACalling(member MemberName, org Organizati
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
 	if this.doesMemberHoldCalling(member, org, calling) {
-		callingList := this.CallingMap[org]
+		callingList := this.callingMap[org]
 		for idx, calling := range callingList {
 			if calling.Holder == member {
 				calling.Holder = VACANT_CALLING
 				calling.Sustained = time.Time{}
 				callingList[idx] = calling
-				this.CallingMap[org] = callingList
+				this.callingMap[org] = callingList
 				return nil
 			}
 		}

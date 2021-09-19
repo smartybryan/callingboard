@@ -8,6 +8,4 @@ and track releasings and sustainings.
 
 TODO
 
-- Add stubs that modify callings into Project
-- Move AddTransaction into the Project calls above
 - Build a diff summary between the base model and the proposed model.

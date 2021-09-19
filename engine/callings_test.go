@@ -36,7 +36,7 @@ func (this *CallingsFixture) TestDaysInCalling() {
 
 func (this *CallingsFixture) TestMembersWithCallings() {
 	callings := NewCallings(5)
-	callings.CallingMap["org1"] = []Calling{
+	callings.callingMap["org1"] = []Calling{
 		{Holder: "Washington, George"}, {Holder: "Lincoln, Abraham"}, {Holder: "Washington, George"},
 	}
 
@@ -91,7 +91,7 @@ func (this *CallingsFixture) TestRemoveMemberFromACalling() {
 	err = callings.removeMemberFromACalling("Last2, First2", "org1", "calling2")
 	this.So(err, should.BeNil)
 	this.So(callings.doesMemberHoldCalling("Last2, First2", "org1", "calling2"), should.BeFalse)
-	this.So(callings.CallingMap["org1"][1].Holder, should.Equal, VACANT_CALLING)
+	this.So(callings.callingMap["org1"][1].Holder, should.Equal, VACANT_CALLING)
 }
 
 func (this *CallingsFixture) TestMoveMemberToAnotherCalling() {
@@ -128,7 +128,7 @@ func (this *CallingsFixture) TestAddCalling() {
 	// happy path
 	err = callings.addCalling("org1", "calling4", false)
 	this.So(err, should.BeNil)
-	this.So(callings.CallingMap["org1"][3].Name, should.Equal, "calling4")
+	this.So(callings.callingMap["org1"][3].Name, should.Equal, "calling4")
 }
 
 func (this *CallingsFixture) TestRemoveCalling() {
@@ -145,7 +145,7 @@ func (this *CallingsFixture) TestRemoveCalling() {
 	// happy path
 	err = callings.removeCalling("org1", "calling3")
 	this.So(err, should.BeNil)
-	this.So(len(callings.CallingMap["org1"]), should.Equal, 2)
+	this.So(len(callings.callingMap["org1"]), should.Equal, 2)
 }
 
 func (this *CallingsFixture) TestUpdateCalling() {
@@ -162,7 +162,7 @@ func (this *CallingsFixture) TestUpdateCalling() {
 	// happy path
 	err = callings.updateCalling("org1", "calling3",true)
 	this.So(err, should.BeNil)
-	this.So(callings.CallingMap["org1"][2].CustomCalling, should.BeTrue)
+	this.So(callings.callingMap["org1"][2].CustomCalling, should.BeTrue)
 }
 
 func (this *CallingsFixture) TestCopy() {

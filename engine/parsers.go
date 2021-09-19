@@ -25,7 +25,7 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 	for idx := 0; idx < len(fileLines); idx++ {
 		if strings.HasPrefix(fileLines[idx], "Position") {
 			currentOrganization = Organization(fileLines[idx-1])
-			this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
+			this.organizationOrder = append(this.organizationOrder, currentOrganization)
 			idx++
 			withinOrganization = true
 		}
@@ -69,10 +69,10 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 		if _, found := MultiUseOrganizations[currentOrganization]; found {
 			if prefix := getOrganizationPrefixFromCalling(calling.Name); len(prefix) > 0 {
 				currentOrganization = prefix + " " + currentOrganization
-				this.OrganizationOrder[len(this.OrganizationOrder)-1] = currentOrganization
+				this.organizationOrder[len(this.organizationOrder)-1] = currentOrganization
 			}
 		}
-		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
+		(*this).callingMap[currentOrganization] = append((*this).callingMap[currentOrganization], calling)
 	}
 
 	return nil

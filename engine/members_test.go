@@ -68,10 +68,10 @@ func createTestCallings() Callings {
 	calling1 := createCalling("calling1", "Last1, First1", 2, 6)
 	calling2 := createCalling("calling2", "Last2, First2", 1, 6)
 	calling3 := createCalling("calling3", VACANT_CALLING, 0, 6)
-	callings.CallingMap["org1"] = []Calling{calling1, calling2, calling3}
-	callings.CallingMap["org2"] = []Calling{calling3}
-	callings.OrganizationOrder = append(callings.OrganizationOrder, "org1")
-	callings.OrganizationOrder = append(callings.OrganizationOrder, "org2")
+	callings.callingMap["org1"] = []Calling{calling1, calling2, calling3}
+	callings.callingMap["org2"] = []Calling{calling3}
+	callings.organizationOrder = append(callings.organizationOrder, "org1")
+	callings.organizationOrder = append(callings.organizationOrder, "org2")
 	return callings
 }
 
