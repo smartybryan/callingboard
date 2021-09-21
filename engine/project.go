@@ -1,5 +1,7 @@
 package engine
 
+import "sort"
+
 const (
 	DefaultNumCallings = 50
 )
@@ -10,6 +12,9 @@ type Project struct {
 	originalCallings Callings
 	transactions     []Transaction
 	undoHistory      []Transaction
+
+	sustainings []Calling
+	releases    []Calling
 }
 
 func NewProject(callings *Callings, members *Members) *Project {
@@ -21,26 +26,44 @@ func NewProject(callings *Callings, members *Members) *Project {
 	}
 }
 
-func (this *Project) Diff() (newCallings Callings) {
-	newCallings = NewCallings(DefaultNumCallings)
+func (this *Project) Diff() (releases, sustainings []Calling) {
+	this.releases = this.releases[:]
+	this.sustainings = this.sustainings[:]
 
 	for _, organization := range this.Callings.organizationOrder {
-		for _, modelCalling := range this.Callings.callingMap[organization] {
-			modelCallingFound := false
-			
-			for _, originalCalling := range this.originalCallings.callingMap[organization] {
-				if modelCalling.Name == originalCalling.Name {
-					modelCallingFound = true
-				}
+		// sustainings
+		modelCallings := this.Callings.CallingList(organization)
+		for _, modelCalling := range modelCallings {
+			if modelCalling.Holder == VACANT_CALLING {
+				continue
+			}
+			if this.originalCallings.doesMemberHoldCalling(modelCalling.Holder, organization, modelCalling.Name) {
+				continue
+			}
+			this.sustainings = append(this.sustainings, modelCalling)
+		}
 
+		// releases
+		originalCallings := this.originalCallings.CallingList(organization)
+		for _, originalCalling := range originalCallings {
+			if originalCalling.Holder == VACANT_CALLING {
+				continue
 			}
-			if !modelCallingFound {
-				//TODO: a new calling was created in the model
+			if this.Callings.doesMemberHoldCalling(originalCalling.Holder, organization, originalCalling.Name) {
+				continue
 			}
+			this.releases = append(this.releases, originalCalling)
 		}
 	}
 
-	return newCallings
+	sort.SliceStable(this.releases, func(i, j int) bool {
+		return this.releases[i].Name < this.releases[j].Name
+	})
+	sort.SliceStable(this.sustainings, func(i, j int) bool {
+		return this.sustainings[i].Name < this.sustainings[j].Name
+	})
+
+	return this.releases, this.sustainings
 }
 
 func (this *Project) RedoTransaction() {

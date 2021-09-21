@@ -37,7 +37,10 @@ func (this *Callings) Copy() Callings {
 	newCallings := NewCallings(len(this.callingMap) * 2)
 
 	for organization, callings := range this.callingMap {
-		newCallings.callingMap[organization] = callings
+		newCallings.callingMap[organization] = []Calling{}
+		for _, calling := range callings {
+			newCallings.callingMap[organization] = append(newCallings.callingMap[organization], calling.Copy())
+		}
 	}
 
 	for _, organization := range this.organizationOrder {
@@ -260,6 +263,15 @@ type Calling struct {
 const (
 	VACANT_CALLING = "Calling Vacant"
 )
+
+func (this *Calling) Copy() Calling {
+	return Calling{
+		Name:          this.Name,
+		Holder:        this.Holder,
+		CustomCalling: this.CustomCalling,
+		Sustained:     this.Sustained,
+	}
+}
 
 func (this *Calling) DaysInCalling() int {
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)

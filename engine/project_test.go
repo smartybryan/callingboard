@@ -66,3 +66,19 @@ func (this *ProjectFixture) TestPlayTransactions() {
 	project.RedoTransaction()
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, "Last3, First3")
 }
+
+func (this *ProjectFixture) TestDiff() {
+	callings := createTestCallings()
+	members := createTestMembers()
+	project := NewProject(&callings, &members)
+
+	_ = project.AddCalling("org2", "calling10", true)
+	_ = project.AddMemberToACalling("Last10, First10","org2", "calling10")
+	_ = project.RemoveMemberFromACalling("Last1, First1","org1", "calling1")
+	_ = project.RemoveCalling("org1", "calling1")
+	_ = project.MoveMemberToAnotherCalling("Last2, First2","org1", "calling2", "org2", "calling22")
+
+	releases, sustainings := project.Diff()
+	this.So(len(sustainings), should.Equal, 2)
+	this.So(len(releases), should.Equal, 2)
+}
