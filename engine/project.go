@@ -30,7 +30,7 @@ func (this *Project) Diff() (releases, sustainings []Calling) {
 	this.releases = this.releases[:]
 	this.sustainings = this.sustainings[:]
 
-	for _, organization := range this.Callings.organizationOrder {
+	for _, organization := range this.Callings.OrganizationOrder {
 		// sustainings
 		modelCallings := this.Callings.CallingList(organization)
 		for _, modelCalling := range modelCallings {

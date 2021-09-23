@@ -15,7 +15,7 @@ func NewMembers(numMembers int) Members {
 }
 
 func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
-	return SetDifference(this.GetMembers(18, 99), callings.MembersWithCallings())
+	return SetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
 }
 
 func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
