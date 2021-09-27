@@ -23,18 +23,18 @@ func main() {
 }
 
 func parseAndPrintCallings() {
-	wardCallings := engine.NewCallings(MaxCallings)
+	wardCallings := engine.NewCallings(MaxCallings, CallingDataFilePath)
 	err := wardCallings.ParseCallingsFromRawData(RawCallingDataFilePath)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = wardCallings.Save(CallingDataFilePath)
+	err = wardCallings.Save()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = wardCallings.Load(CallingDataFilePath)
+	err = wardCallings.Load()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -52,28 +52,28 @@ func parseAndPrintCallings() {
 }
 
 func parseAndPrintMembers() {
-	membership := engine.NewMembers(MaxMembers)
+	membership := engine.NewMembers(MaxMembers, MembersDataFilePath)
 	err := membership.ParseMembersFromRawData(RawMembersDataFilePath)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = membership.Save(MembersDataFilePath)
+	err = membership.Save()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = membership.Load(MembersDataFilePath)
+	err = membership.Load()
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	fmt.Println()
 
-	for _, name := range membership.SortedKeys() {
-		memberRecord := membership[name]
+	for _, name := range membership.GetMembers(0,120) {
+		memberRecord := membership.GetMemberRecord(name)
 		fmt.Printf("%s %s %s (%d) (eoy:%d) %t\n",
 			memberRecord.Name, memberRecord.Gender, util.PrintableDate(memberRecord.Birthday),
-			memberRecord.Age(), memberRecord.AgeByEndOfYear(), memberRecord.Unbaptized)
+			memberRecord.Age, memberRecord.AgeByEndOfYear, memberRecord.Unbaptized)
 	}
 }

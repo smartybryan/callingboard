@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.org/smartybryan/callorg/util"
 )
 
 type Organization string
@@ -13,17 +15,22 @@ type Organization string
 type Callings struct {
 	CallingMap        map[Organization][]Calling
 	OrganizationOrder []Organization
+
+	filePath string
 }
 
-func NewCallings(numCallings int) Callings {
+func NewCallings(numCallings int, path string) Callings {
 	return Callings{
 		CallingMap: make(map[Organization][]Calling, numCallings),
+		filePath:   path,
 	}
 }
 
 func (this *Callings) CallingList(organization Organization) (callingList []Calling) {
 	if callings, found := this.CallingMap[organization]; found {
 		for _, calling := range callings {
+			calling.PrintableSustained = util.PrintableDate(calling.Sustained)
+			calling.PrintableTimeInCalling = util.PrintableTimeInCalling(calling.DaysInCalling())
 			callingList = append(callingList, calling)
 		}
 	}
@@ -31,23 +38,6 @@ func (this *Callings) CallingList(organization Organization) (callingList []Call
 		return callingList[i].Name < callingList[j].Name
 	})
 	return callingList
-}
-
-func (this *Callings) Copy() Callings {
-	newCallings := NewCallings(len(this.CallingMap) * 2)
-
-	for organization, callings := range this.CallingMap {
-		newCallings.CallingMap[organization] = []Calling{}
-		for _, calling := range callings {
-			newCallings.CallingMap[organization] = append(newCallings.CallingMap[organization], calling.Copy())
-		}
-	}
-
-	for _, organization := range this.OrganizationOrder {
-		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
-	}
-
-	return newCallings
 }
 
 func (this *Callings) MembersWithCallings() (names []MemberName) {
@@ -87,23 +77,40 @@ func (this *Callings) VacantCallingList(organization Organization) (callingList 
 	return callingList
 }
 
-func (this *Callings) Load(path string) error {
-	jsonBytes, err := os.ReadFile(path)
+func (this *Callings) Load() error {
+	jsonBytes, err := os.ReadFile(this.filePath)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(jsonBytes, this)
 }
 
-func (this *Callings) Save(path string) error {
+func (this *Callings) Save() error {
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, jsonBytes, 0660)
+	return os.WriteFile(this.filePath, jsonBytes, 0660)
 }
 
 ///// private /////
+
+func (this *Callings) copy() Callings {
+	newCallings := NewCallings(len(this.CallingMap)*2, "")
+
+	for organization, callings := range this.CallingMap {
+		newCallings.CallingMap[organization] = []Calling{}
+		for _, calling := range callings {
+			newCallings.CallingMap[organization] = append(newCallings.CallingMap[organization], calling.copy())
+		}
+	}
+
+	for _, organization := range this.OrganizationOrder {
+		newCallings.OrganizationOrder = append(newCallings.OrganizationOrder, organization)
+	}
+
+	return newCallings
+}
 
 func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization, calling string) bool {
 	if !this.isValidOrganization(org) {
@@ -258,13 +265,16 @@ type Calling struct {
 	Holder        MemberName
 	CustomCalling bool
 	Sustained     time.Time
+
+	PrintableSustained     string
+	PrintableTimeInCalling string
 }
 
 const (
 	VACANT_CALLING = "Calling Vacant"
 )
 
-func (this *Calling) Copy() Calling {
+func (this *Calling) copy() Calling {
 	return Calling{
 		Name:          this.Name,
 		Holder:        this.Holder,

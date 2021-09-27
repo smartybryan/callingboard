@@ -122,7 +122,7 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 			Unbaptized: unbaptized,
 		}
 
-		(*this)[MemberName(member.Name)] = member
+		this.MemberMap[MemberName(member.Name)] = member
 	}
 
 	return nil

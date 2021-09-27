@@ -9,12 +9,31 @@ import (
 type InputModel struct {
 	MemberMinAge int
 	MemberMaxAge int
+	MemberName string
 
+	Organization string
+	FromOrg string
+
+	Calling string
+	FromCalling string
+	CustomCalling bool
+
+	TransactionName string
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
-	this.MemberMinAge = atoi(strings.TrimSpace(request.Form.Get("min")))
-	this.MemberMaxAge = atoi(strings.TrimSpace(request.Form.Get("max")))
+	this.MemberMinAge = atoi(request.Form.Get("min"))
+	this.MemberMaxAge = atoi(request.Form.Get("max"))
+	this.MemberName = sanitize(request.Form.Get("member"))
+
+	this.Organization = sanitize(request.Form.Get("org"))
+	this.FromOrg = sanitize(request.Form.Get("from-org"))
+
+	this.Calling = sanitize(request.Form.Get("calling"))
+	this.FromCalling = sanitize(request.Form.Get("from-calling"))
+	this.CustomCalling = atob(request.Form.Get("custom-calling"))
+
+	this.TransactionName = sanitize(request.Form.Get("name"))
 
 	return nil
 }
@@ -27,11 +46,19 @@ func (this *InputModel) Validate() error {
 		this.MemberMinAge = 0
 	}
 
-
 	return nil
 }
 
+func sanitize(value string) string {
+	return strings.ToLower(strings.TrimSpace(value))
+}
+
 func atoi(value string) int {
-	val, _ := strconv.Atoi(value)
+	val, _ := strconv.Atoi(sanitize(value))
+	return val
+}
+
+func atob(value string) bool {
+	val, _ := strconv.ParseBool(sanitize(value))
 	return val
 }

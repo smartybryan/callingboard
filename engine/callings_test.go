@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -35,7 +36,7 @@ func (this *CallingsFixture) TestDaysInCalling() {
 }
 
 func (this *CallingsFixture) TestMembersWithCallings() {
-	callings := NewCallings(5)
+	callings := NewCallings(5,"")
 	callings.CallingMap["org1"] = []Calling{
 		{Holder: "Washington, George"}, {Holder: "Lincoln, Abraham"}, {Holder: "Washington, George"},
 	}
@@ -44,22 +45,22 @@ func (this *CallingsFixture) TestMembersWithCallings() {
 }
 
 func (this *CallingsFixture) TestOrganizationalList() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 	this.So(callings.OrganizationList(), should.Resemble, []Organization{"org1", "org2"})
 }
 
 func (this *CallingsFixture) TestCallingList() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 	this.So(len(callings.CallingList("org1")), should.Equal, 3)
 }
 
 func (this *CallingsFixture) TestVacantCallingList() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 	this.So(len(callings.VacantCallingList("org1")), should.Equal, 1)
 }
 
 func (this *CallingsFixture) TestAddMemberToACalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid org
 	err := callings.addMemberToACalling("Last99, First99", "bogusorg", "calling3")
@@ -77,7 +78,7 @@ func (this *CallingsFixture) TestAddMemberToACalling() {
 }
 
 func (this *CallingsFixture) TestRemoveMemberFromACalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid org
 	err := callings.removeMemberFromACalling("Last2, First2", "bogusorg", "calling3")
@@ -95,7 +96,7 @@ func (this *CallingsFixture) TestRemoveMemberFromACalling() {
 }
 
 func (this *CallingsFixture) TestMoveMemberToAnotherCalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid toOrg
 	err := callings.moveMemberToAnotherCalling("Last2, First2", "bogusorg", "calling3", "org1", "calling4")
@@ -119,7 +120,7 @@ func (this *CallingsFixture) TestMoveMemberToAnotherCalling() {
 }
 
 func (this *CallingsFixture) TestAddCalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid org
 	err := callings.addCalling("bogusorg", "calling4", false)
@@ -132,7 +133,7 @@ func (this *CallingsFixture) TestAddCalling() {
 }
 
 func (this *CallingsFixture) TestRemoveCalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid org
 	err := callings.removeCalling("bogusorg", "calling4")
@@ -149,7 +150,7 @@ func (this *CallingsFixture) TestRemoveCalling() {
 }
 
 func (this *CallingsFixture) TestUpdateCalling() {
-	callings := createTestCallings()
+	callings := createTestCallings("")
 
 	// invalid org
 	err := callings.updateCalling("bogusorg", "calling4",true)
@@ -166,12 +167,30 @@ func (this *CallingsFixture) TestUpdateCalling() {
 }
 
 func (this *CallingsFixture) TestCopy() {
-	callings := createTestCallings()
-	callingsCopy := callings.Copy()
+	callings := createTestCallings("")
+	callingsCopy := callings.copy()
 
 	this.So(reflect.DeepEqual(callings, callingsCopy), should.BeTrue)
 
 	err := callings.addCalling("org1", "calling5", false)
 	this.So(err, should.BeNil)
 	this.So(reflect.DeepEqual(callings, callingsCopy), should.BeFalse)
+}
+
+func (this *CallingsFixture) TestSaveLoad() {
+	tempFile := "testcallings"
+	callings := createTestCallings(tempFile)
+
+	cmLength := len(callings.CallingMap)
+	ooLength := len(callings.OrganizationOrder)
+	err := callings.Save()
+	this.So(err, should.BeNil)
+
+	callings = NewCallings(10, tempFile)
+	err = callings.Load()
+	this.So(err, should.BeNil)
+	this.So(len(callings.CallingMap), should.Equal, cmLength)
+	this.So(len(callings.OrganizationOrder), should.Equal, ooLength)
+
+	os.Remove(tempFile)
 }

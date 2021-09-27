@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -20,17 +21,17 @@ func (this *MembersFixture) TestAgeFunctions() {
 	member := createMember("User, Joe", 0)
 
 	member.Birthday = setDate(-20, 0, 0)
-	this.So(member.Age(), should.Equal, 20)
+	this.So(member.age(), should.Equal, 20)
 
 	member.Birthday = setDate(-20, 0, 2)
-	this.So(member.Age(), should.Equal, 19)
+	this.So(member.age(), should.Equal, 19)
 
 	member.Birthday = setDate(-20, 0, 2)
-	this.So(member.AgeByEndOfYear(), should.Equal, 20)
+	this.So(member.ageByEndOfYear(), should.Equal, 20)
 }
 
 func (this *MembersFixture) TestGetMembers() {
-	members := createTestMembers()
+	members := createTestMembers("")
 
 	this.So(len(members.GetMembers(11, 17)), should.Equal, 1)
 	this.So(len(members.GetMembers(18, 99)), should.Equal, 3)
@@ -39,32 +40,47 @@ func (this *MembersFixture) TestGetMembers() {
 }
 
 func (this *MembersFixture) TestAdultsWithoutACalling() {
-	members := createTestMembers()
-	callings := createTestCallings()
+	members := createTestMembers("")
+	callings := createTestCallings("")
 
 	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []MemberName{"Last3, First3", "Last4, First4"})
 }
 
 func (this *MembersFixture) TestEligibleForACalling() {
-	members := createTestMembers()
+	members := createTestMembers("")
 
 	this.So(len(members.AdultsEligibleForACalling()), should.Equal, 3)
 	this.So(len(members.YouthEligibleForACalling()), should.Equal, 1)
 }
 
+func (this *MembersFixture) TestSaveLoad() {
+	tempFile := "testmembers"
+	members := createTestMembers(tempFile)
+	mLength := len(members.MemberMap)
+	err := members.Save()
+	this.So(err, should.BeNil)
+
+	members = NewMembers(10,tempFile)
+	err = members.Load()
+	this.So(err, should.BeNil)
+	this.So(len(members.MemberMap), should.Equal, mLength)
+
+	os.Remove(tempFile)
+}
+
 ////////////////////////////////////////////////////////
 
-func createTestMembers() Members {
-	members := NewMembers(5)
-	members["Last1, First1"] = createMember("Last1, First1", 15)
-	members["Last2, First2"] = createMember("Last2, First2", 20)
-	members["Last3, First3"] = createMember("Last3, First3", 55)
-	members["Last4, First4"] = createMember("Last4, First4", 30)
+func createTestMembers(path string) Members {
+	members := NewMembers(5, path)
+	members.MemberMap["Last1, First1"] = createMember("Last1, First1", 15)
+	members.MemberMap["Last2, First2"] = createMember("Last2, First2", 20)
+	members.MemberMap["Last3, First3"] = createMember("Last3, First3", 55)
+	members.MemberMap["Last4, First4"] = createMember("Last4, First4", 30)
 	return members
 }
 
-func createTestCallings() Callings {
-	callings := NewCallings(5)
+func createTestCallings(path string) Callings {
+	callings := NewCallings(5,path)
 	calling1 := createCalling("calling1", "Last1, First1", 2, 6)
 	calling2 := createCalling("calling2", "Last2, First2", 1, 6)
 	calling3 := createCalling("calling3", VACANT_CALLING, 0, 6)

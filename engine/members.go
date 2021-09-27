@@ -8,10 +8,18 @@ import (
 )
 
 type MemberName string
-type Members map[MemberName]Member
 
-func NewMembers(numMembers int) Members {
-	return make(map[MemberName]Member, numMembers)
+type Members struct {
+	MemberMap map[MemberName]Member
+
+	filePath string
+}
+
+func NewMembers(numMembers int, path string) Members {
+	return Members{
+		MemberMap: make(map[MemberName]Member, numMembers),
+		filePath:  path,
+	}
 }
 
 func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
@@ -22,9 +30,18 @@ func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
 	return this.GetMembers(18, 99)
 }
 
+func (this *Members) GetMemberRecord(name MemberName) Member {
+	if member, found := this.MemberMap[name]; found {
+		member.Age = member.age()
+		member.AgeByEndOfYear = member.ageByEndOfYear()
+		return member
+	}
+	return Member{}
+}
+
 func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
-	for name, member := range *this {
-		if !member.Unbaptized && member.Age() >= minAge && member.Age() <= maxAge {
+	for name, member := range this.MemberMap {
+		if !member.Unbaptized && member.age() >= minAge && member.age() <= maxAge {
 			names = append(names, name)
 		}
 	}
@@ -38,33 +55,20 @@ func (this *Members) YouthEligibleForACalling() (members []MemberName) {
 	return this.GetMembers(11, 17)
 }
 
-func (this *Members) Load(path string) error {
-	jsonBytes, err := os.ReadFile(path)
+func (this *Members) Load() error {
+	jsonBytes, err := os.ReadFile(this.filePath)
 	if err != nil {
 		return err
 	}
 	return json.Unmarshal(jsonBytes, this)
 }
 
-func (this *Members) Save(path string) error {
+func (this *Members) Save() error {
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, jsonBytes, 0660)
-}
-
-func (this *Members) SortedKeys() []MemberName {
-	var names []MemberName
-
-	for name, _ := range *this {
-		names = append(names, name)
-	}
-	sort.SliceStable(names, func(i, j int) bool {
-		return names[i] < names[j]
-	})
-
-	return names
+	return os.WriteFile(this.filePath, jsonBytes, 0660)
 }
 
 //////////////////////////////////////////////////////
@@ -74,9 +78,12 @@ type Member struct {
 	Gender     string
 	Birthday   time.Time
 	Unbaptized bool
+
+	Age            int
+	AgeByEndOfYear int
 }
 
-func (this *Member) Age() int {
+func (this *Member) age() int {
 	today := time.Now()
 	birthdate := this.Birthday
 	today = today.In(birthdate.Location())
@@ -95,8 +102,8 @@ func (this *Member) Age() int {
 	return age
 }
 
-func (this *Member) AgeByEndOfYear() int {
-	age := this.Age()
+func (this *Member) ageByEndOfYear() int {
+	age := this.age()
 	_, bm, bd := this.Birthday.Date()
 	_, tm, td := time.Now().Date()
 

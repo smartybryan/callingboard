@@ -12,11 +12,11 @@ import (
 func main() {
 	appConfig := config.ParseConfig()
 
-	members := engine.NewMembers(config.MaxMembers)
-	panicOnError(members.Load(appConfig.MembersDataPath))
-	callings := engine.NewCallings(config.MaxCallings)
-	panicOnError(callings.Load(appConfig.CallingDataPath))
-	project := engine.NewProject(&callings, &members)
+	members := engine.NewMembers(config.MaxMembers, appConfig.MembersDataPath)
+	panicOnError(members.Load())
+	callings := engine.NewCallings(config.MaxCallings, appConfig.CallingDataPath)
+	panicOnError(callings.Load())
+	project := engine.NewProject(&callings, &members, appConfig.DataPath)
 
 	web.SetupRoutes(appConfig, web.NewController(project))
 

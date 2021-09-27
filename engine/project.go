@@ -1,9 +1,16 @@
 package engine
 
-import "sort"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+)
 
 const (
-	DefaultNumCallings = 50
+	TransactionFileSuffix = ".txf"
 )
 
 type Project struct {
@@ -12,23 +19,29 @@ type Project struct {
 	originalCallings Callings
 	transactions     []Transaction
 	undoHistory      []Transaction
+	dataPath         string
 
-	sustainings []Calling
-	releases    []Calling
+	diff DiffResult
 }
 
-func NewProject(callings *Callings, members *Members) *Project {
+type DiffResult struct {
+	Sustainings []Calling
+	Releases    []Calling
+}
+
+func NewProject(callings *Callings, members *Members, dataPath string) *Project {
 	return &Project{
 		Callings:         callings,
-		originalCallings: callings.Copy(),
+		originalCallings: callings.copy(),
 		Members:          members,
 		transactions:     make([]Transaction, 0, 100),
+		dataPath:         dataPath,
 	}
 }
 
-func (this *Project) Diff() (releases, sustainings []Calling) {
-	this.releases = this.releases[:]
-	this.sustainings = this.sustainings[:]
+func (this *Project) Diff() DiffResult {
+	this.diff.Releases = this.diff.Releases[:]
+	this.diff.Sustainings = this.diff.Sustainings[:]
 
 	for _, organization := range this.Callings.OrganizationOrder {
 		// sustainings
@@ -40,7 +53,7 @@ func (this *Project) Diff() (releases, sustainings []Calling) {
 			if this.originalCallings.doesMemberHoldCalling(modelCalling.Holder, organization, modelCalling.Name) {
 				continue
 			}
-			this.sustainings = append(this.sustainings, modelCalling)
+			this.diff.Sustainings = append(this.diff.Sustainings, modelCalling)
 		}
 
 		// releases
@@ -52,36 +65,68 @@ func (this *Project) Diff() (releases, sustainings []Calling) {
 			if this.Callings.doesMemberHoldCalling(originalCalling.Holder, organization, originalCalling.Name) {
 				continue
 			}
-			this.releases = append(this.releases, originalCalling)
+			this.diff.Releases = append(this.diff.Releases, originalCalling)
 		}
 	}
 
-	sort.SliceStable(this.releases, func(i, j int) bool {
-		return this.releases[i].Name < this.releases[j].Name
+	sort.SliceStable(this.diff.Releases, func(i, j int) bool {
+		return this.diff.Releases[i].Name < this.diff.Releases[j].Name
 	})
-	sort.SliceStable(this.sustainings, func(i, j int) bool {
-		return this.sustainings[i].Name < this.sustainings[j].Name
+	sort.SliceStable(this.diff.Sustainings, func(i, j int) bool {
+		return this.diff.Sustainings[i].Name < this.diff.Sustainings[j].Name
 	})
 
-	return this.releases, this.sustainings
+	return this.diff
 }
 
-func (this *Project) RedoTransaction() {
+func (this *Project) RedoTransaction() bool {
 	if len(this.undoHistory) == 0 {
-		return
+		return false
 	}
 	this.transactions = append(this.transactions, this.undoHistory[len(this.undoHistory)-1])
 	this.undoHistory = this.undoHistory[:len(this.undoHistory)-1]
 	this.playTransactions()
+	return true
 }
 
-func (this *Project) UndoTransaction() {
+func (this *Project) UndoTransaction() bool {
 	if len(this.transactions) == 0 {
-		return
+		return false
 	}
 	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
 	this.transactions = this.transactions[:len(this.transactions)-1]
 	this.playTransactions()
+
+	return true
+}
+
+func (this *Project) ListTransactionFiles() (transactionFiles []string) {
+	files, _ := ioutil.ReadDir(this.dataPath)
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), TransactionFileSuffix) {
+			transactionFiles = append(transactionFiles, strings.TrimSuffix(filepath.Base(file.Name()), TransactionFileSuffix))
+		}
+	}
+
+	return transactionFiles
+}
+
+func (this *Project) LoadTransactions(name string) error {
+	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	jsonBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(jsonBytes, &this.transactions)
+}
+
+func (this *Project) SaveTransactions(name string) error {
+	jsonBytes, err := json.Marshal(this.transactions)
+	if err != nil {
+		return err
+	}
+	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	return os.WriteFile(path, jsonBytes, 0660)
 }
 
 ///// model modification stubs /////
@@ -127,7 +172,7 @@ func (this *Project) addTransaction(operation string, parameters ...interface{})
 }
 
 func (this *Project) playTransactions() {
-	freshCallings := this.originalCallings.Copy()
+	freshCallings := this.originalCallings.copy()
 	this.Callings = &freshCallings
 
 	for _, transaction := range this.transactions {
