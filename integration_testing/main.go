@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.org/smartybryan/callorg/engine"
 	"github.org/smartybryan/callorg/util"
@@ -24,10 +25,11 @@ func main() {
 
 func parseAndPrintCallings() {
 	wardCallings := engine.NewCallings(MaxCallings, CallingDataFilePath)
-	err := wardCallings.ParseCallingsFromRawData(RawCallingDataFilePath)
+	data, err := ioutil.ReadFile(RawCallingDataFilePath)
 	if err != nil {
 		fmt.Println(err)
 	}
+	wardCallings.ParseCallingsFromRawData(data)
 
 	err = wardCallings.Save()
 	if err != nil {
@@ -53,10 +55,11 @@ func parseAndPrintCallings() {
 
 func parseAndPrintMembers() {
 	membership := engine.NewMembers(MaxMembers, MembersDataFilePath)
-	err := membership.ParseMembersFromRawData(RawMembersDataFilePath)
+	data, err := ioutil.ReadFile(RawMembersDataFilePath)
 	if err != nil {
 		fmt.Println(err)
 	}
+	membership.ParseMembersFromRawData(data)
 
 	err = membership.Save()
 	if err != nil {

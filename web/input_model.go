@@ -9,16 +9,17 @@ import (
 type InputModel struct {
 	MemberMinAge int
 	MemberMaxAge int
-	MemberName string
+	MemberName   string
 
 	Organization string
-	FromOrg string
+	FromOrg      string
 
-	Calling string
-	FromCalling string
+	Calling       string
+	FromCalling   string
 	CustomCalling bool
 
 	TransactionName string
+	RawData         []byte
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
@@ -34,6 +35,9 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.CustomCalling = atob(request.Form.Get("custom-calling"))
 
 	this.TransactionName = sanitize(request.Form.Get("name"))
+
+	// TODO: for raw data, read body into []byte and call it raw-data
+	this.RawData = []byte{}
 
 	return nil
 }

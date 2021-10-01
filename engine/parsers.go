@@ -2,19 +2,14 @@ package engine
 
 import (
 	"bufio"
-	"os"
+	"bytes"
 	"strings"
 	"time"
 )
 
-func (this *Callings) ParseCallingsFromRawData(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-
+func (this *Callings) ParseCallingsFromRawData(data []byte) bool {
 	var fileLines []string
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
 		fileLines = append(fileLines, strings.TrimSpace(scanner.Text()))
 	}
@@ -75,18 +70,12 @@ func (this *Callings) ParseCallingsFromRawData(path string) error {
 		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
 	}
 
-	return nil
+	return true
 }
 
-
-func (this *Members) ParseMembersFromRawData(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-
+func (this *Members) ParseMembersFromRawData(data []byte) bool {
 	var fileLines []string
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
 		fileLines = append(fileLines, strings.TrimSpace(scanner.Text()))
 	}
@@ -101,7 +90,7 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 		}
 
 		if strings.HasPrefix(fileLines[idx], "Count") {
-			return nil
+			return true
 		}
 
 		memberRecord := strings.Split(fileLines[idx], "\t")
@@ -109,21 +98,21 @@ func (this *Members) ParseMembersFromRawData(path string) error {
 			continue
 		}
 
-		unbaptized :=  false
+		unbaptized := false
 		if memberRecord[0][0] == '*' {
 			unbaptized = true
 			memberRecord[0] = memberRecord[0][1:]
 		}
 		birthday, _ := time.Parse("2 Jan 2006", memberRecord[3])
 		member := Member{
-			Name:     MemberName(memberRecord[0]),
-			Gender:   memberRecord[1],
-			Birthday: birthday,
+			Name:       MemberName(memberRecord[0]),
+			Gender:     memberRecord[1],
+			Birthday:   birthday,
 			Unbaptized: unbaptized,
 		}
 
 		this.MemberMap[MemberName(member.Name)] = member
 	}
 
-	return nil
+	return true
 }
