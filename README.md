@@ -8,4 +8,6 @@ and track releasings and sustainings.
 
 TODO
 
-- Build a diff summary between the base model and the proposed model.
+- UI - raw data conversion then save parsed data
+- Authentication/authorization
+- 

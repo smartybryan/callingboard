@@ -1,6 +1,8 @@
 package web
 
 import (
+	"errors"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,8 +38,18 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	this.TransactionName = sanitize(request.Form.Get("name"))
 
-	// TODO: for raw data, read body into []byte and call it raw-data
-	this.RawData = []byte{}
+	if request.Body != http.NoBody {
+		size := atoi(request.Header.Get("Content-Length"))
+		if size == 0 {
+			size = 128*1024
+		}
+		this.RawData = make([]byte, size)
+		_, err := request.Body.Read(this.RawData)
+		if err != nil && err != io.EOF {
+			return errors.New("cannot read body")
+		}
+		_ = request.Body.Close()
+	}
 
 	return nil
 }

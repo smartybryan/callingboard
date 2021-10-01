@@ -7,7 +7,7 @@ import (
 
 const (
 	ListenPortDefault           = ":40600"
-	DataPathDefault             = "/Users/bryan/callorg"
+	DataPathDefault             = "."
 	HtmlServerDefault			= "html"
 	CallingDataPathDefault      = "callings.csv"
 	MembersDataPathDefault      = "members.csv"

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.org/smartybryan/callorg/config"
@@ -13,9 +14,9 @@ func main() {
 	appConfig := config.ParseConfig()
 
 	members := engine.NewMembers(config.MaxMembers, appConfig.MembersDataPath)
-	panicOnError(members.Load())
+	logOnError(members.Load())
 	callings := engine.NewCallings(config.MaxCallings, appConfig.CallingDataPath)
-	panicOnError(callings.Load())
+	logOnError(callings.Load())
 	project := engine.NewProject(&callings, &members, appConfig.DataPath)
 
 	web.SetupRoutes(appConfig, web.NewController(project))
@@ -27,5 +28,11 @@ func main() {
 func panicOnError(err error) {
 	if err != nil {
 		panic(err)
+	}
+}
+
+func logOnError(err error) {
+	if err != nil {
+		log.Println(err)
 	}
 }
