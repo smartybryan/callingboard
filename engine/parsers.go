@@ -8,6 +8,8 @@ import (
 )
 
 func (this *Callings) ParseCallingsFromRawData(data []byte) bool {
+	*(this) = NewCallings(this.initialSize, this.filePath)
+
 	var fileLines []string
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
@@ -74,6 +76,8 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) bool {
 }
 
 func (this *Members) ParseMembersFromRawData(data []byte) bool {
+	*(this) = NewMembers(this.initialSize, this.filePath)
+
 	var fileLines []string
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	for scanner.Scan() {
@@ -111,8 +115,8 @@ func (this *Members) ParseMembersFromRawData(data []byte) bool {
 			Unbaptized: unbaptized,
 		}
 
-		this.MemberMap[MemberName(member.Name)] = member
+		this.MemberMap[member.Name] = member
 	}
 
-	return true
+	return len(this.MemberMap) > 0
 }

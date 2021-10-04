@@ -16,12 +16,14 @@ type Callings struct {
 	CallingMap        map[Organization][]Calling
 	OrganizationOrder []Organization
 
-	filePath string
+	initialSize int
+	filePath    string
 }
 
 func NewCallings(numCallings int, path string) Callings {
 	return Callings{
 		CallingMap: make(map[Organization][]Calling, numCallings),
+		initialSize: numCallings,
 		filePath:   path,
 	}
 }

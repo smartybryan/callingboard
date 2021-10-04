@@ -12,12 +12,14 @@ type MemberName string
 type Members struct {
 	MemberMap map[MemberName]Member
 
+	initialSize int
 	filePath string
 }
 
 func NewMembers(numMembers int, path string) Members {
 	return Members{
 		MemberMap: make(map[MemberName]Member, numMembers),
+		initialSize: numMembers,
 		filePath:  path,
 	}
 }

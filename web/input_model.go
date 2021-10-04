@@ -44,9 +44,9 @@ func (this *InputModel) Bind(request *http.Request) error {
 			size = 128*1024
 		}
 		this.RawData = make([]byte, size)
-		_, err := request.Body.Read(this.RawData)
-		if err != nil && err != io.EOF {
-			return errors.New("cannot read body")
+		numRead, err := request.Body.Read(this.RawData)
+		if numRead == 0 || err != nil && err != io.EOF {
+			return errors.New("cannot read body ")
 		}
 		_ = request.Body.Close()
 	}
