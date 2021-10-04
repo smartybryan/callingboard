@@ -8,6 +8,7 @@ and track releasings and sustainings.
 
 TODO
 
-- UI - raw data conversion then save parsed data
+- Before members/callings save, backup the current file in case you need to go back.
+- In the controller, after successful import of member/calling data, save to disk.
 - Authentication/authorization
 - 

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (this *Callings) ParseCallingsFromRawData(data []byte) bool {
+func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 	*(this) = NewCallings(this.initialSize, this.filePath)
 
 	var fileLines []string
@@ -70,12 +70,13 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) bool {
 			}
 		}
 		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
+		callingCount++
 	}
 
-	return true
+	return callingCount
 }
 
-func (this *Members) ParseMembersFromRawData(data []byte) bool {
+func (this *Members) ParseMembersFromRawData(data []byte) int {
 	*(this) = NewMembers(this.initialSize, this.filePath)
 
 	var fileLines []string
@@ -94,7 +95,7 @@ func (this *Members) ParseMembersFromRawData(data []byte) bool {
 		}
 
 		if strings.HasPrefix(fileLines[idx], "Count") {
-			return true
+			return len(this.MemberMap)
 		}
 
 		memberRecord := strings.Split(fileLines[idx], "\t")
@@ -118,5 +119,5 @@ func (this *Members) ParseMembersFromRawData(data []byte) bool {
 		this.MemberMap[member.Name] = member
 	}
 
-	return len(this.MemberMap) > 0
+	return len(this.MemberMap)
 }
