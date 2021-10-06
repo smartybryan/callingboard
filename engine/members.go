@@ -13,14 +13,14 @@ type Members struct {
 	MemberMap map[MemberName]Member
 
 	initialSize int
-	filePath string
+	filePath    string
 }
 
 func NewMembers(numMembers int, path string) Members {
 	return Members{
-		MemberMap: make(map[MemberName]Member, numMembers),
+		MemberMap:   make(map[MemberName]Member, numMembers),
 		initialSize: numMembers,
-		filePath:  path,
+		filePath:    path,
 	}
 }
 
@@ -66,11 +66,35 @@ func (this *Members) Load() error {
 }
 
 func (this *Members) Save() error {
+	if len(this.MemberMap) == 0 {
+		return nil
+	}
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
 		return err
 	}
 	return os.WriteFile(this.filePath, jsonBytes, 0660)
+}
+
+///// private /////
+
+func (this *Members) copy() Members {
+	newMembers := NewMembers(this.initialSize, this.filePath)
+	newMembers.initialSize = this.initialSize
+	newMembers.filePath = this.filePath
+
+	for name, member := range this.MemberMap {
+		newMembers.MemberMap[name] = Member{
+			Name:           member.Name,
+			Gender:         member.Gender,
+			Birthday:       member.Birthday,
+			Unbaptized:     member.Unbaptized,
+			Age:            0,
+			AgeByEndOfYear: 0,
+		}
+	}
+
+	return newMembers
 }
 
 //////////////////////////////////////////////////////

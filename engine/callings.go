@@ -22,9 +22,9 @@ type Callings struct {
 
 func NewCallings(numCallings int, path string) Callings {
 	return Callings{
-		CallingMap: make(map[Organization][]Calling, numCallings),
+		CallingMap:  make(map[Organization][]Calling, numCallings),
 		initialSize: numCallings,
-		filePath:   path,
+		filePath:    path,
 	}
 }
 
@@ -88,6 +88,9 @@ func (this *Callings) Load() error {
 }
 
 func (this *Callings) Save() error {
+	if len(this.CallingMap) == 0 {
+		return nil
+	}
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
 		return err
@@ -99,6 +102,8 @@ func (this *Callings) Save() error {
 
 func (this *Callings) copy() Callings {
 	newCallings := NewCallings(len(this.CallingMap)*2, "")
+	newCallings.initialSize = this.initialSize
+	newCallings.filePath = this.filePath
 
 	for organization, callings := range this.CallingMap {
 		newCallings.CallingMap[organization] = []Calling{}

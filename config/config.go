@@ -6,13 +6,13 @@ import (
 )
 
 const (
-	ListenPortDefault           = ":40600"
+	ListenPortDefault           = ":40630"
 	DataPathDefault             = "."
-	HtmlServerDefault			= "html"
-	CallingDataPathDefault      = "callings.csv"
-	MembersDataPathDefault      = "members.csv"
-	CallingModelDataPathDefault = "callings_model.csv"
-	MembersModelDataPathDefault = "members_model.csv"
+	HtmlServerDefault           = "html"
+	CallingDataPathDefault      = "callings.json"
+	MembersDataPathDefault      = "members.json"
+	CallingModelDataPathDefault = "callings_model.json"
+	MembersModelDataPathDefault = "members_model.json"
 
 	MaxCallings = 300
 	MaxMembers  = 500
@@ -25,13 +25,13 @@ type Config struct {
 	MembersDataPath      string
 	CallingModelDataPath string
 	MembersModelDataPath string
-	HtmlServerPath string
+	HtmlServerPath       string
 }
 
 func ParseConfig() Config {
 	config := Config{}
 
-	flag.StringVar(&config.DataPath, "data", DataPathDefault, "The path to the data files.")
+	flag.StringVar(&config.DataPath, "data", DataPathDefault, "The path to the data and html files.")
 	flag.StringVar(&config.ListenPort, "listen", ListenPortDefault, "Listen port. e.g. :8080")
 	flag.Parse()
 

@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="js/callorg.css">
+</head>
+<body>
+<h2>CallOrg</h2>
+<label for="rawdata">Raw Member or Calling Data</label>
+<br>
+<textarea id="rawdata" rows="15" cols="50" placeholder="Paste Member or Calling Page Data"></textarea>
+<br>
+<br>
+<input type="button" onclick="parseRawData('parse-raw-members')" value="Parse Members">
+<input type="button" onclick="parseRawData('parse-raw-callings')" value="Parse Callings">
+
+<br><hr/><br>
+<label for="rawdata">Members</label>
+<br>
+<textarea id="members" rows="15" cols="50" placeholder="Member data will be displayed here"></textarea>
+<br>
+<br>
+<input type="button" onclick="displayMembers('members')" value="All Members">
+<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
+<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
+<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
+
+<script src="js/callorg.js"></script>
+</body>
+</html>

@@ -8,7 +8,8 @@ import (
 )
 
 func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
-	*(this) = NewCallings(this.initialSize, this.filePath)
+	saveCallings := this.copy()
+	*this = NewCallings(this.initialSize, this.filePath)
 
 	var fileLines []string
 	scanner := bufio.NewScanner(bytes.NewReader(data))
@@ -73,11 +74,17 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		callingCount++
 	}
 
+	// if parse issue, keep current contents
+	if callingCount == 0 {
+		*this = saveCallings.copy()
+	}
+
 	return callingCount
 }
 
 func (this *Members) ParseMembersFromRawData(data []byte) int {
-	*(this) = NewMembers(this.initialSize, this.filePath)
+	saveMembers := this.copy()
+	*this = NewMembers(this.initialSize, this.filePath)
 
 	var fileLines []string
 	scanner := bufio.NewScanner(bytes.NewReader(data))
@@ -117,6 +124,11 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 		}
 
 		this.MemberMap[member.Name] = member
+	}
+
+	// if parse issue, restore current members
+	if len(this.MemberMap) == 0 {
+		*this = saveMembers.copy()
 	}
 
 	return len(this.MemberMap)

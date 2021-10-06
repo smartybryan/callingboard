@@ -8,7 +8,8 @@ and track releasings and sustainings.
 
 TODO
 
-- Before members/callings save, backup the current file in case you need to go back.
-- In the controller, after successful import of member/calling data, save to disk.
+- Display error when parse error occurs for Members and Callings
+- Text area to display organizations.
+- Text area to display all callings or per organization.
 - Authentication/authorization
 - 

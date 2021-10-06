@@ -67,9 +67,10 @@ func (this *Controller) SaveMembers() detour.Renderer {
 }
 
 func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
+	this.project.Members.ParseMembersFromRawData(input.RawData)
 	return detour.JSONResult{
 		StatusCode:  200,
-		Content:     this.project.Members.ParseMembersFromRawData(input.RawData),
+		Content:     this.project.Members.Save(),
 	}
 }
 
@@ -118,9 +119,10 @@ func (this *Controller) SaveCallings() detour.Renderer {
 }
 
 func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
+	this.project.Callings.ParseCallingsFromRawData(input.RawData)
 	return detour.JSONResult{
 		StatusCode:  200,
-		Content:     this.project.Callings.ParseCallingsFromRawData(input.RawData),
+		Content:     this.project.Callings.Save(),
 	}
 }
 
