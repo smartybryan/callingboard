@@ -67,7 +67,13 @@ func (this *Controller) SaveMembers() detour.Renderer {
 }
 
 func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
-	this.project.Members.ParseMembersFromRawData(input.RawData)
+	numMembers := this.project.Members.ParseMembersFromRawData(input.RawData)
+	if numMembers < 10 {
+		return detour.JSONResult{
+			StatusCode:  422,
+			Content:     "Unable to parse Member data",
+		}
+	}
 	return detour.JSONResult{
 		StatusCode:  200,
 		Content:     this.project.Members.Save(),
@@ -119,7 +125,13 @@ func (this *Controller) SaveCallings() detour.Renderer {
 }
 
 func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
-	this.project.Callings.ParseCallingsFromRawData(input.RawData)
+	numCalligs := this.project.Callings.ParseCallingsFromRawData(input.RawData)
+	if numCalligs < 10 {
+		return detour.JSONResult{
+			StatusCode:  422,
+			Content:     "Unable to parse Calling data",
+		}
+	}
 	return detour.JSONResult{
 		StatusCode:  200,
 		Content:     this.project.Callings.Save(),

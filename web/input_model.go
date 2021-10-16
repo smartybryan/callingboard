@@ -74,7 +74,7 @@ func (this *InputModel) Validate() error {
 }
 
 func sanitize(value string) string {
-	return strings.ToLower(strings.TrimSpace(value))
+	return strings.TrimSpace(value)
 }
 
 func atoi(value string) int {

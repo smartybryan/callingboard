@@ -8,8 +8,10 @@ and track releasings and sustainings.
 
 TODO
 
-- Display error when parse error occurs for Members and Callings
 - Text area to display organizations.
 - Text area to display all callings or per organization.
+- Build member display list
+- Build org display list
+- Build calling display list
 - Authentication/authorization
 - 

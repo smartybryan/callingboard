@@ -127,9 +127,10 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 	}
 
 	// if parse issue, restore current members
+	memberCount := len(this.MemberMap)
 	if len(this.MemberMap) == 0 {
 		*this = saveMembers.copy()
 	}
 
-	return len(this.MemberMap)
+	return memberCount
 }
