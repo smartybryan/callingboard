@@ -7,10 +7,18 @@ import (
 
 func PrintableDate(date time.Time) string {
 	y, m, d := date.Date()
+	if y == 1 {
+		return "N/A"
+	}
+
 	return fmt.Sprintf("%d-%d-%d", y, m, d)
 }
 
 func PrintableTimeInCalling(daysInCalling int) string {
+	if daysInCalling == 0 {
+		return "None"
+	}
+
 	years := daysInCalling / 365
 	months := (daysInCalling - (365*years))/30
 	days := daysInCalling - ((365 * years) + (30 * months))

@@ -69,10 +69,18 @@ function orgSelected(index) {
 
 function displayCallings(endpoint, argName, arg) {
 	const callingElement = document.getElementById("callings");
+	callingElement.innerHTML = "";
+
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
-			callingElement.innerText = this.responseText;
+			let jsonObject = JSON.parse(this.responseText)
+			jsonObject.forEach(function (calling) {
+				let opt = document.createElement('option');
+				opt.value = calling.Name;
+				opt.innerText = calling.Name + " ; " + calling.Holder + " ; " + calling.PrintableSustained + " (" + calling.PrintableTimeInCalling + ")";
+				callingElement.appendChild(opt);
+			});
 		}
 	};
 

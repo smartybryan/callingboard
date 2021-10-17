@@ -315,6 +315,9 @@ func (this *Calling) copy() Calling {
 }
 
 func (this *Calling) DaysInCalling() int {
+	if this.Sustained.IsZero() {
+		return 0
+	}
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
 }
 

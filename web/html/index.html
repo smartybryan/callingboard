@@ -5,20 +5,12 @@
 </head>
 <body>
 <h2>CallOrg</h2>
-<label for="rawdata">Raw Member or Calling Data</label>
-<br>
-<textarea id="rawdata" rows="15" cols="50" placeholder="Paste Member or Calling Page Data"></textarea>
-<br>
-<br>
-<input type="button" onclick="parseRawData('parse-raw-members')" value="Parse Members">
-<input type="button" onclick="parseRawData('parse-raw-callings')" value="Parse Callings">
 
 <br><hr/><br>
-<label for="rawdata">Members</label>
+<label for="members">Members</label>
 <br>
-<select id="members" name="members" size="15" onchange="if (this.selectedIndex) memberSelected(this.selectedIndex);"></select>
-<br>
-<br>
+<select id="members" name="members" size="15" onchange="memberSelected(this.selectedIndex)"></select>
+<br><br>
 <input type="button" onclick="displayMembers('members')" value="All Members">
 <input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
 <input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
@@ -26,18 +18,25 @@
 <input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
 
 <br><hr/><br>
-<label for="rawdata">Organizations</label>
+<label for="organizations">Organizations</label>
 <br>
 <select id="organizations" name="organizations" size="15" onchange="orgSelected(this.selectedIndex)"></select>
-<br>
-<br>
+<br><br>
 <input type="button" onclick="displayOrganizations('organizations')" value="List Organizations">
 
 <br><hr/><br>
-<label for="rawdata">Callings</label>
+<label for="callings">Callings</label>
 <br>
-<textarea id="callings" rows="15" cols="50" placeholder="Calling List"></textarea>
+<select id="callings" name="callings" size="15"></select>
+
+<br><hr/><br>
+<label for="rawdata">Raw Member or Calling Data</label>
 <br>
+<textarea id="rawdata" rows="15" cols="50" placeholder="Paste Member or Calling Page Data"></textarea>
+<br>
+<br>
+<input type="button" onclick="parseRawData('parse-raw-members')" value="Parse Members">
+<input type="button" onclick="parseRawData('parse-raw-callings')" value="Parse Callings">
 
 
 <script src="js/callorg.js"></script>
