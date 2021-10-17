@@ -16,7 +16,7 @@
 <br><hr/><br>
 <label for="rawdata">Members</label>
 <br>
-<textarea id="members" rows="15" cols="50" placeholder="Member data will be displayed here"></textarea>
+<select id="members" name="members" size="15" onchange="if (this.selectedIndex) memberSelected(this.selectedIndex);"></select>
 <br>
 <br>
 <input type="button" onclick="displayMembers('members')" value="All Members">
@@ -28,20 +28,17 @@
 <br><hr/><br>
 <label for="rawdata">Organizations</label>
 <br>
-<textarea id="organizations" rows="15" cols="50" placeholder="Organization List will be displayed here"></textarea>
+<select id="organizations" name="organizations" size="15" onchange="orgSelected(this.selectedIndex)"></select>
 <br>
 <br>
-<input type="button" onclick="displayOrganizations('organizations')" value="Organizations">
+<input type="button" onclick="displayOrganizations('organizations')" value="List Organizations">
 
 <br><hr/><br>
 <label for="rawdata">Callings</label>
 <br>
-<textarea id="callings" rows="15" cols="50" placeholder="Calling List for Organization"></textarea>
+<textarea id="callings" rows="15" cols="50" placeholder="Calling List"></textarea>
 <br>
-<input id="calling-org" size="50" placeholder="Enter an organization name">
-<br>
-<br>
-<input type="button" onclick="displayCallings('callings')" value="Callings For Organization">
+
 
 <script src="js/callorg.js"></script>
 </body>

@@ -29,16 +29,30 @@ func NewCallings(numCallings int, path string) Callings {
 }
 
 func (this *Callings) CallingList(organization Organization) (callingList []Calling) {
-	if callings, found := this.CallingMap[organization]; found {
-		for _, calling := range callings {
-			calling.PrintableSustained = util.PrintableDate(calling.Sustained)
-			calling.PrintableTimeInCalling = util.PrintableTimeInCalling(calling.DaysInCalling())
-			callingList = append(callingList, calling)
+	if organization == ALL_ORGANIZATIONS {
+		for _, org := range this.OrganizationOrder {
+			if callings, found := this.CallingMap[org]; found {
+				callingList = this.getCallingListByOrganization(callings, callingList)
+			}
+		}
+	} else {
+		if callings, found := this.CallingMap[organization]; found {
+			callingList = this.getCallingListByOrganization(callings, callingList)
 		}
 	}
 	sort.SliceStable(callingList, func(i, j int) bool {
 		return callingList[i].Name < callingList[j].Name
 	})
+	return callingList
+}
+
+func (this *Callings) CallingListForMember(member MemberName) (callingList []Calling) {
+	allCallings := this.CallingList(ALL_ORGANIZATIONS)
+	for _, calling := range allCallings {
+		if calling.Holder == member {
+			callingList = append(callingList, calling)
+		}
+	}
 	return callingList
 }
 
@@ -135,6 +149,15 @@ func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization,
 func (this *Callings) isValidOrganization(org Organization) bool {
 	_, found := this.CallingMap[org]
 	return found
+}
+
+func (this *Callings) getCallingListByOrganization(callings []Calling, callingList []Calling) []Calling {
+	for _, calling := range callings {
+		calling.PrintableSustained = util.PrintableDate(calling.Sustained)
+		calling.PrintableTimeInCalling = util.PrintableTimeInCalling(calling.DaysInCalling())
+		callingList = append(callingList, calling)
+	}
+	return callingList
 }
 
 func getOrganizationPrefixFromCalling(callingName string) Organization {
@@ -279,6 +302,7 @@ type Calling struct {
 
 const (
 	VACANT_CALLING = "Calling Vacant"
+	ALL_ORGANIZATIONS = "All Organizations"
 )
 
 func (this *Calling) copy() Calling {

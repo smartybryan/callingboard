@@ -54,6 +54,12 @@ func (this *CallingsFixture) TestCallingList() {
 	this.So(len(callings.CallingList("org1")), should.Equal, 3)
 }
 
+func (this *CallingsFixture) TestCallingListForMember() {
+	callings := createTestCallings("")
+	callingsForMember := callings.CallingListForMember("Last1, First1")
+	this.So(len(callingsForMember), should.Equal, 1)
+}
+
 func (this *CallingsFixture) TestVacantCallingList() {
 	callings := createTestCallings("")
 	this.So(len(callings.VacantCallingList("org1")), should.Equal, 1)

@@ -1,7 +1,7 @@
 function parseRawData(endpoint) {
 	const rawData = document.getElementById("rawdata");
 	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 422) {
 			alert(this.responseText);
 		}
@@ -13,10 +13,18 @@ function parseRawData(endpoint) {
 
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
+	membersElement.innerHTML = "";
+
 	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
-			membersElement.innerText = this.responseText;
+			let jsonObject = JSON.parse(this.responseText)
+			jsonObject.forEach(function (member) {
+				let opt = document.createElement('option');
+				opt.value = member;
+				opt.innerText = member;
+				membersElement.appendChild(opt);
+			});
 		}
 	};
 	xhttp.open("GET", "/v1/" + endpoint);
@@ -24,13 +32,29 @@ function displayMembers(endpoint) {
 	xhttp.send();
 }
 
+function memberSelected(index) {
+	let memberOptions = document.getElementById('members').options;
+	displayCallings("callings-for-member", "member", memberOptions[index].text);
+}
 
 function displayOrganizations(endpoint) {
 	const orgElement = document.getElementById("organizations");
+	orgElement.innerHTML = "";
+	let opt = document.createElement('option');
+	opt.value = "All Organizations";
+	opt.innerText = "All Organizations";
+	orgElement.appendChild(opt);
+
 	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
-			orgElement.innerText = this.responseText;
+			let jsonObject = JSON.parse(this.responseText)
+			jsonObject.forEach(function (member) {
+				let opt = document.createElement('option');
+				opt.value = member;
+				opt.innerText = member;
+				orgElement.appendChild(opt);
+			});
 		}
 	};
 	xhttp.open("GET", "/v1/" + endpoint);
@@ -38,18 +62,21 @@ function displayOrganizations(endpoint) {
 	xhttp.send();
 }
 
-function displayCallings(endpoint) {
+function orgSelected(index) {
+	let orgOptions = document.getElementById('organizations').options;
+	displayCallings("callings", "org", orgOptions[index].text)
+}
+
+function displayCallings(endpoint, argName, arg) {
 	const callingElement = document.getElementById("callings");
 	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
 			callingElement.innerText = this.responseText;
 		}
 	};
-	let url = endpoint;
-	if (endpoint === 'callings') {
-		url += "?org=" + encodeURI(document.getElementById("calling-org").value);
-	}
+
+	let url = endpoint + "?" + argName + "=" + encodeURI(arg);
 	xhttp.open("GET", "/v1/" + url);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();

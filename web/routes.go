@@ -23,6 +23,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	// callings
 	http.Handle("/v1/organizations", detour.New(controller.OrganizationList))
 	http.Handle("/v1/callings", detour.New(controller.CallingList)) // org
+	http.Handle("/v1/callings-for-member", detour.New(controller.CallingListForMember)) // member
 	http.Handle("/v1/vacant-calling-list", detour.New(controller.VacantCallingList)) // org
 	http.Handle("/v1/members-with-callings", detour.New(controller.MembersWithCallings))
 	http.Handle("/v1/add-calling", detour.New(controller.AddCalling)) // org, calling, custom-calling

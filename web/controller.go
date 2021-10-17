@@ -89,6 +89,13 @@ func (this *Controller) CallingList(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) CallingListForMember(input *InputModel) detour.Renderer {
+	return detour.JSONResult{
+		StatusCode:  200,
+		Content:     this.project.Callings.CallingListForMember(engine.MemberName(input.MemberName)),
+	}
+}
+
 func (this *Controller) MembersWithCallings() detour.Renderer {
 	return detour.JSONResult{
 		StatusCode:  200,
