@@ -78,7 +78,7 @@ function displayCallings(endpoint, argName, arg) {
 			jsonObject.forEach(function (calling) {
 				let opt = document.createElement('option');
 				opt.value = calling.Name;
-				opt.innerText = calling.Name + " ; " + calling.Holder + " ; " + calling.PrintableSustained + " (" + calling.PrintableTimeInCalling + ")";
+				opt.innerText = calling.Org + " ; " + calling.Name + " ; " + calling.Holder + " ; " + calling.PrintableSustained + " (" + calling.PrintableTimeInCalling + ")";
 				callingElement.appendChild(opt);
 			});
 		}

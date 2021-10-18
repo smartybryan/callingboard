@@ -40,9 +40,9 @@ func (this *Callings) CallingList(organization Organization) (callingList []Call
 			callingList = this.getCallingListByOrganization(callings, callingList)
 		}
 	}
-	sort.SliceStable(callingList, func(i, j int) bool {
-		return callingList[i].Name < callingList[j].Name
-	})
+	//sort.SliceStable(callingList, func(i, j int) bool {
+	//	return callingList[i].Name < callingList[j].Name
+	//})
 	return callingList
 }
 
@@ -291,6 +291,7 @@ func (this *Callings) removeMemberFromACalling(member MemberName, org Organizati
 ///////////////////////////////////////////////////////
 
 type Calling struct {
+	Org           Organization
 	Name          string
 	Holder        MemberName
 	CustomCalling bool
@@ -301,7 +302,7 @@ type Calling struct {
 }
 
 const (
-	VACANT_CALLING = "Calling Vacant"
+	VACANT_CALLING    = "Calling Vacant"
 	ALL_ORGANIZATIONS = "All Organizations"
 )
 

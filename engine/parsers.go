@@ -70,6 +70,7 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 				this.OrganizationOrder[len(this.OrganizationOrder)-1] = currentOrganization
 			}
 		}
+		calling.Org = currentOrganization
 		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
 		callingCount++
 	}
