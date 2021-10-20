@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
-	"strings"
 	"time"
 
 	"github.org/smartybryan/callorg/util"
@@ -74,13 +73,7 @@ func (this *Callings) MembersWithCallings() (names []MemberName) {
 }
 
 func (this *Callings) OrganizationList() (organizationList []Organization) {
-	for organization, _ := range this.CallingMap {
-		organizationList = append(organizationList, organization)
-	}
-	sort.SliceStable(organizationList, func(i, j int) bool {
-		return organizationList[i] < organizationList[j]
-	})
-	return organizationList
+	return this.OrganizationOrder
 }
 
 func (this *Callings) VacantCallingList(organization Organization) (callingList []Calling) {
@@ -158,15 +151,6 @@ func (this *Callings) getCallingListByOrganization(callings []Calling, callingLi
 		callingList = append(callingList, calling)
 	}
 	return callingList
-}
-
-func getOrganizationPrefixFromCalling(callingName string) Organization {
-	for _, organization := range SharedCallingOrganizations {
-		if strings.HasPrefix(callingName, string(organization)) {
-			return organization
-		}
-	}
-	return ""
 }
 
 ///// model modification methods (called by Project) /////
@@ -292,6 +276,7 @@ func (this *Callings) removeMemberFromACalling(member MemberName, org Organizati
 
 type Calling struct {
 	Org           Organization
+	SubOrg        Organization
 	Name          string
 	Holder        MemberName
 	CustomCalling bool
@@ -322,17 +307,21 @@ func (this *Calling) DaysInCalling() int {
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
 }
 
-var MultiUseOrganizations = map[Organization]struct{}{
-	"Activities":          struct{}{},
-	"Ministering":         struct{}{},
-	"Music":               struct{}{},
-	"Service":             struct{}{},
-	"Unassigned Teachers": struct{}{},
-}
-
-var SharedCallingOrganizations = []Organization{
-	"Elders Quorum",
-	"Primary",
-	"Relief Society",
-	"Sunday School",
+// OrganizationParseMap
+// Used during parsing to determine a change of organization.
+// Left values are the sub-organizations listed in the web page data,
+// Right values are the organization. If empty, the left value is the
+// organization with no sub-org
+var OrganizationParseMap = map[Organization]Organization{
+	"Bishopric":                            "",
+	"Elders Quorum Presidency":             "Elders Quorum",
+	"Relief Society Presidency":            "Relief Society",
+	"Presidency of the Aaronic Priesthood": "Aaronic Priesthood Quorums",
+	"Young Women Presidency":               "Young Women",
+	"Sunday School Presidency":             "Sunday School",
+	"Primary Presidency":                   "Primary",
+	"Ward Missionaries":                    "",
+	"Full-Time Missionaries":               "",
+	"Temple and Family History":            "",
+	"Young Single Adult":                   "Other Callings",
 }

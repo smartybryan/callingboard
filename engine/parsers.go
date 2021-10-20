@@ -17,13 +17,20 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		fileLines = append(fileLines, strings.TrimSpace(scanner.Text()))
 	}
 
-	var currentOrganization Organization
+	var currentOrganization, currentSubOrganization Organization
 	withinOrganization := false
 
 	for idx := 0; idx < len(fileLines); idx++ {
 		if strings.HasPrefix(fileLines[idx], "Position") {
-			currentOrganization = Organization(fileLines[idx-1])
-			this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
+			currentSubOrganization = Organization(fileLines[idx-1])
+			if org, found := OrganizationParseMap[currentSubOrganization]; found {
+				currentOrganization = org
+				if currentOrganization == "" {
+					currentOrganization = currentSubOrganization
+					currentSubOrganization = ""
+				}
+				this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
+			}
 			idx++
 			withinOrganization = true
 		}
@@ -62,15 +69,8 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 			idx += 2
 		}
 
-		// for organization names that are shared by multiple organizations,
-		// prepend the actual organization to make them specific
-		if _, found := MultiUseOrganizations[currentOrganization]; found {
-			if prefix := getOrganizationPrefixFromCalling(calling.Name); len(prefix) > 0 {
-				currentOrganization = prefix + " " + currentOrganization
-				this.OrganizationOrder[len(this.OrganizationOrder)-1] = currentOrganization
-			}
-		}
 		calling.Org = currentOrganization
+		calling.SubOrg = currentSubOrganization
 		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
 		callingCount++
 	}
