@@ -149,7 +149,7 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 		}
 	}
 	numObjects, err := this.project.Callings.Save()
-	msg := fmt.Sprintf("Imported %d organizations", numObjects)
+	msg := fmt.Sprintf("Imported %d callings", numObjects)
 	if err != nil {
 		msg = err.Error()
 	}

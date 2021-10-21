@@ -55,6 +55,10 @@ func (this *Callings) CallingListForMember(member MemberName) (callingList []Cal
 	return callingList
 }
 
+func (this *Callings) Count() int {
+	return len(this.CallingList(ALL_ORGANIZATIONS))
+}
+
 func (this *Callings) MembersWithCallings() (names []MemberName) {
 	nameMap := make(map[MemberName]struct{}, 200)
 	for _, callings := range (*this).CallingMap {
@@ -103,7 +107,7 @@ func (this *Callings) Save() (numObjects int, err error) {
 		return 0, err
 	}
 	err = os.WriteFile(this.filePath, jsonBytes, 0660)
-	return len(this.CallingMap), err
+	return this.Count(), err
 }
 
 ///// private /////
