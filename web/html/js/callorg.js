@@ -2,8 +2,12 @@ function parseRawData(endpoint) {
 	const rawData = document.getElementById("rawdata");
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 422) {
-			alert(this.responseText);
+		if (this.readyState === 4) {
+			let msg = this.responseText;
+			if (msg === "null\n") {
+				msg = "Import successful"
+			}
+			alert(msg);
 		}
 	};
 	xhttp.open("POST", "/v1/" + endpoint);

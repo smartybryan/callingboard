@@ -94,15 +94,16 @@ func (this *Callings) Load() error {
 	return json.Unmarshal(jsonBytes, this)
 }
 
-func (this *Callings) Save() error {
+func (this *Callings) Save() (numObjects int, err error) {
 	if len(this.CallingMap) == 0 {
-		return nil
+		return 0, nil
 	}
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return os.WriteFile(this.filePath, jsonBytes, 0660)
+	err = os.WriteFile(this.filePath, jsonBytes, 0660)
+	return len(this.CallingMap), err
 }
 
 ///// private /////

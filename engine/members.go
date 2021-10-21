@@ -65,15 +65,16 @@ func (this *Members) Load() error {
 	return json.Unmarshal(jsonBytes, this)
 }
 
-func (this *Members) Save() error {
+func (this *Members) Save() (numObjects int, err error) {
 	if len(this.MemberMap) == 0 {
-		return nil
+		return 0, nil
 	}
 	jsonBytes, err := json.Marshal(this)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return os.WriteFile(this.filePath, jsonBytes, 0660)
+	err = os.WriteFile(this.filePath, jsonBytes, 0660)
+	return len(this.MemberMap), err
 }
 
 ///// private /////
