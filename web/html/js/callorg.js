@@ -60,31 +60,42 @@ function setupTree() {
 	xhttp.send();
 }
 
-function treeExpandCollapse(id) {
-	let element = document.getElementById(id)
-	element.parentElement.querySelector(".nested").classList.toggle("active");
-	element.classList.toggle("caret-down");
-
-	let toggler = element.getElementsByClassName("caret");
-	// let toggler = document.getElementsByClassName("caret");
+function startTreeListeners() {
+	let caret = document.getElementsByClassName("caret");
 	let i;
 
-	for (i = 0; i < toggler.length; i++) {
-		toggler[i].parentElement.querySelector(".nested").classList.toggle("active");
-		toggler[i].classList.toggle("caret-down");
+	for (i = 0; i < caret.length; i++) {
+		caret[i].addEventListener("click", function () {
+			if (this.innerText === "All Organizations") {
+				toggleTree(this);
+			} else {
+				expandChildren(this);
+			}
+		});
 	}
 }
 
-function startTreeListeners() {
-	let toggler = document.getElementsByClassName("caret");
-	let i;
+function collapseTree(element) {
+	element.parentElement.querySelector(".nested").classList.remove("active");
+	element.classList.remove("caret-down");
+}
 
+function expandChildren(element) {
+	let toggler = element.parentElement.getElementsByClassName("caret");
+	let i;
 	for (i = 0; i < toggler.length; i++) {
-		toggler[i].addEventListener("click", function () {
-			this.parentElement.querySelector(".nested").classList.toggle("active");
-			this.classList.toggle("caret-down");
-		});
+		expandTree(toggler[i]);
 	}
+}
+
+function expandTree(element) {
+	element.parentElement.querySelector(".nested").classList.add("active");
+	element.classList.add("caret-down");
+}
+
+function toggleTree(element) {
+	element.parentElement.querySelector(".nested").classList.toggle("active");
+	element.classList.toggle("caret-down");
 }
 
 function displayMembers(endpoint) {
