@@ -2,6 +2,8 @@ window.onload = function () {
 	setupTree()
 };
 
+//// tree functions ////
+
 function setupTree() {
 	const wardOrgs = document.getElementById("ward-organizations");
 
@@ -67,7 +69,7 @@ function startTreeListeners() {
 	for (i = 0; i < caret.length; i++) {
 		caret[i].addEventListener("click", function () {
 			if (this.innerText === "All Organizations") {
-				toggleTree(this);
+				toggleElement(this);
 			} else {
 				expandChildren(this);
 			}
@@ -75,28 +77,38 @@ function startTreeListeners() {
 	}
 }
 
-function collapseTree(element) {
-	element.parentElement.querySelector(".nested").classList.remove("active");
-	element.classList.remove("caret-down");
+function expandCollapseTree(op) {
+	let caret = document.getElementsByClassName("caret");
+	let i;
+
+	for (i = 0; i < caret.length; i++) {
+		switch(op) {
+			case 'e':
+				caret[i].parentElement.querySelector(".nested").classList.add("active");
+				caret[i].classList.add("caret-down");
+				break;
+			case 'c':
+				caret[i].parentElement.querySelector(".nested").classList.remove("active");
+				caret[i].classList.remove("caret-down");
+				break;
+		}
+	}
 }
 
 function expandChildren(element) {
 	let toggler = element.parentElement.getElementsByClassName("caret");
 	let i;
 	for (i = 0; i < toggler.length; i++) {
-		expandTree(toggler[i]);
+		toggleElement(toggler[i]);
 	}
 }
 
-function expandTree(element) {
-	element.parentElement.querySelector(".nested").classList.add("active");
-	element.classList.add("caret-down");
-}
-
-function toggleTree(element) {
+function toggleElement(element) {
 	element.parentElement.querySelector(".nested").classList.toggle("active");
 	element.classList.toggle("caret-down");
 }
+
+//// misc ////
 
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
@@ -146,6 +158,8 @@ function displayCallings(endpoint, argName, arg) {
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
 }
+
+//// parsers ////
 
 function parseRawData(endpoint) {
 	const rawData = document.getElementById("rawdata");

@@ -6,7 +6,8 @@
 <body>
 <h2>CallOrg</h2>
 
-<input type="button" onclick="treeExpandCollapse('Elders Quorum')" value="Expand/Collapse All">
+<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
+<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
 <br><br>
 <ul id="ward">
 	<li><span class="caret">All Organizations</span>
@@ -16,7 +17,6 @@
 	</li>
 </ul>
 <br>
-<input type="button" onclick="treeExpandCollapse()" value="Expand/Collapse All">
 
 <br>
 <hr/>
@@ -24,7 +24,7 @@
 
 <label for="members">Members</label>
 <br>
-<select id="members" name="members" size="15" onchange="memberSelected(this.selectedIndex)"></select>
+<select id="members" name="members" size="5" onchange="memberSelected(this.selectedIndex)"></select>
 <br><br>
 <input type="button" onclick="displayMembers('members')" value="All Members">
 <input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
@@ -38,7 +38,7 @@
 
 <label for="callings">Callings</label>
 <br>
-<select id="callings" name="callings" size="15"></select>
+<select id="callings" name="callings" size="5"></select>
 
 <br>
 <hr/>
