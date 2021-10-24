@@ -60,8 +60,13 @@ function setupTree() {
 	xhttp.send();
 }
 
-function treeCollapse() {
-	let toggler = document.getElementsByClassName("caret");
+function treeExpandCollapse(id) {
+	let element = document.getElementById(id)
+	element.parentElement.querySelector(".nested").classList.toggle("active");
+	element.classList.toggle("caret-down");
+
+	let toggler = element.getElementsByClassName("caret");
+	// let toggler = document.getElementsByClassName("caret");
 	let i;
 
 	for (i = 0; i < toggler.length; i++) {
