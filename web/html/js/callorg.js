@@ -15,11 +15,13 @@ function setupTree() {
 				let container = document.getElementById(calling.Org);
 				if (container == null) {
 					container = document.createElement("li");
+
 					let caret = document.createElement("span");
 					caret.setAttribute("class", "caret");
 					caret.innerText = calling.Org;
 					container.appendChild(caret);
 					wardOrgs.appendChild(container);
+
 					let nested = document.createElement("ul");
 					nested.setAttribute("class", "nested");
 					nested.setAttribute("id", calling.Org);
@@ -32,11 +34,13 @@ function setupTree() {
 					if (subOrg == null) {
 						subOrg = document.createElement("li");
 						subOrg.setAttribute("id", calling.SubOrg)
+
 						let caret = document.createElement("span");
 						caret.setAttribute("class", "caret");
 						caret.innerText = calling.SubOrg;
 						subOrg.appendChild(caret);
 						container.appendChild(subOrg);
+
 						let nested = document.createElement("ul");
 						nested.setAttribute("class", "nested");
 						nested.setAttribute("id", calling.Org + calling.SubOrg);
@@ -48,7 +52,11 @@ function setupTree() {
 				}
 
 				let callingInfo = document.createElement("li");
-				callingInfo.innerText = calling.Name + " ; " + calling.Holder + " ; " + calling.PrintableSustained + " (" + calling.PrintableTimeInCalling + ")";
+				callingInfo.classList.add("calling-row");
+				if (calling.Holder === "Calling Vacant") {
+					callingInfo.classList.add("vacant");
+				}
+				callingInfo.innerHTML = calling.Name + "<br><span class=\"member\">" + calling.Holder + "</span> (" + calling.PrintableTimeInCalling + ")";
 				container.appendChild(callingInfo);
 			});
 
