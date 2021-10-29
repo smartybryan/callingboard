@@ -30,7 +30,7 @@ function setupTree() {
 				}
 
 				if (calling.SubOrg !== "") {
-					let subOrg = document.getElementById(calling.Org + calling.SubOrg);
+					let subOrg = document.getElementById(calling.Org + "@" + calling.SubOrg);
 					if (subOrg == null) {
 						subOrg = document.createElement("li");
 						subOrg.setAttribute("id", calling.SubOrg)
@@ -43,15 +43,21 @@ function setupTree() {
 
 						let nested = document.createElement("ul");
 						nested.setAttribute("class", "nested");
-						nested.setAttribute("id", calling.Org + calling.SubOrg);
+						nested.setAttribute("id", calling.Org + "@"+ calling.SubOrg);
 						subOrg.appendChild(nested);
 						container = nested;
 					} else {
 						container = subOrg;
 					}
 				}
+				container.setAttribute("ondrop", "drop(event)")
+				container.setAttribute("ondragover", "allowDrop(event)")
+				container.setAttribute("ondragstart", "drag(event)")
 
 				let callingInfo = document.createElement("li");
+				callingInfo.setAttribute("id", calling.Name + "@" + calling.Holder)
+				callingInfo.setAttribute("draggable", "true");
+
 				callingInfo.classList.add("calling-row");
 				if (calling.Holder === "Calling Vacant") {
 					callingInfo.classList.add("vacant");
@@ -59,6 +65,9 @@ function setupTree() {
 				callingInfo.innerHTML = calling.Name + "<br><span class=\"member\">" + calling.Holder + "</span> (" + calling.PrintableTimeInCalling + ")";
 				container.appendChild(callingInfo);
 			});
+
+			//TODO: functions to generate calling ID and INNERHTML,
+			//      extract calling and name from ID
 
 			startTreeListeners()
 		}
@@ -90,7 +99,7 @@ function expandCollapseTree(op) {
 	let i;
 
 	for (i = 0; i < caret.length; i++) {
-		switch(op) {
+		switch (op) {
 			case 'e':
 				caret[i].parentElement.querySelector(".nested").classList.add("active");
 				caret[i].classList.add("caret-down");
@@ -114,6 +123,36 @@ function expandChildren(element) {
 function toggleElement(element) {
 	element.parentElement.querySelector(".nested").classList.toggle("active");
 	element.classList.toggle("caret-down");
+}
+
+//// drag and drop ////
+
+function allowDrop(ev) {
+	ev.preventDefault();
+}
+
+function drag(ev) {
+	ev.dataTransfer.setData("calling", ev.target.id);
+}
+
+function drop(ev) {
+	ev.preventDefault();
+	let data = ev.dataTransfer.getData("calling");
+
+	let dropTarget = ev.target;
+	if (dropTarget.tagName === "LI") {
+		dropTarget = ev.target.parentElement
+	} else if (dropTarget.tagName === "SPAN") {
+		dropTarget = ev.target.parentElement.parentElement
+	}
+
+	let movedElement = document.getElementById(data);
+	let currentId = movedElement.getAttribute("id");
+	let elementCopy = document.getElementById(data).cloneNode(true)
+
+	movedElement.setAttribute("id", currentId + "OLD");
+	movedElement.innerHTML = "MOVED";
+	dropTarget.appendChild(elementCopy);
 }
 
 //// misc ////

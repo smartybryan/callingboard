@@ -18,5 +18,7 @@ WORKFLOW
 - Drag a calling into Release to release the member (make the calling vacant)
 - Drag a member (from the member box) to a calling in the tree and it adds them to the Sustain box
 - Delete a row from either box to back out the change.
-
+** The drag and drop process will need to call the backend Api to keep the model in sync with the UI.
+We won't be able to repaint the tree or the expand state will be lost.
+- 
 
