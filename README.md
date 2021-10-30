@@ -7,10 +7,14 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Box on left to drag a calling to for a release
-- Member box on left to drag a person from for a calling
-- Style calling box same as the callings in the tree
-- Search box for members ?
+- Add sustain list on left
+- Member box to drag a member to a calling; add to sustain list.
+- Style existing calling box same as the callings in the tree
+- In drag and drop operations, call the backend API.
+- Save and load model.
+- Reload original data.
+- Refresh tree with new model (necessary?)
+- Search box for members (needed?)
 - Authentication/authorization ?
 
 WORKFLOW
