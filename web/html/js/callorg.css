@@ -88,6 +88,10 @@ li.calling-row {
 }
 
 li.vacant {
+	background-color: #acf2e9;
+}
+
+li.model-vacant {
 	background-color: #bdf272;
 }
 

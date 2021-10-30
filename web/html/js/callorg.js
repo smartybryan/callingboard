@@ -167,7 +167,10 @@ function drag(ev) {
 function drop(ev) {
 	ev.preventDefault();
 	let currentId = ev.dataTransfer.getData("calling");
+	let movedElement = document.getElementById(currentId);
+	let newElement = document.getElementById(currentId).cloneNode(true);
 
+	// find the UL container of the dropped element
 	let dropTarget = ev.target;
 	if (dropTarget.tagName === "LI") {
 		dropTarget = ev.target.parentElement
@@ -175,27 +178,29 @@ function drop(ev) {
 		dropTarget = ev.target.parentElement.parentElement
 	}
 
-	//TODO: if the tree is both the source and destination, cancel the operation
+	// if the ward tree is both the source and destination, cancel the operation
+	if (dropTarget.classList.contains("nested") && movedElement.parentElement.classList.contains("nested")) {
+		return
+	}
 
-	let movedElement = document.getElementById(currentId);
-	let elementCopy = document.getElementById(currentId).cloneNode(true);
-
-	// if dropTarget already has a moved element, use it and delete source element.
+	// if dropTarget already has a moved element with same id, use it and delete source element.
 	let movedId = callingIdMoved(currentId);
-	let targetElement = document.getElementById(movedId);
-	if (targetElement) {
-		targetElement.setAttribute("id", currentId)
-		targetElement.innerHTML = movedElement.innerHTML
-		targetElement.classList.remove("vacant")
+	let existingPreviouslyMovedElement = document.getElementById(movedId);
+	if (existingPreviouslyMovedElement) {
+		existingPreviouslyMovedElement.setAttribute("id", currentId)
+		existingPreviouslyMovedElement.innerHTML = movedElement.innerHTML
+		existingPreviouslyMovedElement.classList.remove("model-vacant")
 		movedElement.remove()
 		return
 	}
 
-	// finish the element copy and make source calling vacant
+	// fix up the old element
 	movedElement.setAttribute("id", callingIdMoved(currentId));
 	movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
-	movedElement.classList.add("vacant")
-	dropTarget.appendChild(elementCopy);
+	movedElement.classList.add("model-vacant")
+
+	// add a copy of the moved element to the new destination
+	dropTarget.appendChild(newElement);
 }
 
 //// member functions ////
