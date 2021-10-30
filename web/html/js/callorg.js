@@ -1,3 +1,7 @@
+const VACANT = "Calling Vacant";
+const NONE = "None";
+const MOVED = "-moved";
+
 window.onload = function () {
 	setupTree()
 };
@@ -10,8 +14,10 @@ function setupTree() {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
+			let counter = 0;
 			let jsonObject = JSON.parse(this.responseText);
 			jsonObject.forEach(function (calling) {
+				counter++;
 				let container = document.getElementById(calling.Org);
 				if (container == null) {
 					container = document.createElement("li");
@@ -43,7 +49,7 @@ function setupTree() {
 
 						let nested = document.createElement("ul");
 						nested.setAttribute("class", "nested");
-						nested.setAttribute("id", calling.Org + "@"+ calling.SubOrg);
+						nested.setAttribute("id", calling.Org + "@" + calling.SubOrg);
 						subOrg.appendChild(nested);
 						container = nested;
 					} else {
@@ -55,19 +61,16 @@ function setupTree() {
 				container.setAttribute("ondragstart", "drag(event)")
 
 				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", calling.Name + "@" + calling.Holder)
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter))
 				callingInfo.setAttribute("draggable", "true");
 
 				callingInfo.classList.add("calling-row");
-				if (calling.Holder === "Calling Vacant") {
+				if (calling.Holder === VACANT) {
 					callingInfo.classList.add("vacant");
 				}
-				callingInfo.innerHTML = calling.Name + "<br><span class=\"member\">" + calling.Holder + "</span> (" + calling.PrintableTimeInCalling + ")";
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
 				container.appendChild(callingInfo);
 			});
-
-			//TODO: functions to generate calling ID and INNERHTML,
-			//      extract calling and name from ID
 
 			startTreeListeners()
 		}
@@ -78,6 +81,32 @@ function setupTree() {
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
 }
+
+//// calling id functions ////
+
+function callingId(callingName, callingHolder, counter) {
+	return callingName + "@" + callingHolder + "@" + counter;
+}
+
+function callingIdComponents(id) {
+	let components = id.split("@");
+	let callingName = components[0], holderName = components[1];
+	return { callingName, holderName }
+}
+
+function callingInnards(callingName, holderName, timeInCalling) {
+	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
+}
+
+function callingIdMoved(id) {
+	return id + MOVED;
+}
+
+function callingIdRemoveMoved(id) {
+	return id.replace(MOVED,'');
+}
+
+//// tree functions ////
 
 function startTreeListeners() {
 	let caret = document.getElementsByClassName("caret");
@@ -148,14 +177,14 @@ function drop(ev) {
 
 	let movedElement = document.getElementById(data);
 	let currentId = movedElement.getAttribute("id");
-	let elementCopy = document.getElementById(data).cloneNode(true)
+	let elementCopy = document.getElementById(data).cloneNode(true);
 
-	movedElement.setAttribute("id", currentId + "OLD");
-	movedElement.innerHTML = "MOVED";
+	movedElement.setAttribute("id", callingIdMoved(currentId));
+	movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
 	dropTarget.appendChild(elementCopy);
 }
 
-//// misc ////
+//// member functions ////
 
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
