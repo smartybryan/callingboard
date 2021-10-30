@@ -19,17 +19,17 @@ function setupTree() {
 			jsonObject.forEach(function (calling) {
 				counter++;
 				let container = document.getElementById(calling.Org);
-				if (container == null) {
+				if (!container) {
 					container = document.createElement("li");
 
 					let caret = document.createElement("span");
-					caret.setAttribute("class", "caret");
+					caret.classList.add("caret");
 					caret.innerText = calling.Org;
 					container.appendChild(caret);
 					wardOrgs.appendChild(container);
 
 					let nested = document.createElement("ul");
-					nested.setAttribute("class", "nested");
+					nested.classList.add("nested");
 					nested.setAttribute("id", calling.Org);
 					container.appendChild(nested);
 					container = nested;
@@ -37,18 +37,18 @@ function setupTree() {
 
 				if (calling.SubOrg !== "") {
 					let subOrg = document.getElementById(calling.Org + "@" + calling.SubOrg);
-					if (subOrg == null) {
+					if (!subOrg) {
 						subOrg = document.createElement("li");
 						subOrg.setAttribute("id", calling.SubOrg)
 
 						let caret = document.createElement("span");
-						caret.setAttribute("class", "caret");
+						caret.classList.add("caret");
 						caret.innerText = calling.SubOrg;
 						subOrg.appendChild(caret);
 						container.appendChild(subOrg);
 
 						let nested = document.createElement("ul");
-						nested.setAttribute("class", "nested");
+						nested.classList.add("nested");
 						nested.setAttribute("id", calling.Org + "@" + calling.SubOrg);
 						subOrg.appendChild(nested);
 						container = nested;
@@ -166,7 +166,7 @@ function drag(ev) {
 
 function drop(ev) {
 	ev.preventDefault();
-	let data = ev.dataTransfer.getData("calling");
+	let currentId = ev.dataTransfer.getData("calling");
 
 	let dropTarget = ev.target;
 	if (dropTarget.tagName === "LI") {
@@ -175,12 +175,26 @@ function drop(ev) {
 		dropTarget = ev.target.parentElement.parentElement
 	}
 
-	let movedElement = document.getElementById(data);
-	let currentId = movedElement.getAttribute("id");
-	let elementCopy = document.getElementById(data).cloneNode(true);
+	//TODO: if the tree is both the source and destination, cancel the operation
 
+	let movedElement = document.getElementById(currentId);
+	let elementCopy = document.getElementById(currentId).cloneNode(true);
+
+	// if dropTarget already has a moved element, use it and delete source element.
+	let movedId = callingIdMoved(currentId);
+	let targetElement = document.getElementById(movedId);
+	if (targetElement) {
+		targetElement.setAttribute("id", currentId)
+		targetElement.innerHTML = movedElement.innerHTML
+		targetElement.classList.remove("vacant")
+		movedElement.remove()
+		return
+	}
+
+	// finish the element copy and make source calling vacant
 	movedElement.setAttribute("id", callingIdMoved(currentId));
 	movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
+	movedElement.classList.add("vacant")
 	dropTarget.appendChild(elementCopy);
 }
 

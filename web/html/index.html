@@ -33,9 +33,8 @@
 		<hr/>
 
 		<label for="releases">Releases</label>
-		<br>
 		<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-			<li>Drag Here</li>
+			<li>(Drag calling here to release)</li>
 		</ul>
 	</nav>
 
@@ -43,13 +42,15 @@
 		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
 		<br><br>
-		<ul id="ward">
-			<li><span class="caret">All Organizations</span>
-				<ul id="ward-organizations" class="nested">
-					<!-- organizations are inserted here -->
-				</ul>
-			</li>
-		</ul>
+		<div id="ward-scroller">
+			<ul id="ward">
+				<li><span class="caret">All Organizations</span>
+					<ul id="ward-organizations" class="nested">
+						<!-- organizations are inserted here -->
+					</ul>
+				</li>
+			</ul>
+		</div>
 	</article>
 </section>
 
