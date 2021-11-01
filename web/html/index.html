@@ -26,15 +26,19 @@
 
 		<hr/>
 
-		<label for="callings">Callings</label>
+		<label for="member-callings">Callings Held By Member</label>
 		<br>
-		<select id="callings" name="callings" size="5"></select>
+		<ul id="member-callings" name="member-callings" ondragstart="drag(event)" ></ul>
 
 		<hr/>
 
 		<label for="releases">Releases</label>
 		<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
 			<li>(Drag calling here to release)</li>
+		</ul>
+
+		<label for="sustainings">Sustainings</label>
+		<ul id="sustainings" ondragstart="drag(event)">
 		</ul>
 	</nav>
 

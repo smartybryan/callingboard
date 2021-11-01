@@ -1,6 +1,8 @@
 const VACANT = "Calling Vacant";
 const NONE = "None";
 const MOVED = "-moved";
+const COPY = "-copy";
+const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases."
 
 window.onload = function () {
 	setupTree()
@@ -64,7 +66,7 @@ function setupTree() {
 				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter))
 				callingInfo.setAttribute("draggable", "true");
 
-				callingInfo.classList.add("calling-row");
+				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
 				if (calling.Holder === VACANT) {
 					callingInfo.classList.add("vacant");
 				}
@@ -91,19 +93,23 @@ function callingId(callingName, callingHolder, counter) {
 function callingIdComponents(id) {
 	let components = id.split("@");
 	let callingName = components[0], holderName = components[1];
-	return { callingName, holderName }
+	return {callingName, holderName}
 }
 
 function callingInnards(callingName, holderName, timeInCalling) {
 	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
 }
 
-function callingIdMoved(id) {
-	return id + MOVED;
+function callingIdWithSuffix(id, suffix) {
+	return id + suffix;
 }
 
-function callingIdRemoveMoved(id) {
-	return id.replace(MOVED,'');
+function callingIdRemoveSuffix(id, suffix) {
+	return id.replace(suffix, '');
+}
+
+function convertHolderToClass(holder) {
+	return holder.replace(",", "").replaceAll(" ", "")
 }
 
 //// tree functions ////
@@ -180,11 +186,27 @@ function drop(ev) {
 
 	// if the ward tree is both the source and destination, cancel the operation
 	if (dropTarget.classList.contains("nested") && movedElement.parentElement.classList.contains("nested")) {
+		alert(MESSAGE_RELEASE_ONLY)
 		return
 	}
 
+	// if element came from member-callings list
+	if (movedElement.classList.contains("member-calling")) {
+		// only allow it to be moved to releases
+		if (dropTarget.id !== "releases") {
+			alert(MESSAGE_RELEASE_ONLY)
+			return
+		}
+
+		// otherwise it came from releases, so remove it and make the tree element the root
+		movedElement.remove();
+		currentId = callingIdRemoveSuffix(currentId, COPY);
+		movedElement = document.getElementById(currentId);
+		newElement = document.getElementById(currentId).cloneNode(true);
+	}
+
 	// if dropTarget already has a moved element with same id, use it and delete source element.
-	let movedId = callingIdMoved(currentId);
+	let movedId = callingIdWithSuffix(currentId, MOVED);
 	let existingPreviouslyMovedElement = document.getElementById(movedId);
 	if (existingPreviouslyMovedElement) {
 		existingPreviouslyMovedElement.setAttribute("id", currentId)
@@ -195,7 +217,7 @@ function drop(ev) {
 	}
 
 	// fix up the old element
-	movedElement.setAttribute("id", callingIdMoved(currentId));
+	movedElement.setAttribute("id", callingIdWithSuffix(currentId, MOVED));
 	movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
 	movedElement.classList.add("model-vacant")
 
@@ -228,30 +250,25 @@ function displayMembers(endpoint) {
 
 function memberSelected(index) {
 	let memberOptions = document.getElementById('members').options;
-	displayCallings("callings-for-member", "member", memberOptions[index].text);
+	displayMemberCallings(memberOptions[index].text);
+	//displayCallings("callings-for-member", "member", memberOptions[index].text);
 }
 
-function displayCallings(endpoint, argName, arg) {
-	const callingElement = document.getElementById("callings");
-	callingElement.innerHTML = "";
+function displayMemberCallings(name) {
+	const parentElement = document.getElementById("member-callings");
+	while (parentElement.firstChild) {
+		parentElement.lastChild.remove();
+	}
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let jsonObject = JSON.parse(this.responseText)
-			jsonObject.forEach(function (calling) {
-				let opt = document.createElement('option');
-				opt.value = calling.Name;
-				opt.innerText = calling.Org + "/" + calling.SubOrg + " ; " + calling.Name + " ; " + calling.Holder + " ; " + calling.PrintableSustained + " (" + calling.PrintableTimeInCalling + ")";
-				callingElement.appendChild(opt);
-			});
-		}
-	};
-
-	let url = endpoint + "?" + argName + "=" + encodeURI(arg);
-	xhttp.open("GET", "/v1/" + url);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	let memberCallings = document.getElementsByClassName(convertHolderToClass(name));
+	for (let i = 0; i < memberCallings.length; i++) {
+		let currentId = memberCallings[i].id;
+		let newElement = document.getElementById(currentId).cloneNode(true);
+		newElement.classList.remove(convertHolderToClass(name)); // avoid endless loop as memberCallings will continue to grow
+		newElement.classList.add("member-calling");
+		newElement.id = callingIdWithSuffix(currentId, COPY);
+		parentElement.appendChild(newElement);
+	}
 }
 
 //// parsers ////
