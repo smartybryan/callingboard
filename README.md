@@ -7,9 +7,7 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Add sustain list on left
-- Member box to drag a member to a calling; add to sustain list.
-- Style existing calling box same as the callings in the tree
+- Drag member to tree but nowhere else. Update calling. Add to sustain list.
 - In drag and drop operations, call the backend API.
 - Save and load model.
 - Reload original data.

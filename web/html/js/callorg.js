@@ -229,6 +229,7 @@ function drop(ev) {
 
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
+	//TODO: clear each element like member-callings
 	membersElement.innerHTML = "";
 
 	const xhttp = new XMLHttpRequest();
@@ -236,21 +237,26 @@ function displayMembers(endpoint) {
 		if (this.readyState === 4 && this.status === 200) {
 			let jsonObject = JSON.parse(this.responseText)
 			jsonObject.forEach(function (member) {
-				let opt = document.createElement('option');
-				opt.value = member;
-				opt.innerText = member;
-				membersElement.appendChild(opt);
+				let memberElement = document.createElement('li');
+				memberElement.innerHTML = member;
+				memberElement.setAttribute("id", member);
+				memberElement.setAttribute("draggable", "true");
+				memberElement.classList.add("member-row", convertHolderToClass(member));
+				memberElement.addEventListener("click", function () {
+					memberSelected(this);
+				});
+				membersElement.appendChild(memberElement);
 			});
 		}
 	};
+
 	xhttp.open("GET", "/v1/" + endpoint);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
 }
 
-function memberSelected(index) {
-	let memberOptions = document.getElementById('members').options;
-	displayMemberCallings(memberOptions[index].text);
+function memberSelected(element) {
+	displayMemberCallings(element.id);
 	//displayCallings("callings-for-member", "member", memberOptions[index].text);
 }
 

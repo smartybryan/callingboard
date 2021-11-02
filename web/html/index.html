@@ -16,7 +16,10 @@
 	<nav>
 		<label for="members">Members</label>
 		<br>
-		<select id="members" name="members" size="5" onchange="memberSelected(this.selectedIndex)"></select>
+		<div id="member-scroller">
+			<ul id="members" ondragstart="drag(event)"></ul>
+		</div>
+		<select id="members2" name="members" size="5" onchange="memberSelected(this.selectedIndex)"></select>
 		<br>
 		<input type="button" onclick="displayMembers('members')" value="All Members">
 		<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
