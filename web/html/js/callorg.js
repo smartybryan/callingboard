@@ -3,6 +3,7 @@ const NONE = "None";
 const MOVED = "-moved";
 const COPY = "-copy";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases."
+const MESSAGE_ALREADY_EXISTS = "The calling already exists at the drop zone."
 
 window.onload = function () {
 	setupTree()
@@ -194,13 +195,20 @@ function drop(ev) {
 	if (movedElement.classList.contains("member-calling")) {
 		// only allow it to be moved to releases
 		if (dropTarget.id !== "releases") {
-			alert(MESSAGE_RELEASE_ONLY)
+			alert(MESSAGE_RELEASE_ONLY);
 			return
 		}
 
-		// otherwise it came from releases, so remove it and make the tree element the root
-		movedElement.remove();
+		// if element already exists in releases, ignore the drag
 		currentId = callingIdRemoveSuffix(currentId, COPY);
+		let checkExist = document.getElementById(currentId);
+		if (checkExist && checkExist.parentElement.id === "releases") {
+			alert(MESSAGE_ALREADY_EXISTS);
+			return;
+		}
+
+		// otherwise it came FROM releases, so remove it and make the tree element the root
+		movedElement.remove();
 		movedElement = document.getElementById(currentId);
 		newElement = document.getElementById(currentId).cloneNode(true);
 	}
@@ -215,6 +223,7 @@ function drop(ev) {
 		movedElement.remove()
 		return
 	}
+
 
 	// fix up the old element
 	movedElement.setAttribute("id", callingIdWithSuffix(currentId, MOVED));
@@ -268,6 +277,15 @@ function displayMemberCallings(name) {
 
 	let memberCallings = document.getElementsByClassName(convertHolderToClass(name));
 	for (let i = 0; i < memberCallings.length; i++) {
+		// skip copying member row element
+		if (memberCallings[i].classList.contains("member-row")) {
+			continue;
+		}
+		// skip copying element already released
+		if (memberCallings[i].classList.contains("model-vacant")) {
+			continue;
+		}
+
 		let currentId = memberCallings[i].id;
 		let newElement = document.getElementById(currentId).cloneNode(true);
 		newElement.classList.remove(convertHolderToClass(name)); // avoid endless loop as memberCallings will continue to grow
