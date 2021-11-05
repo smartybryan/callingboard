@@ -19,15 +19,13 @@
 		<div id="member-scroller">
 			<ul id="members" ondragstart="drag(event)"></ul>
 		</div>
-		<select id="members2" name="members" size="5" onchange="memberSelected(this.selectedIndex)"></select>
-		<br>
+		<br><br><br><br><br><br>
 		<input type="button" onclick="displayMembers('members')" value="All Members">
 		<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
 		<input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
 		<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
 		<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
-
-		<hr/>
+		<br><br>
 
 		<label for="member-callings">Callings Held By Member</label>
 		<br>
@@ -37,17 +35,22 @@
 
 		<label for="releases">Releases</label>
 		<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-			<li>(Drag calling here to release)</li>
 		</ul>
 
 		<label for="sustainings">Sustainings</label>
 		<ul id="sustainings" ondragstart="drag(event)">
 		</ul>
+
+		<br><br>
+		<input type="button" onclick="transaction('undo-trans')" value="Undo">
+		<input type="button" onclick="transaction('redo-trans')" value="Redo">
+
 	</nav>
 
 	<article>
 		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
+		<input type="button" onclick="refreshFromModel()" value="Refresh All">
 		<br><br>
 		<div id="ward-scroller">
 			<ul id="ward">

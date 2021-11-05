@@ -111,6 +111,10 @@ li.model-vacant {
 	background-color: #bdf272;
 }
 
+li.proposed {
+	background-color: #faa07a;
+}
+
 .member {
 	color: darkred;
 	font-weight: bold;

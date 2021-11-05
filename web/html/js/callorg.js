@@ -1,12 +1,18 @@
 const VACANT = "Calling Vacant";
+const ALL_ORGS = "All Organizations";
 const NONE = "None";
 const MOVED = "-moved";
 const COPY = "-copy";
-const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases."
-const MESSAGE_ALREADY_EXISTS = "The calling already exists at the drop zone."
+const PROPOSED = "-proposed";
+const RELEASE_DROP_ENABLER = "(Drag calling here to release)";
+const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
+const MESSAGE_RELEASE_DROP = "You may not drop a Released calling here. Drop it in the trash to undo.";
+const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
+const MESSAGE_ALREADY_EXISTS = "The calling already exists at the drop zone.";
+const MESSAGE_SUSTAIN_NOT_ALLOWED = "Sustain proposals cannot be dropped here.";
 
 window.onload = function () {
-	setupTree()
+	setupTree();
 };
 
 //// tree functions ////
@@ -63,23 +69,14 @@ function setupTree() {
 				container.setAttribute("ondragover", "allowDrop(event)")
 				container.setAttribute("ondragstart", "drag(event)")
 
-				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter))
-				callingInfo.setAttribute("draggable", "true");
-
-				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
-				if (calling.Holder === VACANT) {
-					callingInfo.classList.add("vacant");
-				}
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
-				container.appendChild(callingInfo);
+				refreshFromModel();
 			});
 
 			startTreeListeners()
 		}
 	};
 
-	let url = "callings?org=All+Organizations";
+	let url = "callings?org=" + encodeURI(ALL_ORGS);
 	xhttp.open("GET", "/v1/" + url);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
@@ -99,6 +96,11 @@ function callingIdComponents(id) {
 
 function callingInnards(callingName, holderName, timeInCalling) {
 	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
+}
+
+function replaceHolderInCallingInnards(element, holderName, timeInCalling) {
+	let idComponents = element.id.split("@");
+	return idComponents[0] + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
 }
 
 function callingIdWithSuffix(id, suffix) {
@@ -121,7 +123,7 @@ function startTreeListeners() {
 
 	for (i = 0; i < caret.length; i++) {
 		caret[i].addEventListener("click", function () {
-			if (this.innerText === "All Organizations") {
+			if (this.innerText === ALL_ORGS) {
 				toggleElement(this);
 			} else {
 				expandChildren(this);
@@ -161,6 +163,110 @@ function toggleElement(element) {
 	element.classList.toggle("caret-down");
 }
 
+//// refresh functions ////
+
+function refreshFromModel() {
+	refreshTree();
+	refreshCallingChanges();
+}
+
+function refreshTree() {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			let counter = 0;
+			let jsonObject = JSON.parse(this.responseText);
+			jsonObject.forEach(function (calling) {
+				let container = null;
+				//TODO: refactor duplicate lines in here and setupTree()
+				if (calling.SubOrg !== "") {
+					container = document.getElementById(calling.Org + "@" + calling.SubOrg);
+				} else {
+					container = document.getElementById(calling.Org);
+				}
+				clearContainer(container);
+			});
+
+			jsonObject.forEach(function (calling) {
+				counter++;
+				let container = null;
+				if (calling.SubOrg !== "") {
+					container = document.getElementById(calling.Org + "@" + calling.SubOrg);
+				} else {
+					container = document.getElementById(calling.Org);
+				}
+
+				let callingInfo = document.createElement("li");
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter))
+				callingInfo.setAttribute("draggable", "true");
+
+				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				if (calling.Holder === VACANT) {
+					callingInfo.classList.add("vacant");
+				}
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				container.appendChild(callingInfo);
+			});
+		}
+	};
+
+	let url = "callings?org=" + ALL_ORGS;
+	xhttp.open("GET", "/v1/" + url);
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
+function refreshCallingChanges() {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			let jsonObject = JSON.parse(this.responseText);
+
+			let container = document.getElementById("releases");
+			clearContainer(container);
+			addReleaseDropEnabler(container);
+			jsonObject.Releases.forEach(function (calling) {
+				let callingInfo = document.createElement("li");
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
+				callingInfo.setAttribute("draggable", "true");
+
+				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				if (calling.Holder === VACANT) {
+					callingInfo.classList.add("vacant");
+				}
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				container.appendChild(callingInfo);
+			});
+
+			container = document.getElementById("sustainings");
+			clearContainer(container);
+			jsonObject.Sustainings.forEach(function (calling) {
+				let callingInfo = document.createElement("li");
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0))
+				callingInfo.setAttribute("draggable", "true");
+
+				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				if (calling.Holder === VACANT) {
+					callingInfo.classList.add("vacant");
+				}
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				container.appendChild(callingInfo);
+			});
+		}
+	};
+
+	let url = "diff";
+	xhttp.open("GET", "/v1/" + url);
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
+function addReleaseDropEnabler(container) {
+	let dropEnabler = document.createElement("li");
+	dropEnabler.innerHTML = RELEASE_DROP_ENABLER;
+	container.appendChild(dropEnabler);
+}
+
 //// drag and drop ////
 
 function allowDrop(ev) {
@@ -177,12 +283,52 @@ function drop(ev) {
 	let movedElement = document.getElementById(currentId);
 	let newElement = document.getElementById(currentId).cloneNode(true);
 
-	// find the UL container of the dropped element
-	let dropTarget = ev.target;
-	if (dropTarget.tagName === "LI") {
-		dropTarget = ev.target.parentElement
-	} else if (dropTarget.tagName === "SPAN") {
-		dropTarget = ev.target.parentElement.parentElement
+	// find the UL and LI elements based on the dropped element
+	let liElement = ev.target;
+	if (liElement.tagName === "SPAN") {
+		liElement = liElement.parentElement;
+	}
+	let dropTarget = liElement.parentElement;
+
+	// dragging from the member row to a vacant calling in the tree
+	if (movedElement.classList.contains("member-row")) {
+		if (!liElement.classList.contains("vacant") && !liElement.classList.contains("model-vacant")) {
+			alert(MESSAGE_MEMBER_ONLY_TO_TREE)
+			return
+		}
+
+		transaction("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement));
+
+		// liElement.innerHTML = replaceHolderInCallingInnards(liElement, movedElement.innerHTML, "Proposed")
+		// liElement.classList.remove("vacant", "model-vacant");
+		// liElement.classList.add("proposed");
+		//
+		// let sustainingElement = liElement.cloneNode(true);
+		// document.getElementById("sustainings").appendChild(sustainingElement);
+		// liElement.id += PROPOSED;
+		return
+	}
+
+	// dragging from releases
+	if (movedElement.parentElement.id === "releases") {
+		alert(MESSAGE_RELEASE_DROP);
+		return
+	}
+
+	// dragging from sustainings
+	if (movedElement.parentElement.id === "sustainings") {
+		if (!dropTarget.classList.contains("nested")) {
+			alert(MESSAGE_SUSTAIN_NOT_ALLOWED);
+			return
+		}
+
+		let treeElement = document.getElementById(callingIdRemoveSuffix(movedElement.id, PROPOSED));
+		movedElement.remove();
+		//TODO: restore the element back to its vacant state (id, classes)
+		//      This is a problem because we need to store the previous member in case they back out the sustain
+		treeElement.classList.remove(PROPOSED);
+		treeElement.classList.add(VACANT);
+		treeElement.innerHTML = replaceHolderInCallingInnards(treeElement, VACANT, NONE)
 	}
 
 	// if the ward tree is both the source and destination, cancel the operation
@@ -224,22 +370,24 @@ function drop(ev) {
 		return
 	}
 
+	transaction("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement));
 
 	// fix up the old element
-	movedElement.setAttribute("id", callingIdWithSuffix(currentId, MOVED));
-	movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
-	movedElement.classList.add("model-vacant")
+	// movedElement.setAttribute("id", callingIdWithSuffix(currentId, MOVED));
+	// movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
+	// movedElement.classList.add("model-vacant")
 
 	// add a copy of the moved element to the new destination
-	dropTarget.appendChild(newElement);
+	// dropTarget.appendChild(newElement);
 }
+
+
 
 //// member functions ////
 
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
-	//TODO: clear each element like member-callings
-	membersElement.innerHTML = "";
+	clearContainer(membersElement);
 
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
@@ -252,7 +400,7 @@ function displayMembers(endpoint) {
 				memberElement.setAttribute("draggable", "true");
 				memberElement.classList.add("member-row", convertHolderToClass(member));
 				memberElement.addEventListener("click", function () {
-					memberSelected(this);
+					memberSelected(memberElement);
 				});
 				membersElement.appendChild(memberElement);
 			});
@@ -266,14 +414,11 @@ function displayMembers(endpoint) {
 
 function memberSelected(element) {
 	displayMemberCallings(element.id);
-	//displayCallings("callings-for-member", "member", memberOptions[index].text);
 }
 
 function displayMemberCallings(name) {
 	const parentElement = document.getElementById("member-callings");
-	while (parentElement.firstChild) {
-		parentElement.lastChild.remove();
-	}
+	clearContainer(parentElement);
 
 	let memberCallings = document.getElementsByClassName(convertHolderToClass(name));
 	for (let i = 0; i < memberCallings.length; i++) {
@@ -293,6 +438,41 @@ function displayMemberCallings(name) {
 		newElement.id = callingIdWithSuffix(currentId, COPY);
 		parentElement.appendChild(newElement);
 	}
+}
+
+function clearContainer(element) {
+	if (!element) {
+		return;
+	}
+	while (element.firstChild) {
+		element.lastChild.remove();
+	}
+}
+
+//// transactions ////
+
+function transaction(endpoint, parms) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4) {
+			refreshFromModel();
+		}
+	};
+	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(parms));
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
+function createTransactionParmsFromTreeElememt(element) {
+	let org = element.parentElement.id.split("@")[0];
+	let callingIdParts = element.id.split("@");
+	return "org=" + org + "&calling=" + callingIdParts[0] + "&member=" + callingIdParts[1];
+}
+
+function createTransactionParmsForMemberElement(memberElement, callingElement) {
+	let org = callingElement.parentElement.id.split("@")[0];
+	let callingIdParts = callingElement.id.split("@");
+	return "org=" + org + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
 }
 
 //// parsers ////
