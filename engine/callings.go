@@ -298,6 +298,8 @@ const (
 
 func (this *Calling) copy() Calling {
 	return Calling{
+		Org:           this.Org,
+		SubOrg:        this.SubOrg,
 		Name:          this.Name,
 		Holder:        this.Holder,
 		CustomCalling: this.CustomCalling,

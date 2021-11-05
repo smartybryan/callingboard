@@ -36,6 +36,14 @@ func NewProject(callings *Callings, members *Members, dataPath string) *Project 
 		Members:          members,
 		transactions:     make([]Transaction, 0, 100),
 		dataPath:         dataPath,
+		diff:             NewDiff(),
+	}
+}
+
+func NewDiff() DiffResult {
+	return DiffResult{
+		Sustainings: make([]Calling, 0, 20),
+		Releases:    make([]Calling, 0, 20),
 	}
 }
 
