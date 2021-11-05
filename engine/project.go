@@ -40,8 +40,8 @@ func NewProject(callings *Callings, members *Members, dataPath string) *Project 
 }
 
 func (this *Project) Diff() DiffResult {
-	this.diff.Releases = this.diff.Releases[:]
-	this.diff.Sustainings = this.diff.Sustainings[:]
+	this.diff.Releases = this.diff.Releases[:0]
+	this.diff.Sustainings = this.diff.Sustainings[:0]
 
 	for _, organization := range this.Callings.OrganizationOrder {
 		// sustainings

@@ -16,6 +16,10 @@ TODO
 - Authentication/authorization ?
 
 WORKFLOW
+- New Approach
+  - drag and drop simply to update the model then refresh the UI which includes the tree, releases, sustainings.
+
+
 - Release and Sustain box
 - Drag a calling into Release to release the member (make the calling vacant)
 - Drag a member (from the member box) to a calling in the tree and it adds them to the Sustain box

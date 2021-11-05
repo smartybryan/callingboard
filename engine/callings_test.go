@@ -189,7 +189,7 @@ func (this *CallingsFixture) TestSaveLoad() {
 
 	cmLength := len(callings.CallingMap)
 	ooLength := len(callings.OrganizationOrder)
-	err := callings.Save()
+	_, err := callings.Save()
 	this.So(err, should.BeNil)
 
 	callings = NewCallings(10, tempFile)
@@ -198,5 +198,5 @@ func (this *CallingsFixture) TestSaveLoad() {
 	this.So(len(callings.CallingMap), should.Equal, cmLength)
 	this.So(len(callings.OrganizationOrder), should.Equal, ooLength)
 
-	os.Remove(tempFile)
+	_ = os.Remove(tempFile)
 }
