@@ -1,16 +1,11 @@
 const VACANT = "Calling Vacant";
 const ALL_ORGS = "All Organizations";
-const NONE = "None";
-const MOVED = "-moved";
-const COPY = "-copy";
-const PROPOSED = "-proposed";
 const RELEASE_DROP_ENABLER = "(Drag calling here to release)";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
 const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
 const MESSAGE_RELEASE_DROP = "You may not drop a Released calling here. Drop it in the trash to undo.";
 const MESSAGE_SUSTAIN_DROP = "You may not drop a Sustained calling here. Drop it in the trash to undo.";
 const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
-const MESSAGE_ALREADY_EXISTS = "The member has already been released from this calling.";
 
 window.onload = function () {
 	setupTreeStructure();
@@ -89,26 +84,8 @@ function callingId(callingName, callingHolder, counter) {
 	return callingName + "@" + callingHolder + "@" + counter;
 }
 
-function callingIdComponents(id) {
-	let components = id.split("@");
-	let callingName = components[0], holderName = components[1];
-	return {callingName, holderName}
-}
-
 function callingInnards(callingName, holderName, timeInCalling) {
 	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
-}
-
-function callingIdWithSuffix(id, suffix) {
-	return id + suffix;
-}
-
-function callingIdRemoveSuffix(id, suffix) {
-	return id.replace(suffix, '');
-}
-
-function convertHolderToClass(holder) {
-	return holder.replace(",", "").replaceAll(" ", "")
 }
 
 //// tree functions ////
@@ -355,7 +332,7 @@ function displayMembers(endpoint) {
 				memberElement.innerHTML = member;
 				memberElement.setAttribute("id", member);
 				memberElement.setAttribute("draggable", "true");
-				memberElement.classList.add("member-row", convertHolderToClass(member));
+				memberElement.classList.add("member-row");
 				memberElement.addEventListener("click", function () {
 					memberSelected(memberElement);
 				});
