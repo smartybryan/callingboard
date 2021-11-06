@@ -152,25 +152,14 @@ function refreshTree() {
 
 			// clear all organizations
 			jsonObject.forEach(function (calling) {
-				let container = null;
-				//TODO: refactor duplicate lines in here and setupTree()
-				if (calling.SubOrg !== "") {
-					container = document.getElementById(calling.Org + "@" + calling.SubOrg);
-				} else {
-					container = document.getElementById(calling.Org);
-				}
+				let container = findContainerFromCalling(calling);
 				clearContainer(container);
 			});
 
 			// repopulate organizations
 			jsonObject.forEach(function (calling) {
 				counter++;
-				let container = null;
-				if (calling.SubOrg !== "") {
-					container = document.getElementById(calling.Org + "@" + calling.SubOrg);
-				} else {
-					container = document.getElementById(calling.Org);
-				}
+				let container = findContainerFromCalling(calling);
 
 				let callingInfo = document.createElement("li");
 				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
@@ -244,6 +233,14 @@ function addReleaseDropEnabler(container) {
 	let dropEnabler = document.createElement("li");
 	dropEnabler.innerHTML = RELEASE_DROP_ENABLER;
 	container.appendChild(dropEnabler);
+}
+
+function findContainerFromCalling(calling) {
+	if (calling.SubOrg !== "") {
+		return document.getElementById(calling.Org + "@" + calling.SubOrg);
+	} else {
+		return document.getElementById(calling.Org);
+	}
 }
 
 //// drag and drop ////
