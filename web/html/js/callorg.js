@@ -6,18 +6,19 @@ const COPY = "-copy";
 const PROPOSED = "-proposed";
 const RELEASE_DROP_ENABLER = "(Drag calling here to release)";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
+const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
 const MESSAGE_RELEASE_DROP = "You may not drop a Released calling here. Drop it in the trash to undo.";
+const MESSAGE_SUSTAIN_DROP = "You may not drop a Sustained calling here. Drop it in the trash to undo.";
 const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
-const MESSAGE_ALREADY_EXISTS = "The calling already exists at the drop zone.";
-const MESSAGE_SUSTAIN_NOT_ALLOWED = "Sustain proposals cannot be dropped here.";
+const MESSAGE_ALREADY_EXISTS = "The member has already been released from this calling.";
 
 window.onload = function () {
-	setupTree();
+	setupTreeStructure();
 };
 
 //// tree functions ////
 
-function setupTree() {
+function setupTreeStructure() {
 	const wardOrgs = document.getElementById("ward-organizations");
 
 	const xhttp = new XMLHttpRequest();
@@ -98,11 +99,6 @@ function callingInnards(callingName, holderName, timeInCalling) {
 	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
 }
 
-function replaceHolderInCallingInnards(element, holderName, timeInCalling) {
-	let idComponents = element.id.split("@");
-	return idComponents[0] + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
-}
-
 function callingIdWithSuffix(id, suffix) {
 	return id + suffix;
 }
@@ -176,6 +172,8 @@ function refreshTree() {
 		if (this.readyState === 4 && this.status === 200) {
 			let counter = 0;
 			let jsonObject = JSON.parse(this.responseText);
+
+			// clear all organizations
 			jsonObject.forEach(function (calling) {
 				let container = null;
 				//TODO: refactor duplicate lines in here and setupTree()
@@ -187,6 +185,7 @@ function refreshTree() {
 				clearContainer(container);
 			});
 
+			// repopulate organizations
 			jsonObject.forEach(function (calling) {
 				counter++;
 				let container = null;
@@ -197,14 +196,14 @@ function refreshTree() {
 				}
 
 				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter))
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
+				callingInfo.setAttribute("data-org", calling.Org);
 				callingInfo.setAttribute("draggable", "true");
-
-				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				callingInfo.classList.add("calling-row");
 				if (calling.Holder === VACANT) {
 					callingInfo.classList.add("vacant");
 				}
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling);
 				container.appendChild(callingInfo);
 			});
 		}
@@ -216,6 +215,7 @@ function refreshTree() {
 	xhttp.send();
 }
 
+//TODO: refactor to remove duplicate code
 function refreshCallingChanges() {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
@@ -228,9 +228,10 @@ function refreshCallingChanges() {
 			jsonObject.Releases.forEach(function (calling) {
 				let callingInfo = document.createElement("li");
 				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
+				callingInfo.setAttribute("data-org", calling.Org);
 				callingInfo.setAttribute("draggable", "true");
 
-				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				callingInfo.classList.add("calling-row");
 				if (calling.Holder === VACANT) {
 					callingInfo.classList.add("vacant");
 				}
@@ -242,10 +243,11 @@ function refreshCallingChanges() {
 			clearContainer(container);
 			jsonObject.Sustainings.forEach(function (calling) {
 				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0))
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
+				callingInfo.setAttribute("data-org", calling.Org);
 				callingInfo.setAttribute("draggable", "true");
 
-				callingInfo.classList.add("calling-row", convertHolderToClass(calling.Holder));
+				callingInfo.classList.add("calling-row");
 				if (calling.Holder === VACANT) {
 					callingInfo.classList.add("vacant");
 				}
@@ -292,20 +294,11 @@ function drop(ev) {
 
 	// dragging from the member row to a vacant calling in the tree
 	if (movedElement.classList.contains("member-row")) {
-		if (!liElement.classList.contains("vacant") && !liElement.classList.contains("model-vacant")) {
+		if (!liElement.classList.contains("vacant")) {
 			alert(MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
-
 		transaction("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement));
-
-		// liElement.innerHTML = replaceHolderInCallingInnards(liElement, movedElement.innerHTML, "Proposed")
-		// liElement.classList.remove("vacant", "model-vacant");
-		// liElement.classList.add("proposed");
-		//
-		// let sustainingElement = liElement.cloneNode(true);
-		// document.getElementById("sustainings").appendChild(sustainingElement);
-		// liElement.id += PROPOSED;
 		return
 	}
 
@@ -317,70 +310,34 @@ function drop(ev) {
 
 	// dragging from sustainings
 	if (movedElement.parentElement.id === "sustainings") {
-		if (!dropTarget.classList.contains("nested")) {
-			alert(MESSAGE_SUSTAIN_NOT_ALLOWED);
-			return
-		}
-
-		let treeElement = document.getElementById(callingIdRemoveSuffix(movedElement.id, PROPOSED));
-		movedElement.remove();
-		//TODO: restore the element back to its vacant state (id, classes)
-		//      This is a problem because we need to store the previous member in case they back out the sustain
-		treeElement.classList.remove(PROPOSED);
-		treeElement.classList.add(VACANT);
-		treeElement.innerHTML = replaceHolderInCallingInnards(treeElement, VACANT, NONE)
+		alert(MESSAGE_SUSTAIN_DROP);
+		return
 	}
 
-	// if the ward tree is both the source and destination, cancel the operation
+	// dragging from ward tree to ward tree, cancel the operation
 	if (dropTarget.classList.contains("nested") && movedElement.parentElement.classList.contains("nested")) {
 		alert(MESSAGE_RELEASE_ONLY)
 		return
 	}
 
-	// if element came from member-callings list
+	// dragging from member-callings list
 	if (movedElement.classList.contains("member-calling")) {
 		// only allow it to be moved to releases
 		if (dropTarget.id !== "releases") {
 			alert(MESSAGE_RELEASE_ONLY);
 			return
 		}
-
-		// if element already exists in releases, ignore the drag
-		currentId = callingIdRemoveSuffix(currentId, COPY);
-		let checkExist = document.getElementById(currentId);
-		if (checkExist && checkExist.parentElement.id === "releases") {
-			alert(MESSAGE_ALREADY_EXISTS);
-			return;
-		}
-
-		// otherwise it came FROM releases, so remove it and make the tree element the root
 		movedElement.remove();
-		movedElement = document.getElementById(currentId);
-		newElement = document.getElementById(currentId).cloneNode(true);
 	}
 
-	// if dropTarget already has a moved element with same id, use it and delete source element.
-	let movedId = callingIdWithSuffix(currentId, MOVED);
-	let existingPreviouslyMovedElement = document.getElementById(movedId);
-	if (existingPreviouslyMovedElement) {
-		existingPreviouslyMovedElement.setAttribute("id", currentId)
-		existingPreviouslyMovedElement.innerHTML = movedElement.innerHTML
-		existingPreviouslyMovedElement.classList.remove("model-vacant")
-		movedElement.remove()
+	// dragging a vacant calling from the tree
+	if (movedElement.classList.contains("vacant")) {
+		alert(MESSAGE_RELEASE_VACANT);
 		return
 	}
 
 	transaction("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement));
-
-	// fix up the old element
-	// movedElement.setAttribute("id", callingIdWithSuffix(currentId, MOVED));
-	// movedElement.innerHTML = callingInnards(callingIdComponents(currentId).callingName, VACANT, NONE);
-	// movedElement.classList.add("model-vacant")
-
-	// add a copy of the moved element to the new destination
-	// dropTarget.appendChild(newElement);
 }
-
 
 
 //// member functions ////
@@ -417,27 +374,31 @@ function memberSelected(element) {
 }
 
 function displayMemberCallings(name) {
-	const parentElement = document.getElementById("member-callings");
-	clearContainer(parentElement);
+	const container = document.getElementById("member-callings");
+	clearContainer(container);
 
-	let memberCallings = document.getElementsByClassName(convertHolderToClass(name));
-	for (let i = 0; i < memberCallings.length; i++) {
-		// skip copying member row element
-		if (memberCallings[i].classList.contains("member-row")) {
-			continue;
-		}
-		// skip copying element already released
-		if (memberCallings[i].classList.contains("model-vacant")) {
-			continue;
-		}
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			let jsonObject = JSON.parse(this.responseText)
+			jsonObject.forEach(function (calling) {
+				let callingInfo = document.createElement("li");
+				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
+				callingInfo.setAttribute("data-org", calling.Org);
+				callingInfo.setAttribute("draggable", "true");
 
-		let currentId = memberCallings[i].id;
-		let newElement = document.getElementById(currentId).cloneNode(true);
-		newElement.classList.remove(convertHolderToClass(name)); // avoid endless loop as memberCallings will continue to grow
-		newElement.classList.add("member-calling");
-		newElement.id = callingIdWithSuffix(currentId, COPY);
-		parentElement.appendChild(newElement);
-	}
+				callingInfo.classList.add("calling-row", "member-calling");
+				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				container.appendChild(callingInfo);
+
+			});
+		}
+	};
+
+	let endpoint = "callings-for-member?member=" + name;
+	xhttp.open("GET", "/v1/" + encodeURI(endpoint));
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
 }
 
 function clearContainer(element) {
@@ -463,16 +424,15 @@ function transaction(endpoint, parms) {
 	xhttp.send();
 }
 
+//TODO: remove dup code from the two functions below
 function createTransactionParmsFromTreeElememt(element) {
-	let org = element.parentElement.id.split("@")[0];
 	let callingIdParts = element.id.split("@");
-	return "org=" + org + "&calling=" + callingIdParts[0] + "&member=" + callingIdParts[1];
+	return "org=" + element.getAttribute("data-org") + "&calling=" + callingIdParts[0] + "&member=" + callingIdParts[1];
 }
 
 function createTransactionParmsForMemberElement(memberElement, callingElement) {
-	let org = callingElement.parentElement.id.split("@")[0];
 	let callingIdParts = callingElement.id.split("@");
-	return "org=" + org + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
+	return "org=" + callingElement.getAttribute("data-org")  + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
 }
 
 //// parsers ////
