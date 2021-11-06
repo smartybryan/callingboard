@@ -17,53 +17,48 @@ function setupTreeStructure() {
 	const wardOrgs = document.getElementById("ward-organizations");
 
 	const xhttp = new XMLHttpRequest();
+
+	function setupNestedContainers(containerName, parentContainer, orgContainer, containerId) {
+		let caret = document.createElement("span");
+		caret.classList.add("caret");
+		caret.innerText = containerName;
+		orgContainer.appendChild(caret);
+		parentContainer.appendChild(orgContainer);
+
+		let nested = document.createElement("ul");
+		nested.classList.add("nested");
+		nested.setAttribute("id", containerId);
+		orgContainer.appendChild(nested);
+		return nested;
+	}
+
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
 			let counter = 0;
 			let jsonObject = JSON.parse(this.responseText);
 			jsonObject.forEach(function (calling) {
 				counter++;
-				let container = document.getElementById(calling.Org);
-				if (!container) {
-					container = document.createElement("li");
-
-					let caret = document.createElement("span");
-					caret.classList.add("caret");
-					caret.innerText = calling.Org;
-					container.appendChild(caret);
-					wardOrgs.appendChild(container);
-
-					let nested = document.createElement("ul");
-					nested.classList.add("nested");
-					nested.setAttribute("id", calling.Org);
-					container.appendChild(nested);
-					container = nested;
+				let orgContainer = document.getElementById(calling.Org);
+				if (!orgContainer) {
+					let containerId = calling.Org;
+					orgContainer = document.createElement("li");
+					orgContainer = setupNestedContainers(calling.Org, wardOrgs, orgContainer, containerId);
 				}
 
 				if (calling.SubOrg !== "") {
-					let subOrg = document.getElementById(calling.Org + "@" + calling.SubOrg);
-					if (!subOrg) {
-						subOrg = document.createElement("li");
-						subOrg.setAttribute("id", calling.SubOrg)
-
-						let caret = document.createElement("span");
-						caret.classList.add("caret");
-						caret.innerText = calling.SubOrg;
-						subOrg.appendChild(caret);
-						container.appendChild(subOrg);
-
-						let nested = document.createElement("ul");
-						nested.classList.add("nested");
-						nested.setAttribute("id", calling.Org + "@" + calling.SubOrg);
-						subOrg.appendChild(nested);
-						container = nested;
+					let containerId = calling.Org + "@" + calling.SubOrg;
+					let subOrgContainer = document.getElementById(containerId);
+					if (!subOrgContainer) {
+						subOrgContainer = document.createElement("li");
+						subOrgContainer.setAttribute("id", calling.SubOrg)
+						orgContainer = setupNestedContainers(calling.SubOrg, orgContainer, subOrgContainer, containerId);
 					} else {
-						container = subOrg;
+						orgContainer = subOrgContainer;
 					}
 				}
-				container.setAttribute("ondrop", "drop(event)")
-				container.setAttribute("ondragover", "allowDrop(event)")
-				container.setAttribute("ondragstart", "drag(event)")
+				orgContainer.setAttribute("ondrop", "drop(event)")
+				orgContainer.setAttribute("ondragover", "allowDrop(event)")
+				orgContainer.setAttribute("ondragstart", "drag(event)")
 
 				refreshFromModel();
 			});
@@ -143,6 +138,19 @@ function refreshFromModel() {
 	refreshCallingChanges();
 }
 
+function createCallingElement(calling, counter) {
+	let callingInfo = document.createElement("li");
+	callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
+	callingInfo.setAttribute("data-org", calling.Org);
+	callingInfo.setAttribute("draggable", "true");
+	callingInfo.classList.add("calling-row");
+	if (calling.Holder === VACANT) {
+		callingInfo.classList.add("vacant");
+	}
+	callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling);
+	return callingInfo;
+}
+
 function refreshTree() {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
@@ -160,17 +168,7 @@ function refreshTree() {
 			jsonObject.forEach(function (calling) {
 				counter++;
 				let container = findContainerFromCalling(calling);
-
-				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
-				callingInfo.setAttribute("data-org", calling.Org);
-				callingInfo.setAttribute("draggable", "true");
-				callingInfo.classList.add("calling-row");
-				if (calling.Holder === VACANT) {
-					callingInfo.classList.add("vacant");
-				}
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling);
-				container.appendChild(callingInfo);
+				container.appendChild(createCallingElement(calling, counter));
 			});
 		}
 	};
@@ -181,7 +179,6 @@ function refreshTree() {
 	xhttp.send();
 }
 
-//TODO: refactor to remove duplicate code
 function refreshCallingChanges() {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
@@ -192,33 +189,13 @@ function refreshCallingChanges() {
 			clearContainer(container);
 			addReleaseDropEnabler(container);
 			jsonObject.Releases.forEach(function (calling) {
-				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
-				callingInfo.setAttribute("data-org", calling.Org);
-				callingInfo.setAttribute("draggable", "true");
-
-				callingInfo.classList.add("calling-row");
-				if (calling.Holder === VACANT) {
-					callingInfo.classList.add("vacant");
-				}
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
-				container.appendChild(callingInfo);
+				container.appendChild(createCallingElement(calling, 0));
 			});
 
 			container = document.getElementById("sustainings");
 			clearContainer(container);
 			jsonObject.Sustainings.forEach(function (calling) {
-				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
-				callingInfo.setAttribute("data-org", calling.Org);
-				callingInfo.setAttribute("draggable", "true");
-
-				callingInfo.classList.add("calling-row");
-				if (calling.Holder === VACANT) {
-					callingInfo.classList.add("vacant");
-				}
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
-				container.appendChild(callingInfo);
+				container.appendChild(createCallingElement(calling, 0));
 			});
 		}
 	};
@@ -356,15 +333,9 @@ function displayMemberCallings(name) {
 		if (this.readyState === 4 && this.status === 200) {
 			let jsonObject = JSON.parse(this.responseText)
 			jsonObject.forEach(function (calling) {
-				let callingInfo = document.createElement("li");
-				callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, 0));
-				callingInfo.setAttribute("data-org", calling.Org);
-				callingInfo.setAttribute("draggable", "true");
-
-				callingInfo.classList.add("calling-row", "member-calling");
-				callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling)
+				let callingInfo = createCallingElement(calling, 0);
+				callingInfo.classList.add("member-calling");
 				container.appendChild(callingInfo);
-
 			});
 		}
 	};
