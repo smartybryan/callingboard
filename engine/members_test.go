@@ -57,7 +57,7 @@ func (this *MembersFixture) TestSaveLoad() {
 	tempFile := "testmembers"
 	members := createTestMembers(tempFile)
 	mLength := len(members.MemberMap)
-	err := members.Save()
+	_, err := members.Save()
 	this.So(err, should.BeNil)
 
 	members = NewMembers(10,tempFile)
@@ -65,7 +65,7 @@ func (this *MembersFixture) TestSaveLoad() {
 	this.So(err, should.BeNil)
 	this.So(len(members.MemberMap), should.Equal, mLength)
 
-	os.Remove(tempFile)
+	_ = os.Remove(tempFile)
 }
 
 ////////////////////////////////////////////////////////

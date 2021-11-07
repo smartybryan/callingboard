@@ -32,6 +32,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/add-member-calling", detour.New(controller.AddMemberToCalling)) // member, org, calling
 	http.Handle("/v1/remove-member-calling", detour.New(controller.RemoveMemberFromCalling)) // member, org, calling
 	http.Handle("/v1/move-member-calling", detour.New(controller.MoveMemberToAnotherCalling)) // member, from-org, from-calling, org, calling
+	http.Handle("/v1/backout-transaction", detour.New(controller.RemoveTransaction)) // name, params (sep by semi-colon)
 	http.Handle("/v1/load-callings", detour.New(controller.LoadCallings))
 	http.Handle("/v1/save-callings", detour.New(controller.SaveCallings))
 	http.Handle("/v1/parse-raw-callings", detour.New(controller.ParseRawCallings))

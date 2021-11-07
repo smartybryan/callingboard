@@ -3,8 +3,7 @@ const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "(Drag calling here to release)";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
 const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
-const MESSAGE_RELEASE_DROP = "You may not drop a Released calling here. Drop it in the trash to undo.";
-const MESSAGE_SUSTAIN_DROP = "You may not drop a Sustained calling here. Drop it in the trash to undo.";
+const MESSAGE_RELEASE_SUSTAINED_DROP = "You may not drop a Released or Sustained calling here. Drop it in the Trash to undo.";
 const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
 
 window.onload = function () {
@@ -81,6 +80,12 @@ function callingId(callingName, callingHolder, counter) {
 
 function callingInnards(callingName, holderName, timeInCalling) {
 	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
+}
+
+function callingIdComponents(id) {
+	let components = id.split("@");
+	let callingName = components[0], holderName = components[1];
+	return {callingName, holderName}
 }
 
 //// tree functions ////
@@ -234,7 +239,6 @@ function drop(ev) {
 	ev.preventDefault();
 	let currentId = ev.dataTransfer.getData("calling");
 	let movedElement = document.getElementById(currentId);
-	let newElement = document.getElementById(currentId).cloneNode(true);
 
 	// find the UL and LI elements based on the dropped element
 	let liElement = ev.target;
@@ -253,15 +257,15 @@ function drop(ev) {
 		return
 	}
 
-	// dragging from releases
-	if (movedElement.parentElement.id === "releases") {
-		alert(MESSAGE_RELEASE_DROP);
-		return
-	}
-
-	// dragging from sustainings
-	if (movedElement.parentElement.id === "sustainings") {
-		alert(MESSAGE_SUSTAIN_DROP);
+	// dragging from releases or sustainings to trash
+	if (movedElement.parentElement.id === "releases" || movedElement.parentElement.id === "sustainings") {
+		if (ev.target.id !== "trash") {
+			alert(MESSAGE_RELEASE_SUSTAINED_DROP);
+			return
+		}
+		let idComponents = callingIdComponents(movedElement.id);
+		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
+		transaction("backout-transaction", params)
 		return
 	}
 
@@ -289,7 +293,6 @@ function drop(ev) {
 
 	transaction("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement));
 }
-
 
 //// member functions ////
 
@@ -357,14 +360,14 @@ function clearContainer(element) {
 
 //// transactions ////
 
-function transaction(endpoint, parms) {
+function transaction(endpoint, params) {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4) {
 			refreshFromModel();
 		}
 	};
-	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(parms));
+	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
 }

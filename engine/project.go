@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -170,6 +171,10 @@ func (this *Project) RemoveMemberFromACalling(member MemberName, org Organizatio
 	return this.Callings.removeMemberFromACalling(member, org, calling)
 }
 
+func (this *Project) RemoveTransaction(operation string, parameters []string) error {
+	return this.removeTransaction(operation, parameters)
+}
+
 ///// private /////
 
 func (this *Project) addTransaction(operation string, parameters ...interface{}) {
@@ -177,6 +182,43 @@ func (this *Project) addTransaction(operation string, parameters ...interface{})
 		Operation:  operation,
 		Parameters: parameters,
 	})
+}
+
+func (this *Project) removeTransaction(operation string, parameters []string) error {
+	for i, transaction := range this.transactions {
+		if _, found := TransactionOperationMap[operation]; !found {
+			continue
+		}
+		if transaction.Operation != TransactionOperationMap[operation] {
+			continue
+		}
+		paramsMatched := 0
+		for _, transactionParameter := range transaction.Parameters {
+			for _, functionParameter := range parameters {
+				testResult := false
+				switch transactionParameter.(type) {
+				case string:
+					testResult = functionParameter == transactionParameter
+				case bool:
+					boolVal, _ := strconv.ParseBool(functionParameter)
+					testResult = boolVal == transactionParameter
+				case MemberName:
+					testResult = MemberName(functionParameter) == transactionParameter
+				case Organization:
+					testResult = Organization(functionParameter) == transactionParameter
+				}
+				if testResult {
+					paramsMatched++
+				}
+			}
+		}
+		if paramsMatched == len(transaction.Parameters) {
+			this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)
+		}
+	}
+
+	this.playTransactions()
+	return nil
 }
 
 func (this *Project) playTransactions() {

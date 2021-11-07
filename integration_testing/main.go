@@ -31,7 +31,7 @@ func parseAndPrintCallings() {
 	}
 	wardCallings.ParseCallingsFromRawData(data)
 
-	err = wardCallings.Save()
+	_, err = wardCallings.Save()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -61,7 +61,7 @@ func parseAndPrintMembers() {
 	}
 	membership.ParseMembersFromRawData(data)
 
-	err = membership.Save()
+	_, err = membership.Save()
 	if err != nil {
 		fmt.Println(err)
 	}

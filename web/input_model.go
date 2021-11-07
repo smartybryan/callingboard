@@ -20,8 +20,9 @@ type InputModel struct {
 	FromCalling   string
 	CustomCalling bool
 
-	TransactionName string
-	RawData         []byte
+	TransactionName   string
+	TransactionParams string
+	RawData           []byte
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
@@ -37,11 +38,12 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.CustomCalling = atob(request.Form.Get("custom-calling"))
 
 	this.TransactionName = sanitize(request.Form.Get("name"))
+	this.TransactionParams = sanitize(request.Form.Get("params"))
 
 	if request.Body != http.NoBody {
 		size := atoi(request.Header.Get("Content-Length"))
 		if size == 0 {
-			size = 128*1024
+			size = 128 * 1024
 		}
 		this.RawData = make([]byte, size)
 		buf := make([]byte, 4096)

@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/smartystreets/detour"
 	"github.org/smartybryan/callorg/engine"
@@ -206,6 +207,14 @@ func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Render
 		StatusCode: 200,
 		Content: this.project.RemoveMemberFromACalling(
 			engine.MemberName(input.MemberName), engine.Organization(input.Organization), input.Calling),
+	}
+}
+
+func (this *Controller) RemoveTransaction(input *InputModel) detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content: this.project.RemoveTransaction(
+			input.TransactionName, strings.Split(input.TransactionParams, ":")),
 	}
 }
 
