@@ -7,8 +7,9 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- API to remove specific transaction
-- Trash can to drag Releases and Sustainings into and remove from transaction list.
+- Collapse All and initial display of tree should expand All Organizations.
+- After a Trash event, if any elements are in the Callings Held By Member list, refresh the list
+  based on the user in a calling in the list.
 - Save model. (name the saved file)
 - Load model. (list current files)
 - Reload original data.
