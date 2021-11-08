@@ -63,6 +63,7 @@ function setupTreeStructure() {
 			});
 
 			startTreeListeners()
+			expandCollapseTree('c')
 		}
 	};
 
@@ -120,6 +121,10 @@ function expandCollapseTree(op) {
 				caret[i].classList.remove("caret-down");
 				break;
 		}
+	}
+	// expand all organizations by default
+	if (op === 'c') {
+		toggleElement(document.getElementById("ward-organizations"));
 	}
 }
 
