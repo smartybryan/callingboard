@@ -216,6 +216,13 @@ function refreshCallingChanges() {
 	xhttp.send();
 }
 
+function refreshCallingsHeldByMember() {
+	let memberCallings = document.getElementById("member-callings");
+	if (memberCallings.firstChild) {
+		displayMemberCallings(callingIdComponents(memberCallings.firstChild.id).holderName);
+	}
+}
+
 function addReleaseDropEnabler(container) {
 	let dropEnabler = document.createElement("li");
 	dropEnabler.innerHTML = RELEASE_DROP_ENABLER;
@@ -270,7 +277,8 @@ function drop(ev) {
 		}
 		let idComponents = callingIdComponents(movedElement.id);
 		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
-		transaction("backout-transaction", params)
+		transaction("backout-transaction", params);
+		// refreshCallingsHeldByMember();
 		return
 	}
 
@@ -288,6 +296,7 @@ function drop(ev) {
 			return
 		}
 		movedElement.remove();
+		// refreshCallingsHeldByMember();
 	}
 
 	// dragging a vacant calling from the tree
