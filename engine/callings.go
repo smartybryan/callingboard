@@ -262,16 +262,18 @@ func (this *Callings) removeMemberFromACalling(member MemberName, org Organizati
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
-	if this.doesMemberHoldCalling(member, org, calling) {
-		callingList := this.CallingMap[org]
-		for idx, calling := range callingList {
-			if calling.Holder == member {
-				calling.Holder = VACANT_CALLING
-				calling.Sustained = time.Time{}
-				callingList[idx] = calling
-				this.CallingMap[org] = callingList
-				return nil
-			}
+	if !this.doesMemberHoldCalling(member, org, calling) {
+		return ERROR_MEMBER_INVALID_CALLING
+	}
+
+	callingList := this.CallingMap[org]
+	for idx, call := range callingList {
+		if call.Holder == member && call.Name == calling {
+			call.Holder = VACANT_CALLING
+			call.Sustained = time.Time{}
+			callingList[idx] = call
+			this.CallingMap[org] = callingList
+			return nil
 		}
 	}
 	return ERROR_MEMBER_INVALID_CALLING
