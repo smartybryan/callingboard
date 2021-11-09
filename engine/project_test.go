@@ -58,10 +58,10 @@ func (this *ProjectFixture) TestRemoveTransaction() {
 	project.addTransaction("addMemberToACalling", "p3", "p4", "p5")
 	this.So(len(project.transactions), should.Equal, 2)
 
-	_ = project.removeTransaction("releases", "p1", "p2", "p3")
+	_ = project.removeTransaction("releases", []string{"p1", "p2", "p3"})
 	this.So(len(project.transactions), should.Equal, 1)
 
-	_ = project.removeTransaction("sustainings", "p3", "p4", "p5")
+	_ = project.removeTransaction("sustainings", []string{"p3", "p4", "p5"})
 	this.So(len(project.transactions), should.Equal, 0)
 }
 

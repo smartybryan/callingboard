@@ -25,7 +25,7 @@ func NewMembers(numMembers int, path string) Members {
 }
 
 func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
-	return SetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
+	return MemberSetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
 }
 
 func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
@@ -108,6 +108,26 @@ type Member struct {
 
 	Age            int
 	AgeByEndOfYear int
+}
+
+
+func MemberSetDifference(mainSet, subtractSet []MemberName) (names []MemberName) {
+	for _, name := range mainSet {
+		if memberInSet(subtractSet, name) {
+			continue
+		}
+		names = append(names, name)
+	}
+	return names
+}
+
+func memberInSet(set []MemberName, name MemberName) bool {
+	for _, value := range set {
+		if value ==  name {
+			return true
+		}
+	}
+	return false
 }
 
 func (this *Member) age() int {

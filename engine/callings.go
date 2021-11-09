@@ -298,6 +298,34 @@ const (
 	ALL_ORGANIZATIONS = "All Organizations"
 )
 
+func CallingSetDifference(mainSet, subtractSet []Calling) (callings []Calling) {
+	for _, calling := range mainSet {
+		if callingInSet(subtractSet, calling) {
+			continue
+		}
+		callings = append(callings, calling)
+	}
+	return callings
+}
+
+func callingInSet(set []Calling, calling Calling) bool {
+	for _, call := range set {
+		if call.Equal(calling) {
+			return true
+		}
+	}
+	return false
+}
+
+func (this *Calling) Equal(calling Calling) bool {
+	return this.Org == calling.Org &&
+		this.SubOrg == calling.SubOrg &&
+		this.Name == calling.Name &&
+		this.Holder == calling.Holder &&
+		this.CustomCalling == calling.CustomCalling &&
+		this.Sustained == calling.Sustained
+}
+
 func (this *Calling) copy() Calling {
 	return Calling{
 		Org:           this.Org,

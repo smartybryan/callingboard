@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -26,8 +25,9 @@ type Project struct {
 }
 
 type DiffResult struct {
-	Sustainings []Calling
-	Releases    []Calling
+	Sustainings  []Calling
+	Releases     []Calling
+	NewVacancies []Calling
 }
 
 func NewProject(callings *Callings, members *Members, dataPath string) *Project {
@@ -43,20 +43,25 @@ func NewProject(callings *Callings, members *Members, dataPath string) *Project 
 
 func NewDiff() DiffResult {
 	return DiffResult{
-		Sustainings: make([]Calling, 0, 20),
-		Releases:    make([]Calling, 0, 20),
+		Sustainings:  make([]Calling, 0, 20),
+		Releases:     make([]Calling, 0, 20),
 	}
 }
 
 func (this *Project) Diff() DiffResult {
 	this.diff.Releases = this.diff.Releases[:0]
 	this.diff.Sustainings = this.diff.Sustainings[:0]
+	this.diff.NewVacancies = this.diff.NewVacancies[:0]
+
+	modelVacancies := make([]Calling, 0, 20)
+	originalVacancies := make([]Calling, 0, 20)
 
 	for _, organization := range this.Callings.OrganizationOrder {
 		// sustainings
 		modelCallings := this.Callings.CallingList(organization)
 		for _, modelCalling := range modelCallings {
 			if modelCalling.Holder == VACANT_CALLING {
+				modelVacancies = append(modelVacancies, modelCalling)
 				continue
 			}
 			if this.originalCallings.doesMemberHoldCalling(modelCalling.Holder, organization, modelCalling.Name) {
@@ -69,6 +74,7 @@ func (this *Project) Diff() DiffResult {
 		originalCallings := this.originalCallings.CallingList(organization)
 		for _, originalCalling := range originalCallings {
 			if originalCalling.Holder == VACANT_CALLING {
+				originalVacancies = append(originalVacancies, originalCalling)
 				continue
 			}
 			if this.Callings.doesMemberHoldCalling(originalCalling.Holder, organization, originalCalling.Name) {
@@ -78,12 +84,16 @@ func (this *Project) Diff() DiffResult {
 		}
 	}
 
-	sort.SliceStable(this.diff.Releases, func(i, j int) bool {
-		return this.diff.Releases[i].Name < this.diff.Releases[j].Name
-	})
-	sort.SliceStable(this.diff.Sustainings, func(i, j int) bool {
-		return this.diff.Sustainings[i].Name < this.diff.Sustainings[j].Name
-	})
+	this.diff.NewVacancies = CallingSetDifference(modelVacancies, originalVacancies)
+
+	//Commented so the original organization order is preserved
+	//this.diff.NewVacancies
+	//sort.SliceStable(this.diff.Releases, func(i, j int) bool {
+	//	return this.diff.Releases[i].Name < this.diff.Releases[j].Name
+	//})
+	//sort.SliceStable(this.diff.Sustainings, func(i, j int) bool {
+	//	return this.diff.Sustainings[i].Name < this.diff.Sustainings[j].Name
+	//})
 
 	return this.diff
 }
