@@ -51,6 +51,10 @@
 	<article>
 		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
+		<label for="all-vacancies">Only Vacant Callings</label>
+		<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
+		<label for="new-vacancies">Only New Vacant Callings</label>
+		<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
 		<br><br>
 		<div id="ward-scroller">
 			<ul id="ward">

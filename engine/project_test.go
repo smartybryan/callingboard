@@ -57,12 +57,6 @@ func (this *ProjectFixture) TestRemoveTransaction() {
 	project.addTransaction("removeMemberFromACalling", "p1", "p2", "p3")
 	project.addTransaction("addMemberToACalling", "p3", "p4", "p5")
 	this.So(len(project.transactions), should.Equal, 2)
-
-	_ = project.removeTransaction("releases", []string{"p1", "p2", "p3"})
-	this.So(len(project.transactions), should.Equal, 1)
-
-	_ = project.removeTransaction("sustainings", []string{"p3", "p4", "p5"})
-	this.So(len(project.transactions), should.Equal, 0)
 }
 
 func (this *ProjectFixture) TestPlayTransactions() {
@@ -82,6 +76,14 @@ func (this *ProjectFixture) TestPlayTransactions() {
 
 	project.RedoTransaction()
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, "Last3, First3")
+
+	this.So(len(project.transactions), should.Equal, 2)
+	_ = project.removeTransaction("sustainings", []string{"Last3, First3", "org1", "calling4"})
+	this.So(len(project.transactions), should.Equal, 1)
+
+	_ = project.RemoveMemberFromACalling("Last3, First3","org1", "calling4")
+	_ = project.removeTransaction("releases", []string{"Last3, First3", "org1", "calling4"})
+	this.So(len(project.transactions), should.Equal, 1)
 }
 
 func (this *ProjectFixture) TestDiff() {
@@ -98,6 +100,9 @@ func (this *ProjectFixture) TestDiff() {
 	diff := project.Diff()
 	this.So(len(diff.Sustainings), should.Equal, 2)
 	this.So(len(diff.Releases), should.Equal, 2)
+
+	this.So(len(diff.NewVacancies), should.Equal, 1)
+	this.So(diff.NewVacancies[0].Name, should.Equal, "calling2")
 }
 
 func (this *ProjectFixture) TestSaveLoadTransactions() {

@@ -55,6 +55,7 @@ function setupTreeStructure() {
 						orgContainer = subOrgContainer;
 					}
 				}
+				orgContainer.classList.add("leaf-container")
 				orgContainer.setAttribute("ondrop", "drop(event)")
 				orgContainer.setAttribute("ondragover", "allowDrop(event)")
 				orgContainer.setAttribute("ondragstart", "drag(event)")
@@ -161,20 +162,29 @@ function createCallingElement(calling, counter) {
 }
 
 function refreshTree() {
+	let showNewVacancies = document.getElementById("new-vacancies").checked
+	let showAllVacancies = document.getElementById("all-vacancies").checked
+
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
 			let counter = 0;
 			let jsonObject = JSON.parse(this.responseText);
-
+			let workingObjects = jsonObject;
+			if (showNewVacancies) {
+				workingObjects = jsonObject.NewVacancies;
+			}
 			// clear all organizations
-			jsonObject.forEach(function (calling) {
-				let container = findContainerFromCalling(calling);
-				clearContainer(container);
-			});
+			let leafContainers = document.getElementsByClassName("leaf-container");
+			for (let leafContainer of leafContainers) {
+				clearContainer(leafContainer);
+			}
 
 			// repopulate organizations
-			jsonObject.forEach(function (calling) {
+			workingObjects.forEach(function (calling) {
+				if (showAllVacancies && calling.Holder != VACANT) {
+					return;
+				}
 				counter++;
 				let container = findContainerFromCalling(calling);
 				container.appendChild(createCallingElement(calling, counter));
@@ -183,6 +193,9 @@ function refreshTree() {
 	};
 
 	let url = "callings?org=" + ALL_ORGS;
+	if (showNewVacancies) {
+		url = "diff"
+	}
 	xhttp.open("GET", "/v1/" + url);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
