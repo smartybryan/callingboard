@@ -8,9 +8,11 @@ and track releasings and sustainings.
 
 TODO
 - Fix the 12 month issue in time in calling
-- Display a list of Vacant callings in this model (all vacant callings in the model minus original vacant callings.
+- New API to return only new vacant callings in the current model
+      (all vacant callings in the model minus original vacant callings)
+- Button above tree to display only newly Vacant callings in the model
 - Save model. (name the saved file)
 - Load model. (list current files)
 - Reload original data
-- Search box for members (needed?)
+- Filter box for member list
 - Authentication/authorization ?

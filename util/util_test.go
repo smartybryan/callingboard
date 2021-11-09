@@ -25,5 +25,6 @@ func (this *UtilFixture) TestPrintableTimeInCalling() {
 	this.So(PrintableTimeInCalling(730), should.Equal, "2 years")
 	this.So(PrintableTimeInCalling(760), should.Equal, "2 years, 1 month")
 	this.So(PrintableTimeInCalling(1075), should.Equal, "2 years, 11 months")
+	this.So(PrintableTimeInCalling(1090), should.Equal, "2 years, 11 months")
 	this.So(PrintableTimeInCalling(1095), should.Equal, "3 years")
 }

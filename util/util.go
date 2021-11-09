@@ -26,6 +26,9 @@ func PrintableTimeInCalling(daysInCalling int) string {
 	if months == 0 && days > 30 {
 		months++
 	}
+	if months > 11 {
+		months = 11
+	}
 
 	yearsLabel := "years"
 	if years < 2 {
