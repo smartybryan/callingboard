@@ -19,9 +19,12 @@ header {
 nav {
 	float: left;
 	width: 40%;
-	background: #ccc;
+	background: white;
 	padding: 20px;
 	overflow: auto;
+	padding-left: 2px;
+	padding-right: 10px;
+	padding-top: 10px;
 }
 
 /* Style the list inside the menu */
@@ -31,10 +34,13 @@ nav ul {
 }
 
 article {
+	border-radius: 20px;
 	float: left;
-	padding: 20px;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	width: 60%;
-	background-color: #f1f1f1;
+	background-color: lightgray;
 	overflow: auto;
 }
 
@@ -70,6 +76,15 @@ footer {
 	margin-left: -5px;
 }
 
+#member-callings-scroller {
+	height: 100px;
+	width: 250px;
+	overflow: auto;
+	float: left;
+	position: relative;
+	margin-left: -5px;
+}
+
 li.member-row {
 	border-radius: 20px;
 	text-indent: 15px;
@@ -94,6 +109,24 @@ ul, #ward {
 	float: left;
 	position: relative;
 	margin-left: -5px;
+}
+
+#trash
+{
+	font-size: 30px;
+	float: right;
+}
+
+.heading {
+	font-size: 25px;
+	font-weight: bold;
+}
+
+.section {
+	border-radius: 20px;
+	background-color: lightgrey;
+	padding: 15px;
+	margin-bottom: 10px;
 }
 
 li.calling-row {

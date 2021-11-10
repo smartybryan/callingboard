@@ -14,56 +14,61 @@
 
 <section>
 	<nav>
-		<label for="members">Members</label>
-		<br>
-		<div id="member-scroller">
-			<ul id="members" ondragstart="drag(event)"></ul>
+		<div class="section">
+			<label class="heading" for="members">Members</label>
+			<br>
+			<div id="member-scroller">
+				<ul id="members" ondragstart="drag(event)"></ul>
+			</div>
+			<br><br><br><br><br><br>
+			<input type="button" onclick="displayMembers('members')" value="All Members">
+			<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
+			<input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
+			<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
+			<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
+			<br><br>
+
+			<label for="member-callings">Callings Held By Member</label>
+			<br>
+			<div id="member-callings-scrollbar">
+				<ul id="member-callings" name="member-callings" ondragstart="drag(event)"></ul>
+			</div>
 		</div>
-		<br><br><br><br><br><br>
-		<input type="button" onclick="displayMembers('members')" value="All Members">
-		<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
-		<input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
-		<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
-		<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
-		<br><br>
+		<div class="section">
+			<label class="heading" for="releases">Releases</label>
+			<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+			</ul>
 
-		<label for="member-callings">Callings Held By Member</label>
-		<br>
-		<ul id="member-callings" name="member-callings" ondragstart="drag(event)" ></ul>
+			<label class="heading" for="sustainings">Sustainings</label>
+			<ul id="sustainings" ondragstart="drag(event)">
+			</ul>
 
-		<hr/>
-
-		<label for="releases">Releases</label>
-		<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-		</ul>
-
-		<label for="sustainings">Sustainings</label>
-		<ul id="sustainings" ondragstart="drag(event)">
-		</ul>
-
-		<br><br>
-<!--		<input type="button" onclick="transaction('undo-trans')" value="Undo">-->
-<!--		<input type="button" onclick="transaction('redo-trans')" value="Redo">-->
-		<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">TRASH</span>
-
+			<br><br>
+			<input type="button" onclick="transaction('undo-trans')" value="Undo Last">
+			<input type="button" onclick="transaction('redo-trans')" value="Redo Last">
+			<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
+		</div>
 	</nav>
 
 	<article>
-		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
-		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
-		<label for="all-vacancies">Only Vacant Callings</label>
-		<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
-		<label for="new-vacancies">Only New Vacant Callings</label>
-		<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
-		<br><br>
-		<div id="ward-scroller">
-			<ul id="ward">
-				<li><span class="caret">All Organizations</span>
-					<ul id="ward-organizations" class="nested">
-						<!-- organizations are inserted here -->
-					</ul>
-				</li>
-			</ul>
+		<div class="section">
+			<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
+			<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
+			<br>
+			<label for="all-vacancies">Only Vacant Callings</label>
+			<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
+			<label for="new-vacancies">Only New Vacant Callings</label>
+			<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
+			<br><br>
+			<div id="ward-scroller">
+				<ul id="ward">
+					<li><span class="caret">All Organizations</span>
+						<ul id="ward-organizations" class="nested">
+							<!-- organizations are inserted here -->
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</article>
 </section>
