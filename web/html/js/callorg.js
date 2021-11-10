@@ -1,6 +1,6 @@
 const VACANT = "Calling Vacant";
 const ALL_ORGS = "All Organizations";
-const RELEASE_DROP_ENABLER = "[Drag calling here to release]";
+const RELEASE_DROP_ENABLER = "[Drop calling here]";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
 const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
 const MESSAGE_RELEASE_SUSTAINED_DROP = "You may not drop a Released or Sustained calling here. Drop it in the Trash to undo.";
