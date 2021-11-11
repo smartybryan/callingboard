@@ -9,11 +9,9 @@ import (
 	"github.org/smartybryan/callorg/util"
 )
 
-type Organization string
-
 type Callings struct {
-	CallingMap        map[Organization][]Calling
-	OrganizationOrder []Organization
+	CallingMap        map[string][]Calling
+	OrganizationOrder []string
 
 	initialSize int
 	filePath    string
@@ -21,13 +19,13 @@ type Callings struct {
 
 func NewCallings(numCallings int, path string) Callings {
 	return Callings{
-		CallingMap:  make(map[Organization][]Calling, numCallings),
+		CallingMap:  make(map[string][]Calling, numCallings),
 		initialSize: numCallings,
 		filePath:    path,
 	}
 }
 
-func (this *Callings) CallingList(organization Organization) (callingList []Calling) {
+func (this *Callings) CallingList(organization string) (callingList []Calling) {
 	if organization == ALL_ORGANIZATIONS {
 		for _, org := range this.OrganizationOrder {
 			if callings, found := this.CallingMap[org]; found {
@@ -45,7 +43,7 @@ func (this *Callings) CallingList(organization Organization) (callingList []Call
 	return callingList
 }
 
-func (this *Callings) CallingListForMember(member MemberName) (callingList []Calling) {
+func (this *Callings) CallingListForMember(member string) (callingList []Calling) {
 	allCallings := this.CallingList(ALL_ORGANIZATIONS)
 	for _, calling := range allCallings {
 		if calling.Holder == member {
@@ -59,8 +57,8 @@ func (this *Callings) Count() int {
 	return len(this.CallingList(ALL_ORGANIZATIONS))
 }
 
-func (this *Callings) MembersWithCallings() (names []MemberName) {
-	nameMap := make(map[MemberName]struct{}, 200)
+func (this *Callings) MembersWithCallings() (names []string) {
+	nameMap := make(map[string]struct{}, 200)
 	for _, callings := range (*this).CallingMap {
 		for _, calling := range callings {
 			nameMap[calling.Holder] = struct{}{}
@@ -76,11 +74,11 @@ func (this *Callings) MembersWithCallings() (names []MemberName) {
 	return names
 }
 
-func (this *Callings) OrganizationList() (organizationList []Organization) {
+func (this *Callings) OrganizationList() (organizationList []string) {
 	return this.OrganizationOrder
 }
 
-func (this *Callings) VacantCallingList(organization Organization) (callingList []Calling) {
+func (this *Callings) VacantCallingList(organization string) (callingList []Calling) {
 	allCallings := this.CallingList(organization)
 	for _, calling := range allCallings {
 		if calling.Holder == VACANT_CALLING {
@@ -131,7 +129,7 @@ func (this *Callings) copy() Callings {
 	return newCallings
 }
 
-func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization, calling string) bool {
+func (this *Callings) doesMemberHoldCalling(member string, org string, calling string) bool {
 	if !this.isValidOrganization(org) {
 		return false
 	}
@@ -144,7 +142,7 @@ func (this *Callings) doesMemberHoldCalling(member MemberName, org Organization,
 	return false
 }
 
-func (this *Callings) isValidOrganization(org Organization) bool {
+func (this *Callings) isValidOrganization(org string) bool {
 	_, found := this.CallingMap[org]
 	return found
 }
@@ -160,7 +158,7 @@ func (this *Callings) getCallingListByOrganization(callings []Calling, callingLi
 
 ///// model modification methods (called by Project) /////
 
-func (this *Callings) addCalling(org Organization, calling string, custom bool) error {
+func (this *Callings) addCalling(org string, calling string, custom bool) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
@@ -178,7 +176,7 @@ func (this *Callings) addCalling(org Organization, calling string, custom bool) 
 	return nil
 }
 
-func (this *Callings) removeCalling(org Organization, calling string) error {
+func (this *Callings) removeCalling(org string, calling string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
@@ -197,7 +195,7 @@ func (this *Callings) removeCalling(org Organization, calling string) error {
 	return nil
 }
 
-func (this *Callings) updateCalling(org Organization, calling string, custom bool) error {
+func (this *Callings) updateCalling(org string, calling string, custom bool) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
@@ -213,7 +211,7 @@ func (this *Callings) updateCalling(org Organization, calling string, custom boo
 	return ERROR_UNKNOWN_CALLING
 }
 
-func (this *Callings) addMemberToACalling(member MemberName, org Organization, calling string) error {
+func (this *Callings) addMemberToACalling(member string, org string, calling string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
@@ -244,7 +242,7 @@ func (this *Callings) addMemberToACalling(member MemberName, org Organization, c
 }
 
 func (this *Callings) moveMemberToAnotherCalling(
-	member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
+	member string, fromOrg string, fromCalling string, toOrg string, toCalling string) error {
 	err := this.removeMemberFromACalling(member, fromOrg, fromCalling)
 	if err != nil {
 		return err
@@ -258,7 +256,7 @@ func (this *Callings) moveMemberToAnotherCalling(
 	return nil
 }
 
-func (this *Callings) removeMemberFromACalling(member MemberName, org Organization, calling string) error {
+func (this *Callings) removeMemberFromACalling(member string, org string, calling string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
@@ -282,10 +280,10 @@ func (this *Callings) removeMemberFromACalling(member MemberName, org Organizati
 ///////////////////////////////////////////////////////
 
 type Calling struct {
-	Org           Organization
-	SubOrg        Organization
+	Org           string
+	SubOrg        string
 	Name          string
-	Holder        MemberName
+	Holder        string
 	CustomCalling bool
 	Sustained     time.Time
 
@@ -349,7 +347,7 @@ func (this *Calling) DaysInCalling() int {
 // Left values are the sub-organizations listed in the web page data,
 // Right values are the organization. If empty, the left value is the
 // organization with no sub-org
-var OrganizationParseMap = map[Organization]Organization{
+var OrganizationParseMap = map[string]string{
 	"Bishopric":                            "",
 	"Elders Quorum Presidency":             "Elders Quorum",
 	"Relief Society Presidency":            "Relief Society",

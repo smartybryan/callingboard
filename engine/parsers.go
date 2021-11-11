@@ -17,12 +17,12 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		fileLines = append(fileLines, strings.TrimSpace(scanner.Text()))
 	}
 
-	var currentOrganization, currentSubOrganization Organization
+	var currentOrganization, currentSubOrganization string
 	withinOrganization := false
 
 	for idx := 0; idx < len(fileLines); idx++ {
 		if strings.HasPrefix(fileLines[idx], "Position") {
-			currentSubOrganization = Organization(fileLines[idx-1])
+			currentSubOrganization = string(fileLines[idx-1])
 			if org, found := OrganizationParseMap[currentSubOrganization]; found {
 				currentOrganization = org
 				if currentOrganization == "" {
@@ -58,10 +58,10 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		}
 
 		if fileLines[idx+1] == "Calling Vacant" {
-			calling.Holder = MemberName(fileLines[idx+1])
+			calling.Holder = string(fileLines[idx+1])
 			idx++
 		} else {
-			calling.Holder = MemberName(fileLines[idx+1])
+			calling.Holder = string(fileLines[idx+1])
 			sustained, err := time.Parse("2 Jan 2006", fileLines[idx+2])
 			if err == nil {
 				calling.Sustained = sustained
@@ -118,7 +118,7 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 		}
 		birthday, _ := time.Parse("2 Jan 2006", memberRecord[3])
 		member := Member{
-			Name:       MemberName(memberRecord[0]),
+			Name:       string(memberRecord[0]),
 			Gender:     memberRecord[1],
 			Birthday:   birthday,
 			Unbaptized: unbaptized,

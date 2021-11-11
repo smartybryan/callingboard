@@ -142,7 +142,7 @@ func (this *ProjectFixture) TestListTransactionFiles() {
 	project.SaveTransactions(tempFile1)
 	project.SaveTransactions(tempFile2)
 	files := project.ListTransactionFiles()
-	this.So(len(files), should.Equal, 2)
+	this.So(len(files), should.BeGreaterThanOrEqualTo, 2)
 
 	os.Remove(tempFile1+TransactionFileSuffix)
 	os.Remove(tempFile2+TransactionFileSuffix)

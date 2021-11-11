@@ -41,12 +41,12 @@ func (this *CallingsFixture) TestMembersWithCallings() {
 		{Holder: "Washington, George"}, {Holder: "Lincoln, Abraham"}, {Holder: "Washington, George"},
 	}
 
-	this.So(callings.MembersWithCallings(), should.Resemble, []MemberName{"Lincoln, Abraham", "Washington, George"})
+	this.So(callings.MembersWithCallings(), should.Resemble, []string{"Lincoln, Abraham", "Washington, George"})
 }
 
 func (this *CallingsFixture) TestOrganizationalList() {
 	callings := createTestCallings("")
-	this.So(callings.OrganizationList(), should.Resemble, []Organization{"org1", "org2"})
+	this.So(callings.OrganizationList(), should.Resemble, []string{"org1", "org2"})
 }
 
 func (this *CallingsFixture) TestCallingList() {

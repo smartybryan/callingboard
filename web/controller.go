@@ -37,7 +37,7 @@ func (this *Controller) AdultsWithoutCalling() detour.Renderer {
 func (this *Controller) GetMemberRecord(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.Members.GetMemberRecord(engine.MemberName(input.MemberName)),
+		Content:    this.project.Members.GetMemberRecord(engine.string(input.MemberName)),
 	}
 }
 
@@ -94,14 +94,14 @@ func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 func (this *Controller) CallingList(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.Callings.CallingList(engine.Organization(input.Organization)),
+		Content:    this.project.Callings.CallingList(engine.string(input.Organization)),
 	}
 }
 
 func (this *Controller) CallingListForMember(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.Callings.CallingListForMember(engine.MemberName(input.MemberName)),
+		Content:    this.project.Callings.CallingListForMember(engine.string(input.MemberName)),
 	}
 }
 
@@ -122,7 +122,7 @@ func (this *Controller) OrganizationList() detour.Renderer {
 func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.Callings.VacantCallingList(engine.Organization(input.Organization)),
+		Content:    this.project.Callings.VacantCallingList(engine.string(input.Organization)),
 	}
 }
 
@@ -165,14 +165,14 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 func (this *Controller) AddCalling(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.AddCalling(engine.Organization(input.Organization), input.Calling, input.CustomCalling),
+		Content:    this.project.AddCalling(engine.string(input.Organization), input.Calling, input.CustomCalling),
 	}
 }
 
 func (this *Controller) RemoveCalling(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.RemoveCalling(engine.Organization(input.Organization), input.Calling),
+		Content:    this.project.RemoveCalling(engine.string(input.Organization), input.Calling),
 	}
 }
 
@@ -180,7 +180,7 @@ func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: this.project.UpdateCalling(
-			engine.Organization(input.Organization), input.Calling, input.CustomCalling),
+			engine.string(input.Organization), input.Calling, input.CustomCalling),
 	}
 }
 
@@ -188,7 +188,7 @@ func (this *Controller) AddMemberToCalling(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: this.project.AddMemberToACalling(
-			engine.MemberName(input.MemberName), engine.Organization(input.Organization), input.Calling),
+			engine.string(input.MemberName), engine.string(input.Organization), input.Calling),
 	}
 }
 
@@ -196,9 +196,9 @@ func (this *Controller) MoveMemberToAnotherCalling(input *InputModel) detour.Ren
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: this.project.MoveMemberToAnotherCalling(
-			engine.MemberName(input.MemberName),
-			engine.Organization(input.FromOrg), input.FromCalling,
-			engine.Organization(input.Organization), input.Calling),
+			engine.string(input.MemberName),
+			engine.string(input.FromOrg), input.FromCalling,
+			engine.string(input.Organization), input.Calling),
 	}
 }
 
@@ -206,7 +206,7 @@ func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Render
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: this.project.RemoveMemberFromACalling(
-			engine.MemberName(input.MemberName), engine.Organization(input.Organization), input.Calling),
+			engine.string(input.MemberName), engine.string(input.Organization), input.Calling),
 	}
 }
 

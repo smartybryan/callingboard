@@ -7,10 +7,8 @@ import (
 	"time"
 )
 
-type MemberName string
-
 type Members struct {
-	MemberMap map[MemberName]Member
+	MemberMap map[string]Member
 
 	initialSize int
 	filePath    string
@@ -18,21 +16,21 @@ type Members struct {
 
 func NewMembers(numMembers int, path string) Members {
 	return Members{
-		MemberMap:   make(map[MemberName]Member, numMembers),
+		MemberMap:   make(map[string]Member, numMembers),
 		initialSize: numMembers,
 		filePath:    path,
 	}
 }
 
-func (this *Members) AdultsWithoutACalling(callings Callings) (names []MemberName) {
+func (this *Members) AdultsWithoutACalling(callings Callings) (names []string) {
 	return MemberSetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
 }
 
-func (this *Members) AdultsEligibleForACalling() (members []MemberName) {
+func (this *Members) AdultsEligibleForACalling() (members []string) {
 	return this.GetMembers(18, 99)
 }
 
-func (this *Members) GetMemberRecord(name MemberName) Member {
+func (this *Members) GetMemberRecord(name string) Member {
 	if member, found := this.MemberMap[name]; found {
 		member.Age = member.age()
 		member.AgeByEndOfYear = member.ageByEndOfYear()
@@ -41,7 +39,7 @@ func (this *Members) GetMemberRecord(name MemberName) Member {
 	return Member{}
 }
 
-func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
+func (this *Members) GetMembers(minAge, maxAge int) (names []string) {
 	for name, member := range this.MemberMap {
 		if !member.Unbaptized && member.age() >= minAge && member.age() <= maxAge {
 			names = append(names, name)
@@ -53,7 +51,7 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []MemberName) {
 	return names
 }
 
-func (this *Members) YouthEligibleForACalling() (members []MemberName) {
+func (this *Members) YouthEligibleForACalling() (members []string) {
 	return this.GetMembers(11, 17)
 }
 
@@ -101,8 +99,8 @@ func (this *Members) copy() Members {
 //////////////////////////////////////////////////////
 
 type Member struct {
-	Name       MemberName
-	Gender     string
+	Name   string
+	Gender string
 	Birthday   time.Time
 	Unbaptized bool
 
@@ -111,7 +109,7 @@ type Member struct {
 }
 
 
-func MemberSetDifference(mainSet, subtractSet []MemberName) (names []MemberName) {
+func MemberSetDifference(mainSet, subtractSet []string) (names []string) {
 	for _, name := range mainSet {
 		if memberInSet(subtractSet, name) {
 			continue
@@ -121,7 +119,7 @@ func MemberSetDifference(mainSet, subtractSet []MemberName) (names []MemberName)
 	return names
 }
 
-func memberInSet(set []MemberName, name MemberName) bool {
+func memberInSet(set []string, name string) bool {
 	for _, value := range set {
 		if value ==  name {
 			return true

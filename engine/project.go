@@ -161,33 +161,33 @@ func (this *Project) ResetTransactions() error {
 
 ///// model modification stubs /////
 
-func (this *Project) AddCalling(org Organization, calling string, custom bool) error {
+func (this *Project) AddCalling(org string, calling string, custom bool) error {
 	this.addTransaction("addCalling", org, calling, custom)
 	return this.Callings.addCalling(org, calling, custom)
 }
 
-func (this *Project) RemoveCalling(org Organization, calling string) error {
+func (this *Project) RemoveCalling(org string, calling string) error {
 	this.addTransaction("removeCalling", org, calling)
 	return this.Callings.removeCalling(org, calling)
 }
 
-func (this *Project) UpdateCalling(org Organization, calling string, custom bool) error {
+func (this *Project) UpdateCalling(org string, calling string, custom bool) error {
 	this.addTransaction("updateCalling", org, calling, custom)
 	return this.Callings.updateCalling(org, calling, custom)
 }
 
-func (this *Project) AddMemberToACalling(member MemberName, org Organization, calling string) error {
+func (this *Project) AddMemberToACalling(member string, org string, calling string) error {
 	this.addTransaction("addMemberToACalling", member, org, calling)
 	return this.Callings.addMemberToACalling(member, org, calling)
 }
 
 func (this *Project) MoveMemberToAnotherCalling(
-	member MemberName, fromOrg Organization, fromCalling string, toOrg Organization, toCalling string) error {
+	member string, fromOrg string, fromCalling string, toOrg string, toCalling string) error {
 	this.addTransaction("moveMemberToAnotherCalling", member, fromOrg, fromCalling, toOrg, toCalling)
 	return this.Callings.moveMemberToAnotherCalling(member, fromOrg, fromCalling, toOrg, toCalling)
 }
 
-func (this *Project) RemoveMemberFromACalling(member MemberName, org Organization, calling string) error {
+func (this *Project) RemoveMemberFromACalling(member string, org string, calling string) error {
 	this.addTransaction("removeMemberFromACalling", member, org, calling)
 	return this.Callings.removeMemberFromACalling(member, org, calling)
 }
@@ -223,10 +223,6 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 				case bool:
 					boolVal, _ := strconv.ParseBool(functionParameter)
 					testResult = boolVal == transactionParameter
-				case MemberName:
-					testResult = MemberName(functionParameter) == transactionParameter
-				case Organization:
-					testResult = Organization(functionParameter) == transactionParameter
 				}
 				if testResult {
 					paramsMatched++
@@ -250,24 +246,24 @@ func (this *Project) playTransactions() {
 		switch transaction.Operation {
 		case "addCalling":
 			_ = this.Callings.addCalling(
-				transaction.Parameters[0].(Organization), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
+				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
 		case "removeCalling":
 			_ = this.Callings.removeCalling(
-				transaction.Parameters[0].(Organization), transaction.Parameters[1].(string))
+				transaction.Parameters[0].(string), transaction.Parameters[1].(string))
 		case "updateCalling":
 			_ = this.Callings.updateCalling(
-				transaction.Parameters[0].(Organization), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
+				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
 		case "addMemberToACalling":
 			_ = this.Callings.addMemberToACalling(
-				transaction.Parameters[0].(MemberName), transaction.Parameters[1].(Organization), transaction.Parameters[2].(string))
+				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(string))
 		case "moveMemberToAnotherCalling":
 			_ = this.Callings.moveMemberToAnotherCalling(
-				transaction.Parameters[0].(MemberName),
-				transaction.Parameters[1].(Organization), transaction.Parameters[2].(string),
-				transaction.Parameters[1].(Organization), transaction.Parameters[2].(string))
+				transaction.Parameters[0].(string),
+				transaction.Parameters[1].(string), transaction.Parameters[2].(string),
+				transaction.Parameters[1].(string), transaction.Parameters[2].(string))
 		case "removeMemberFromACalling":
 			_ = this.Callings.removeMemberFromACalling(
-				transaction.Parameters[0].(MemberName), transaction.Parameters[1].(Organization), transaction.Parameters[2].(string))
+				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(string))
 		}
 	}
 }

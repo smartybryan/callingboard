@@ -409,7 +409,7 @@ function createTransactionParmsForMemberElement(memberElement, callingElement) {
 function loadModel() {
 	let name = document.getElementById("model-name").value;
 	if (!name) {
-		alert(name);
+		alert("Please provide a model name to load.");
 		return
 	}
 	modelOperation("load-trans", name)
@@ -418,7 +418,7 @@ function loadModel() {
 function saveModel() {
 	let name = document.getElementById("model-name").value;
 	if (!name) {
-		alert(name);
+		alert("Please provide a model name to save.");
 		return
 	}
 	modelOperation("save-trans", name)
@@ -432,6 +432,9 @@ function modelOperation(endpoint, name) {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
+			if (this.responseText !== "null\n") {
+				alert("Error during " + endpoint + "operation. (" + this.responseText + ")");
+			}
 			refreshFromModel();
 		}
 	};

@@ -36,14 +36,14 @@ func (this *MembersFixture) TestGetMembers() {
 	this.So(len(members.GetMembers(11, 17)), should.Equal, 1)
 	this.So(len(members.GetMembers(18, 99)), should.Equal, 3)
 	this.So(members.GetMembers(18, 99), should.Resemble,
-		[]MemberName{"Last2, First2", "Last3, First3", "Last4, First4"})
+		[]string{"Last2, First2", "Last3, First3", "Last4, First4"})
 }
 
 func (this *MembersFixture) TestAdultsWithoutACalling() {
 	members := createTestMembers("")
 	callings := createTestCallings("")
 
-	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []MemberName{"Last3, First3", "Last4, First4"})
+	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []string{"Last3, First3", "Last4, First4"})
 }
 
 func (this *MembersFixture) TestEligibleForACalling() {
@@ -92,11 +92,11 @@ func createTestCallings(path string) Callings {
 }
 
 func createMember(name string, age int) Member {
-	return Member{Name: MemberName(name), Birthday: setDate(-age, 0, 0)}
+	return Member{Name: string(name), Birthday: setDate(-age, 0, 0)}
 }
 
 func createCalling(name, memberName string, years, months int) Calling {
-	return Calling{Name: name, Holder: MemberName(memberName), Sustained: setDate(-years, -months, 0)}
+	return Calling{Name: name, Holder: string(memberName), Sustained: setDate(-years, -months, 0)}
 }
 
 func setDate(yearOffset, monthOffset, dayOffset int) time.Time {
