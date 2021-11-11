@@ -246,6 +246,13 @@ func (this *Controller) SaveTransactions(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) ResetTransactions() detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    this.project.ResetTransactions(),
+	}
+}
+
 func (this *Controller) UndoTransaction() detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,

@@ -1,6 +1,6 @@
 const VACANT = "Calling Vacant";
 const ALL_ORGS = "All Organizations";
-const RELEASE_DROP_ENABLER = "[Drop calling here]";
+const RELEASE_DROP_ENABLER = "[Drop calling here] &#10549;";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
 const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
 const MESSAGE_RELEASE_SUSTAINED_DROP = "You may not drop a Released or Sustained calling here. Drop it in the Trash to undo.";
@@ -14,7 +14,6 @@ window.onload = function () {
 
 function setupTreeStructure() {
 	const wardOrgs = document.getElementById("ward-organizations");
-
 	const xhttp = new XMLHttpRequest();
 
 	function setupNestedContainers(containerName, parentContainer, orgContainer, containerId) {
@@ -403,6 +402,47 @@ function createTransactionParmsFromTreeElememt(element) {
 function createTransactionParmsForMemberElement(memberElement, callingElement) {
 	let callingIdParts = callingElement.id.split("@");
 	return "org=" + callingElement.getAttribute("data-org")  + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
+}
+
+//// model file operations ////
+
+function loadModel() {
+	let name = document.getElementById("model-name").value;
+	if (!name) {
+		alert(name);
+		return
+	}
+	modelOperation("load-trans", name)
+}
+
+function saveModel() {
+	let name = document.getElementById("model-name").value;
+	if (!name) {
+		alert(name);
+		return
+	}
+	modelOperation("save-trans", name)
+}
+
+function resetModel() {
+	modelOperation("reset-trans")
+}
+
+function modelOperation(endpoint, name) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			refreshFromModel();
+		}
+	};
+
+	let params = ""
+	if (name) {
+		params = "?name=" + name;
+	}
+	xhttp.open("GET", "/v1/" + endpoint + encodeURI(params));
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
 }
 
 //// parsers ////

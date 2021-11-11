@@ -115,7 +115,6 @@ func (this *Project) UndoTransaction() bool {
 	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
 	this.transactions = this.transactions[:len(this.transactions)-1]
 	this.playTransactions()
-
 	return true
 }
 
@@ -136,7 +135,12 @@ func (this *Project) LoadTransactions(name string) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(jsonBytes, &this.transactions)
+	err = json.Unmarshal(jsonBytes, &this.transactions)
+	if err != nil {
+		return err
+	}
+	this.playTransactions()
+	return nil
 }
 
 func (this *Project) SaveTransactions(name string) error {
@@ -146,6 +150,13 @@ func (this *Project) SaveTransactions(name string) error {
 	}
 	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
 	return os.WriteFile(path, jsonBytes, 0660)
+}
+
+func (this *Project) ResetTransactions() error {
+	this.transactions = this.transactions[:0]
+	this.undoHistory = this.undoHistory[:0]
+	this.playTransactions()
+	return nil
 }
 
 ///// model modification stubs /////

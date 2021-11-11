@@ -9,7 +9,13 @@
 <body>
 
 <header>
-	<h2>CallOrg</h2>
+	<span id="title">CallOrg</span>
+	<span id="header-buttons">
+		<input type="button" onclick="saveModel()" value="Save Model">
+		<input id="model-name" type="text" placeholder="Enter model to save" value="">
+		<input type="button" onclick="loadModel()" value="Load Model">
+		<input type="button" onclick="resetModel()" value="Reset Model">
+	</span>
 </header>
 
 <section>
@@ -27,7 +33,7 @@
 			<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
 			<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
 
-<!--			<label for="member-callings">Callings Held By Member</label>-->
+			<!--			<label for="member-callings">Callings Held By Member</label>-->
 			<br>
 			<div id="member-callings-scroller">
 				<ul id="member-callings" name="member-callings" ondragstart="drag(event)"></ul>
@@ -35,12 +41,18 @@
 		</div>
 		<div class="section-actions">
 			<label class="heading" for="releases">Releases</label>
-			<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-			</ul>
+			<br>
+			<div class="release-sustain-scroller">
+				<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+				</ul>
+			</div>
 
 			<label class="heading" for="sustainings">Sustainings</label>
-			<ul id="sustainings" ondragstart="drag(event)">
-			</ul>
+			<br>
+			<div class="release-sustain-scroller">
+				<ul id="sustainings" ondragstart="drag(event)">
+				</ul>
+			</div>
 
 			<br><br>
 			<input type="button" onclick="transaction('undo-trans')" value="Undo Last">

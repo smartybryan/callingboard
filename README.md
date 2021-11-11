@@ -7,8 +7,8 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Save model. (name the saved file)
-- Load model. (list current files)
+- Save model. (popup to specify name)
+- Load model. (popup to list and select current files)
 - Reload original data
 - Print Report
 - Tabbed Import/Tree
