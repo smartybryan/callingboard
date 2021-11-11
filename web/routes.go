@@ -45,5 +45,4 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/reset-trans", detour.New(controller.ResetTransactions))
 	http.Handle("/v1/undo-trans", detour.New(controller.UndoTransaction))
 	http.Handle("/v1/redo-trans", detour.New(controller.RedoTransaction))
-
 }
