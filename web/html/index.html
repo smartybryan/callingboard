@@ -18,80 +18,110 @@
 	</span>
 </header>
 
-<section>
-	<nav>
-		<div class="section-members">
-			<label class="heading" for="members">Members</label>
-			<br>
-			<div id="member-scroller">
-				<ul id="members" ondragstart="drag(event)"></ul>
-			</div>
-			<br><br><br><br><br><br>
-			<input type="button" onclick="displayMembers('members')" value="All Members">
-			<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
-			<input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
-			<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
-			<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
+<div class="tab">
+	<button class="tablinks" onclick="openTab(event, 'modeling')" id="default-tab">Modeling</button>
+	<button class="tablinks" onclick="openTab(event, 'import')">Import</button>
+</div>
 
-			<!--			<label for="member-callings">Callings Held By Member</label>-->
-			<br>
-			<div id="member-callings-scroller">
-				<ul id="member-callings" name="member-callings" ondragstart="drag(event)"></ul>
-			</div>
-		</div>
-		<div class="section-actions">
-			<label class="heading" for="releases">Releases</label>
-			<br>
-			<div class="release-sustain-scroller">
-				<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-				</ul>
-			</div>
+<div id="modeling" class="tabcontent">
+	<section>
+		<nav>
+			<div class="section-members">
+				<label class="heading" for="members">Members</label>
+				<br>
+				<div id="member-scroller">
+					<ul id="members" ondragstart="drag(event)"></ul>
+				</div>
+				<br><br><br><br><br><br>
+				<input type="button" onclick="displayMembers('members')" value="All Members">
+				<input type="button" onclick="displayMembers('adults-without-calling')" value="Adults Without Calling">
+				<input type="button" onclick="displayMembers('members-with-callings')" value="Members With a Calling">
+				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">
+				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">
 
-			<label class="heading" for="sustainings">Sustainings</label>
-			<br>
-			<div class="release-sustain-scroller">
-				<ul id="sustainings" ondragstart="drag(event)">
-				</ul>
+				<!--			<label for="member-callings">Callings Held By Member</label>-->
+				<br>
+				<div id="member-callings-scroller">
+					<ul id="member-callings" name="member-callings" ondragstart="drag(event)"></ul>
+				</div>
 			</div>
+			<div class="section-actions">
+				<label class="heading" for="releases">Releases</label>
+				<br>
+				<div class="release-sustain-scroller">
+					<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+					</ul>
+				</div>
 
+				<label class="heading" for="sustainings">Sustainings</label>
+				<br>
+				<div class="release-sustain-scroller">
+					<ul id="sustainings" ondragstart="drag(event)">
+					</ul>
+				</div>
+
+				<br><br>
+				<input type="button" onclick="transaction('undo-trans')" value="Undo Last">
+				<input type="button" onclick="transaction('redo-trans')" value="Redo Last">
+				<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
+			</div>
+		</nav>
+
+		<article>
+			<div class="section">
+				<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
+				<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
+				<br>
+				<label for="all-vacancies">Only Vacant Callings</label>
+				<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
+				<label for="new-vacancies">Only New Vacant Callings</label>
+				<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
+				<br><br>
+				<div id="ward-scroller">
+					<ul id="ward">
+						<li><span class="caret">All Organizations</span>
+							<ul id="ward-organizations" class="nested">
+								<!-- organizations are inserted here -->
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</article>
+	</section>
+</div>
+
+<div id="import" class="tabcontent">
+	<section>
+		<nav>
+			<div class="section-members">
+				<span class="heading">Instructions</span>
+				<br><br>
+				<div class="sub-heading">Members</div>
+				<div class="instructions">1) Login to <a href="https://lcr.churchofjesuschrist.org/records/member-list?lang=eng" target="_blank">this page on the Church website.</a></div>
+				<div class="instructions">2) Scroll all the way to the bottom of the page.</div>
+				<div class="instructions">3) Select and copy the entire page.</div>
+				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C; <strong>Mac:</strong> Cmd-A, Cmd-C)</div>
+				<div class="instructions">4) Paste in the window and click the <strong>Members</strong> button.</div>
+				<br>
+				<div class="sub-heading">Callings</div>
+				<div class="instructions">1) Login to <a href="https://lcr.churchofjesuschrist.org/orgs/callings-by-organization?lang=eng" target="_blank">this page on the Church website.</a></div>
+				<div class="instructions">2) Click on <strong>All Organization</strong>.</div>
+				<div class="instructions">3) Select and copy the entire page.</div>
+				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C; <strong>Mac:</strong> Cmd-A, Cmd-C)</div>
+				<div class="instructions">4) Paste in the window and click the <strong>Callings</strong> button.</div>
+			</div>
+		</nav>
+		<article>
+			<label class="heading" for="rawdata">Import Member and Calling Data</label>
 			<br><br>
-			<input type="button" onclick="transaction('undo-trans')" value="Undo Last">
-			<input type="button" onclick="transaction('redo-trans')" value="Redo Last">
-			<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
-		</div>
-	</nav>
-
-	<article>
-		<div class="section">
-			<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
-			<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
-			<br>
-			<label for="all-vacancies">Only Vacant Callings</label>
-			<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
-			<label for="new-vacancies">Only New Vacant Callings</label>
-			<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
+			<textarea id="rawdata" placeholder="IMPORTANT: Any unsaved models will be lost when importing data."></textarea>
 			<br><br>
-			<div id="ward-scroller">
-				<ul id="ward">
-					<li><span class="caret">All Organizations</span>
-						<ul id="ward-organizations" class="nested">
-							<!-- organizations are inserted here -->
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</article>
-</section>
-
-<footer>
-	<label for="rawdata">Raw Member or Calling Data</label>
-	<br>
-	<textarea id="rawdata" rows="15" cols="50" placeholder="Paste Member or Calling Page Data"></textarea>
-	<br><br>
-	<input type="button" onclick="parseRawData('parse-raw-members')" value="Parse Members">
-	<input type="button" onclick="parseRawData('parse-raw-callings')" value="Parse Callings">
-</footer>
+			<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
+			<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">
+		</article>
+	</section>
+</div>
 
 <script src="js/callorg.js"></script>
 </body>

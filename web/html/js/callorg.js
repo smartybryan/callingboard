@@ -5,10 +5,26 @@ const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
 const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
 const MESSAGE_RELEASE_SUSTAINED_DROP = "You may not drop a Released or Sustained calling here. Drop it in the Trash to undo.";
 const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
+const MESSAGE_MODEL_RESET = "Data has been reloaded and the model has been cleared.";
 
 window.onload = function () {
 	setupTreeStructure();
+	document.getElementById("default-tab").click();
 };
+
+function openTab(evt, tabName) {
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	document.getElementById(tabName).style.display = "block";
+	evt.currentTarget.className += " active";
+}
 
 //// tree functions ////
 
@@ -425,7 +441,8 @@ function saveModel() {
 }
 
 function resetModel() {
-	modelOperation("reset-trans")
+	modelOperation("reset-model");
+	alert(MESSAGE_MODEL_RESET);
 }
 
 function modelOperation(endpoint, name) {
@@ -460,6 +477,9 @@ function parseRawData(endpoint) {
 				msg = "Import successful"
 			}
 			alert(msg);
+			document.getElementById("rawdata").value = "";
+			resetModel();
+			refreshFromModel();
 		}
 	};
 	xhttp.open("POST", "/v1/" + endpoint);

@@ -130,6 +130,7 @@ func (this *Project) ListTransactionFiles() (transactionFiles []string) {
 }
 
 func (this *Project) LoadTransactions(name string) error {
+	_ = this.ResetModel()
 	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
 	jsonBytes, err := os.ReadFile(path)
 	if err != nil {
@@ -152,10 +153,11 @@ func (this *Project) SaveTransactions(name string) error {
 	return os.WriteFile(path, jsonBytes, 0660)
 }
 
-func (this *Project) ResetTransactions() error {
+func (this *Project) ResetModel() error {
+	_ = this.Callings.Load()
+	this.originalCallings = this.Callings.copy()
 	this.transactions = this.transactions[:0]
 	this.undoHistory = this.undoHistory[:0]
-	this.playTransactions()
 	return nil
 }
 

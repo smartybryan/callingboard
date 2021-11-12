@@ -42,7 +42,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/list-trans-files", detour.New(controller.ListTransactionFiles))
 	http.Handle("/v1/load-trans", detour.New(controller.LoadTransactions)) // name
 	http.Handle("/v1/save-trans", detour.New(controller.SaveTransactions)) // name
-	http.Handle("/v1/reset-trans", detour.New(controller.ResetTransactions))
+	http.Handle("/v1/reset-model", detour.New(controller.ResetModel))
 	http.Handle("/v1/undo-trans", detour.New(controller.UndoTransaction))
 	http.Handle("/v1/redo-trans", detour.New(controller.RedoTransaction))
 }
