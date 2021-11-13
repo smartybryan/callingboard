@@ -265,9 +265,13 @@ li.proposed {
 	border-top: none;
 }
 
+#model-name {
+	margin-right: 5px;
+}
+
 #model-name-scroller {
 	height: 100px;
-	width: 250px;
+	width: 257px;
 	overflow: auto;
 	float: left;
 	position: relative;
