@@ -7,11 +7,10 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Save model. (popup to specify name)
-- Load model. (popup to list and select current files)
-- Reload original data
+- click in model name input, should select all by default
+- press enter in the field should be same as click
+- selectable names in the list box
+- Member button, members released in this model but not sustained.
 - Print Report
-- Tabbed Import/Tree
-- Add which pages to paste to import.
 - Filter box for member list
 - Authentication/authorization ?

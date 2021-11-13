@@ -427,11 +427,16 @@ function listModels() {
 }
 
 function updateFileList(response) {
-	let transFileList = document.getElementById("model-name-scroller")
+	let transFileList = document.getElementById("model-names")
+	clearContainer(transFileList)
+
 	let jsonObject = JSON.parse(response)
 	jsonObject.forEach(function (name) {
-
-		alert("TODO: " + name)
+		let tr = document.createElement('tr');
+		let td = document.createElement('td');
+		td.innerText = name;
+		tr.appendChild(td)
+		transFileList.appendChild(tr);
 	});
 }
 
@@ -473,8 +478,11 @@ function modelOperation(endpoint, name) {
 		if (this.readyState === 4 && this.status === 200) {
 			if (endpoint === "list-trans-files") {
 				updateFileList(this.responseText);
-			} else {
+			} else if (this.responseText === "null\n") {
 				refreshFromModel();
+				alert("Success!")
+			} else {
+				alert(this.responseText)
 			}
 		}
 	};
