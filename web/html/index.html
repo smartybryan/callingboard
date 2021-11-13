@@ -10,16 +10,11 @@
 
 <header>
 	<span id="title">CallOrg</span>
-	<span id="header-buttons">
-		<input type="button" onclick="saveModel()" value="Save Model">
-		<input id="model-name" type="text" placeholder="Model name to save/load" value="">
-		<input type="button" onclick="loadModel()" value="Load Model">
-		<input type="button" onclick="resetModel()" value="Reset Model">
-	</span>
 </header>
 
 <div class="tab">
 	<button class="tablinks" onclick="openTab(event, 'modeling')" id="default-tab">Modeling</button>
+	<button class="tablinks" onclick="openTab(event, 'manage-models')">Model Management</button>
 	<button class="tablinks" onclick="openTab(event, 'import')">Import</button>
 </div>
 
@@ -71,11 +66,12 @@
 			<div class="section">
 				<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 				<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
-				<br>
-				<label for="all-vacancies">Only Vacant Callings</label>
+				<br><br>
+				<span><strong>Filter: </strong></span>
 				<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
-				<label for="new-vacancies">Only New Vacant Callings</label>
+				<label for="all-vacancies">All Vacant Callings&nbsp;&nbsp;&nbsp;</label>
 				<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
+				<label for="new-vacancies">New Vacant Callings Only</label>
 				<br><br>
 				<div id="ward-scroller">
 					<ul id="ward">
@@ -91,6 +87,29 @@
 	</section>
 </div>
 
+<div id="manage-models" class="tabcontent">
+	<section>
+		<nav>
+			<div class="section-members">
+				<input type="button" onclick="saveModel()" value="Save Model">
+				<input id="model-name" type="text" placeholder="Model name to save" value="">
+				<br><br>
+				<select id="model-name-scroller">
+				</select>
+				<input type="button" onclick="listModels()" value="Refresh List">
+				<br>
+				<input type="button" onclick="loadModel()" value="Load Model">
+				<br>
+				<input type="button" onclick="deleteModel()" value="Delete Model">
+				<br><br><br><br>
+				<label>Reset the model back to imported data</label>
+				<br>
+				<input type="button" onclick="resetModel()" value="Reset Model">
+			</div>
+		</nav>
+	</section>
+</div>
+
 <div id="import" class="tabcontent">
 	<section>
 		<nav>
@@ -98,24 +117,33 @@
 				<span class="heading">Instructions</span>
 				<br><br>
 				<div class="sub-heading">Members</div>
-				<div class="instructions">1) Login to <a href="https://lcr.churchofjesuschrist.org/records/member-list?lang=eng" target="_blank">this page on the Church website.</a></div>
+				<div class="instructions">1) Login to <a
+						href="https://lcr.churchofjesuschrist.org/records/member-list?lang=eng" target="_blank">this
+					page on the Church website.</a></div>
 				<div class="instructions">2) Scroll all the way to the bottom of the page.</div>
 				<div class="instructions">3) Select and copy the entire page.</div>
-				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C; <strong>Mac:</strong> Cmd-A, Cmd-C)</div>
+				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C;
+					<strong>Mac:</strong> Cmd-A, Cmd-C)
+				</div>
 				<div class="instructions">4) Paste in the window and click the <strong>Members</strong> button.</div>
 				<br>
 				<div class="sub-heading">Callings</div>
-				<div class="instructions">1) Login to <a href="https://lcr.churchofjesuschrist.org/orgs/callings-by-organization?lang=eng" target="_blank">this page on the Church website.</a></div>
+				<div class="instructions">1) Login to <a
+						href="https://lcr.churchofjesuschrist.org/orgs/callings-by-organization?lang=eng"
+						target="_blank">this page on the Church website.</a></div>
 				<div class="instructions">2) Click on <strong>All Organization</strong>.</div>
 				<div class="instructions">3) Select and copy the entire page.</div>
-				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C; <strong>Mac:</strong> Cmd-A, Cmd-C)</div>
+				<div class="instructions">&nbsp;&nbsp;&nbsp;&nbsp;(<strong>Windows</strong>: Ctl-A, Ctl-C;
+					<strong>Mac:</strong> Cmd-A, Cmd-C)
+				</div>
 				<div class="instructions">4) Paste in the window and click the <strong>Callings</strong> button.</div>
 			</div>
 		</nav>
 		<article>
 			<label class="heading" for="rawdata">Import Member and Calling Data</label>
 			<br><br>
-			<textarea id="rawdata" placeholder="IMPORTANT: Any unsaved models will be lost when importing data."></textarea>
+			<textarea id="rawdata"
+					  placeholder="IMPORTANT: Any unsaved models will be lost when importing data."></textarea>
 			<br><br>
 			<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
 			<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">

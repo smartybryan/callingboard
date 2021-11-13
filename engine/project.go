@@ -153,6 +153,11 @@ func (this *Project) SaveTransactions(name string) error {
 	return os.WriteFile(path, jsonBytes, 0660)
 }
 
+func (this *Project) DeleteTransactions(name string) error {
+	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	return os.Remove(path)
+}
+
 func (this *Project) ResetModel() error {
 	_ = this.Callings.Load()
 	this.originalCallings = this.Callings.copy()

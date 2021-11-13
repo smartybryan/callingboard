@@ -8,7 +8,9 @@ body {
 
 #rawdata {
 	height: 205px;
+	width: 100%;
 	width: -webkit-fill-available;
+	width: -moz-available;
 }
 
 /* Style the header */
@@ -25,15 +27,12 @@ header {
 	font-size: x-large;
 }
 
-#header-buttons {
-	float: right;
-}
-
 input[type=button] {
 	border-radius: 10px;
+	margin-bottom: 5px;
 }
 
-/* Create two columns/boxes that floats next to each other */
+/* Create two columns/boxes that float next to each other */
 nav {
 	float: left;
 	width: 40%;
@@ -96,8 +95,9 @@ footer {
 
 #member-callings-scroller {
 	height: 100px;
+	width: 100%;
 	width: -webkit-fill-available;
-	overflow: auto;
+	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: -5px;
@@ -106,8 +106,9 @@ footer {
 
 .release-sustain-scroller {
 	height: 125px;
+	width: 100%;
 	width: -webkit-fill-available;
-	overflow: auto;
+	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: -5px;
@@ -131,13 +132,14 @@ ul, #ward {
 
 #ward {
 	margin: 0;
-	padding: 0;
+	padding: 8px;
 }
 
 #ward-scroller {
 	height: 600px;
+	width: 100%;
 	width: -webkit-fill-available;
-	overflow: auto;
+	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: -5px;
@@ -261,4 +263,16 @@ li.proposed {
 	padding: 6px 12px;
 	border: 1px solid #ccc;
 	border-top: none;
+}
+
+#model-name-scroller {
+	height: 100px;
+	width: 250px;
+	overflow: auto;
+	float: left;
+	position: relative;
+	background: #f1f1f1;
+	border: 1px solid #222;
+	padding: 5px;
+	margin-right: 10px;
 }

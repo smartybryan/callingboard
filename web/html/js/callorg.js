@@ -422,13 +422,35 @@ function createTransactionParmsForMemberElement(memberElement, callingElement) {
 
 //// model file operations ////
 
+function listModels() {
+	modelOperation("list-trans-files")
+}
+
+function updateFileList(response) {
+	let transFileList = document.getElementById("model-name-scroller")
+	let jsonObject = JSON.parse(response)
+	jsonObject.forEach(function (name) {
+
+		alert("TODO: " + name)
+	});
+}
+
 function loadModel() {
-	let name = document.getElementById("model-name").value;
+	let name = "";
 	if (!name) {
-		alert("Please provide a model name to load.");
+		alert("Please select a model name to load.");
 		return
 	}
 	modelOperation("load-trans", name)
+}
+
+function deleteModel() {
+	let name = "";
+	if (!name) {
+		alert("Please select a model name to delete.");
+		return
+	}
+	modelOperation("delete-trans", name)
 }
 
 function saveModel() {
@@ -449,10 +471,11 @@ function modelOperation(endpoint, name) {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
-			if (this.responseText !== "null\n") {
-				alert("Error during " + endpoint + "operation. (" + this.responseText + ")");
+			if (endpoint === "list-trans-files") {
+				updateFileList(this.responseText);
+			} else {
+				refreshFromModel();
 			}
-			refreshFromModel();
 		}
 	};
 
