@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -25,9 +26,9 @@ type Project struct {
 }
 
 type DiffResult struct {
-	Sustainings  []Calling
-	Releases     []Calling
-	NewVacancies []Calling
+	Sustainings           []Calling
+	Releases              []Calling
+	NewVacancies          []Calling
 }
 
 func NewProject(callings *Callings, members *Members, dataPath string) *Project {
@@ -43,8 +44,8 @@ func NewProject(callings *Callings, members *Members, dataPath string) *Project 
 
 func NewDiff() DiffResult {
 	return DiffResult{
-		Sustainings:  make([]Calling, 0, 20),
-		Releases:     make([]Calling, 0, 20),
+		Sustainings: make([]Calling, 0, 20),
+		Releases:    make([]Calling, 0, 20),
 	}
 }
 
@@ -86,16 +87,11 @@ func (this *Project) Diff() DiffResult {
 
 	this.diff.NewVacancies = CallingSetDifference(modelVacancies, originalVacancies)
 
-	//Commented so the original organization order is preserved
-	//this.diff.NewVacancies
-	//sort.SliceStable(this.diff.Releases, func(i, j int) bool {
-	//	return this.diff.Releases[i].Name < this.diff.Releases[j].Name
-	//})
-	//sort.SliceStable(this.diff.Sustainings, func(i, j int) bool {
-	//	return this.diff.Sustainings[i].Name < this.diff.Sustainings[j].Name
-	//})
-
 	return this.diff
+}
+
+func (this *Project) NewlyAvailableMembers() []string {
+	return this.newlyAvailableMembers()
 }
 
 func (this *Project) RedoTransaction() bool {
@@ -273,4 +269,21 @@ func (this *Project) playTransactions() {
 				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(string))
 		}
 	}
+}
+
+func (this *Project) newlyAvailableMembers() []string {
+	var releasedMembers, sustainedMembers []string
+	for _, transaction := range this.transactions {
+		if transaction.Operation == "addMemberToACalling" {
+			sustainedMembers = append(sustainedMembers, (transaction.Parameters[0]).(string))
+		}
+		if transaction.Operation == "removeMemberFromACalling" {
+			releasedMembers = append(releasedMembers, (transaction.Parameters[0]).(string))
+		}
+	}
+	availMembers := MemberSetDifference(releasedMembers, sustainedMembers)
+	availMembers = MemberSetDifference(availMembers, this.Callings.MembersWithCallings())
+
+	sort.Strings(availMembers)
+	return availMembers
 }

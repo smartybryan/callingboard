@@ -15,6 +15,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/adults-without-calling", detour.New(controller.AdultsWithoutCalling))
 	http.Handle("/v1/eligible-adults", detour.New(controller.AdultsEligibleForCalling))
 	http.Handle("/v1/eligible-youth", detour.New(controller.YouthEligibleForCalling))
+	http.Handle("/v1/newly-available", detour.New(controller.NewlyAvailableMembers))
 	http.Handle("/v1/get-member", detour.New(controller.GetMemberRecord)) // member
 	http.Handle("/v1/load-members", detour.New(controller.LoadMembers))
 	http.Handle("/v1/save-members", detour.New(controller.SaveMembers))

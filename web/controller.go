@@ -55,6 +55,13 @@ func (this *Controller) YouthEligibleForCalling() detour.Renderer {
 	}
 }
 
+func (this *Controller) NewlyAvailableMembers() detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    this.project.NewlyAvailableMembers(),
+	}
+}
+
 func (this *Controller) LoadMembers() detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
