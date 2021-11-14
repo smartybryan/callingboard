@@ -267,6 +267,15 @@ li.proposed {
 
 #model-name {
 	margin-right: 5px;
+	font-size: 15px;
+}
+
+td.selected {
+	background: lightgray;
+}
+
+td:hover{
+	cursor:pointer;
 }
 
 #model-name-scroller {
@@ -279,4 +288,8 @@ li.proposed {
 	border: 1px solid #222;
 	padding: 5px;
 	margin-right: 10px;
+}
+
+td {
+	font-size: 15px;
 }

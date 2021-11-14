@@ -9,6 +9,7 @@ const MESSAGE_MODEL_RESET = "Data has been reloaded and the model has been clear
 
 window.onload = function () {
 	setupTreeStructure();
+	listModels();
 	document.getElementById("default-tab").click();
 };
 
@@ -20,10 +21,10 @@ function openTab(evt, tabName) {
 	}
 	tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
-		tablinks[i].className = tablinks[i].className.replace(" active", "");
+		tablinks[i].classList.remove("active");
 	}
 	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
+	evt.currentTarget.classList.add("active");
 }
 
 //// tree functions ////
@@ -440,8 +441,25 @@ function updateFileList(response) {
 	});
 }
 
+function selectModelFile(ev) {
+	let currentSelected = ev.target.parentElement.parentElement.getElementsByClassName("selected")
+	if (currentSelected.length > 0) {
+		currentSelected[0].classList.remove("selected")
+	}
+	ev.target.classList.add("selected")
+}
+
+function getSelectedModelFile() {
+	let table = document.getElementById("model-names")
+	let selected = table.getElementsByClassName("selected")
+	if (selected.length > 0) {
+		return selected[0].innerHTML;
+	}
+	return ""
+}
+
 function loadModel() {
-	let name = "";
+	let name = getSelectedModelFile();
 	if (!name) {
 		alert("Please select a model name to load.");
 		return
@@ -450,7 +468,7 @@ function loadModel() {
 }
 
 function deleteModel() {
-	let name = "";
+	let name = getSelectedModelFile();
 	if (!name) {
 		alert("Please select a model name to delete.");
 		return
@@ -480,7 +498,10 @@ function modelOperation(endpoint, name) {
 				updateFileList(this.responseText);
 			} else if (this.responseText === "null\n") {
 				refreshFromModel();
-				alert("Success!")
+				listModels();
+				if (endpoint === "load-trans") {
+					alert("Model loaded");
+				}
 			} else {
 				alert(this.responseText)
 			}

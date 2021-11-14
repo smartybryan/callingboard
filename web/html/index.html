@@ -91,11 +91,11 @@
 	<section>
 		<nav>
 			<div class="section-members">
-				<input id="model-name" type="text" size="35" onclick="this.select()" placeholder="Model name to save" value="">
+				<input id="model-name" type="text" size="30" onclick="this.select()" placeholder="Model name to save" value="">
 				<input type="button" onclick="saveModel()" value="Save Model">
 				<br><br>
 				<div id="model-name-scroller">
-					<table id="model-names"></table>
+					<table id="model-names" onclick="selectModelFile(event)"></table>
 				</div>
 				<input type="button" onclick="listModels()" value="Refresh List">
 				<br>
