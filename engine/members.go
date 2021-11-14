@@ -114,7 +114,9 @@ func MemberSetDifference(mainSet, subtractSet []string) (names []string) {
 		if memberInSet(subtractSet, name) {
 			continue
 		}
-		names = append(names, name)
+		if !memberInSet(names, name) {
+			names = append(names, name)
+		}
 	}
 	return names
 }

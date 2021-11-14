@@ -9,6 +9,7 @@ const MESSAGE_MODEL_RESET = "Data has been reloaded and the model has been clear
 
 window.onload = function () {
 	setupTreeStructure();
+	displayMembers("members-with-callings");
 	listModels();
 	document.getElementById("default-tab").click();
 };
@@ -333,6 +334,7 @@ function drop(ev) {
 function displayMembers(endpoint) {
 	const membersElement = document.getElementById("members");
 	clearContainer(membersElement);
+	clearContainer(document.getElementById("member-callings"));
 
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
