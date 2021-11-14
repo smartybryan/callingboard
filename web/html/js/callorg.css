@@ -85,22 +85,27 @@ footer {
 }
 
 #member-scroller {
-	height: 100px;
+	height: 120px;
 	width: 250px;
 	overflow: auto;
 	float: left;
 	position: relative;
-	margin-left: -5px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#member-buttons {
+	float: right;
 }
 
 #member-callings-scroller {
-	height: 100px;
+	height: 120px;
 	width: 100%;
 	width: -webkit-fill-available;
 	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
-	margin-left: -5px;
+	margin-left: 5px;
 	padding: 10px;
 }
 
@@ -111,7 +116,7 @@ footer {
 	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
-	margin-left: -5px;
+	margin-left: 6px;
 	padding: 10px;
 }
 
@@ -175,6 +180,7 @@ ul, #ward {
 	background-color: lightgrey;
 	padding: 15px;
 	margin-bottom: 10px;
+	height: 381px;
 }
 
 li.calling-row {
