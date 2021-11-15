@@ -99,6 +99,11 @@ input[type=button] {
 	outline: none;
 }
 
+#clear-filter {
+	margin-left: -18px;
+	position: absolute;
+}
+
 .filtered {
 	display: none;
 }
@@ -243,7 +248,7 @@ td.selected {
 }
 
 #rawdata {
-	height: 25vh;
+	height: 225px;
 	width: 100%;
 	padding: 15px;
 	border-radius: 20px;
