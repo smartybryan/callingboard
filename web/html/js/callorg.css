@@ -38,13 +38,12 @@ input[type=button] {
 
 nav {
 	float: left;
-	width: 28%;
 	height: 88vh;
+	width: 28%;
+	margin: 10px;
 	padding: 15px;
-	overflow: auto;
 	border-radius: 20px;
 	background-color: lightgrey;
-	margin: 10px;
 }
 
 nav ul {
@@ -54,25 +53,23 @@ nav ul {
 }
 
 article {
-	border-radius: 20px;
 	float: left;
-	padding: 15px;
-	margin: 10px;
-	width: 40%;
 	height: 88vh;
+	width: 40%;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
 	background-color: lightgray;
-	overflow: auto;
 }
 
 import {
-	border-radius: 20px;
 	float: left;
-	padding: 15px;
-	margin: 10px;
-	width: 40%;
 	height: 350px;
+	width: 40%;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
 	background-color: lightgray;
-	overflow: auto;
 }
 
 /* Clear floats after the columns */
@@ -219,6 +216,57 @@ li.proposed {
 	margin-left: 30px;
 }
 
+.nested {
+	display: none;
+}
+
+.active {
+	display: block;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+.filtered {
+	display: none;
+}
+
+#model-name {
+	width: 54%;
+	margin-right: 5px;
+	font-size: 15px;
+	padding-left: 15px;
+	border-radius: 20px;
+	outline: none;
+}
+
+#model-name-scroller {
+	height: 200px;
+	width: 257px;
+	overflow: auto;
+	float: left;
+	position: relative;
+	background: #f1f1f1;
+	border: 1px solid #222;
+	padding: 5px;
+	margin-right: 10px;
+	border-radius: 20px;
+}
+
+td.selected {
+	background: lightgray;
+}
+
+td:hover{
+	cursor:pointer;
+}
+
+td {
+	font-size: 15px;
+}
+
+/* TREE CARETS */
 .caret {
 	cursor: pointer;
 	-webkit-user-select: none; /* Safari 3.1+ */
@@ -240,22 +288,13 @@ li.proposed {
 ' transform: rotate(90 deg);
 }
 
-.nested {
-	display: none;
-}
-
-.active {
-	display: block;
-}
-
-/* Style the tab */
+/* TABS */
 .tab {
 	overflow: hidden;
 	border: 1px solid #ccc;
 	background-color: #f1f1f1;
 }
 
-/* Style the buttons inside the tab */
 .tab button {
 	background-color: inherit;
 	float: left;
@@ -267,61 +306,16 @@ li.proposed {
 	font-size: 15px;
 }
 
-/* Change background color of buttons on hover */
 .tab button:hover {
 	background-color: #ddd;
 }
 
-/* Create an active/current tablink class */
 .tab button.active {
 	background-color: #ccc;
 }
 
-/* Style the tab content */
 .tabcontent {
 	display: none;
 	border: 1px solid #ccc;
 	border-top: none;
-}
-
-.pointer {
-	cursor: pointer;
-}
-
-.filtered {
-	display: none;
-}
-
-#model-name {
-	width: 54%;
-	margin-right: 5px;
-	font-size: 15px;
-	padding-left: 15px;
-	border-radius: 20px;
-	outline: none;
-}
-
-td.selected {
-	background: lightgray;
-}
-
-td:hover{
-	cursor:pointer;
-}
-
-#model-name-scroller {
-	height: 200px;
-	width: 257px;
-	overflow: auto;
-	float: left;
-	position: relative;
-	background: #f1f1f1;
-	border: 1px solid #222;
-	padding: 5px;
-	margin-right: 10px;
-	border-radius: 20px;
-}
-
-td {
-	font-size: 15px;
 }

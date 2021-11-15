@@ -8,4 +8,6 @@ and track releasings and sustainings.
 
 TODO
 - Print Report
+- List of members who need callings  
+  ** maybe another tab to create and store that list, then another button to retrieve it
 - Authentication/authorization ?
