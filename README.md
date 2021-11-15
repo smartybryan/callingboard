@@ -7,7 +7,5 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- 3 column format
-- Filter box for member list
 - Print Report
 - Authentication/authorization ?
