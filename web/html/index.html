@@ -25,25 +25,37 @@
 				<label class="heading" for="members">Members</label>
 				<br>
 				<div id="member-scroller">
-					<ul id="members" ondragstart="drag(event)"></ul>
+					<input id="member-filter" size="20" onclick="this.select()" onkeyup="filterMembers()" placeholder="Member filter">
+					<ul id="members" ondragstart="drag(event)">
+					</ul>
 				</div>
 				<br>
-				<input type="button" onclick="displayMembers('members')" value="All Members">
+				<div id="member-buttons">
+					<input type="button" onclick="displayMembers('members')" value="All Members">
+					<br>
+					<input type="button" onclick="displayMembers('adults-without-calling')"
+						   value="Adults Without Calling">
+					<br>
+					<input type="button" onclick="displayMembers('members-with-callings')"
+						   value="Members With a Calling">
+					<br>
+					<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
+					<!--				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">-->
+					<!--				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">-->
+				</div>
+				<div>&nbsp;</div>
+				<label class="heading" for="member-callings-scroller">Member Callings</label>
 				<br>
-				<input type="button" onclick="displayMembers('adults-without-calling')"
-					   value="Adults Without Calling">
-				<br>
-				<input type="button" onclick="displayMembers('members-with-callings')"
-					   value="Members With a Calling">
-				<br>
-				<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
-				<!--				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">-->
-				<!--				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">-->
-				<br><br>
 				<div id="member-callings-scroller">
-					<ul id="member-callings" name="member-callings" ondragstart="drag(event)"></ul>
+					<ul id="member-callings" ondragstart="drag(event)">
+					</ul>
 				</div>
+				<span>&nbsp;</span>
+
 			</div>
+		</nav>
+
+		<nav>
 			<div class="section-actions">
 				<label class="heading" for="releases">Releases</label>
 				<br>
@@ -52,6 +64,7 @@
 					</ul>
 				</div>
 
+				<div>&nbsp;</div>
 				<label class="heading" for="sustainings">Sustainings</label>
 				<br>
 				<div class="release-sustain-scroller">
@@ -59,6 +72,7 @@
 					</ul>
 				</div>
 
+				<div>&nbsp;</div>
 				<input type="button" onclick="transaction('undo-trans')" value="Undo Last">
 				<input type="button" onclick="transaction('redo-trans')" value="Redo Last">
 				<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
@@ -92,7 +106,7 @@
 
 <div id="manage-models" class="tabcontent">
 	<section>
-		<nav>
+		<article>
 			<div class="section-members">
 				<input id="model-name" type="text" size="30" onclick="this.select()" placeholder="Model name to save"
 					   value="">
@@ -106,18 +120,18 @@
 				<input type="button" onclick="loadModel()" value="Load Model">
 				<br>
 				<input type="button" onclick="deleteModel()" value="Delete Model">
-				<br><br><br><br>
+				<br><br><br><br><br><br><br><br><br>
 				<label>Reset the model back to imported data</label>
 				<br>
 				<input type="button" onclick="resetModel()" value="Reset Model">
 			</div>
-		</nav>
+		</article>
 	</section>
 </div>
 
 <div id="import" class="tabcontent">
 	<section>
-		<nav>
+		<import>
 			<div class="section-members">
 				<span class="heading">Instructions</span>
 				<br><br>
@@ -142,9 +156,10 @@
 					<strong>Mac:</strong> Cmd-A, Cmd-C)
 				</div>
 				<div class="instructions">4) Paste in the window and click the <strong>Callings</strong> button.</div>
+				<div>&nbsp;</div>
 			</div>
-		</nav>
-		<article>
+		</import>
+		<import>
 			<label class="heading" for="rawdata">Import Member and Calling Data</label>
 			<br><br>
 			<textarea id="rawdata"
@@ -152,7 +167,7 @@
 			<br><br>
 			<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
 			<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">
-		</article>
+		</import>
 	</section>
 </div>
 

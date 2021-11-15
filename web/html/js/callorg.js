@@ -351,6 +351,8 @@ function displayMembers(endpoint) {
 				});
 				membersElement.appendChild(memberElement);
 			});
+
+			filterMembers();
 		}
 	};
 
@@ -361,6 +363,32 @@ function displayMembers(endpoint) {
 
 function memberSelected(element) {
 	displayMemberCallings(element.id);
+}
+
+function filterMembers() {
+	let filter = document.getElementById("member-filter").value.toLowerCase();
+	if (filter.length === 0) {
+		return;
+	}
+
+	const memberElements = document.getElementById("members");
+	const currentMemberList = memberElements.getElementsByTagName("li");
+	if (currentMemberList.length === 0) {
+		return;
+	}
+
+	clearContainer(document.getElementById("member-callings"));
+	let filteredList = [];
+	for (let i = 0; i < memberElements.length; i++) {
+		if (memberElements[i].id.toLowerCase().startsWith(filter)) {
+			filteredList.push(memberElements[i]);
+		}
+	}
+
+	clearContainer(memberElements);
+	for (let filteredListElement of filteredList) {
+		memberElements.appendChild(filteredListElement);
+	}
 }
 
 function displayMemberCallings(name) {

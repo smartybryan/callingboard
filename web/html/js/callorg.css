@@ -7,7 +7,7 @@ body {
 }
 
 #rawdata {
-	height: 205px;
+	height: 250px;
 	width: 100%;
 	width: -webkit-fill-available;
 	width: -moz-available;
@@ -30,12 +30,13 @@ header {
 input[type=button] {
 	border-radius: 10px;
 	margin-bottom: 5px;
+	margin-left: 10px;
 }
 
 /* Create two columns/boxes that float next to each other */
 nav {
 	float: left;
-	width: 40%;
+	width: 30%;
 	background: white;
 	padding: 20px;
 	overflow: auto;
@@ -48,6 +49,7 @@ nav {
 nav ul {
 	list-style-type: none;
 	padding: 0;
+	margin-top: 0px;
 }
 
 article {
@@ -56,7 +58,19 @@ article {
 	padding: 15px;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	width: 60%;
+	width: 40%;
+	background-color: lightgray;
+	overflow: auto;
+}
+
+import {
+	border-radius: 20px;
+	float: left;
+	padding: 15px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-right: 15px;
+	width: 40%;
 	background-color: lightgray;
 	overflow: auto;
 }
@@ -85,24 +99,30 @@ footer {
 }
 
 #member-scroller {
-	height: 120px;
-	width: 250px;
+	height: 40vh;
+	width: -webkit-fill-available;
+	width: -moz-available;
 	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: 10px;
 	margin-right: 10px;
+	margin-bottom: 15px;
 }
 
 #member-buttons {
-	float: right;
+	height: 100px;
+	width: -webkit-fill-available;
+	width: -moz-available;
+	float: left;
+	position: relative;
 }
 
 #member-callings-scroller {
-	height: 120px;
-	width: 100%;
+	height: 125px;
 	width: -webkit-fill-available;
-	width: -moz-available;	overflow: auto;
+	width: -moz-available;
+	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: 5px;
@@ -110,14 +130,23 @@ footer {
 }
 
 .release-sustain-scroller {
-	height: 125px;
-	width: 100%;
+	height: 34vh;
 	width: -webkit-fill-available;
 	width: -moz-available;	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: 6px;
 	padding: 10px;
+}
+
+#member-filter {
+	margin-bottom: 2px;
+	padding-left: 15px;
+	border-radius: 20px;
+}
+
+li {
+	cursor: pointer;
 }
 
 li.member-row {
@@ -141,8 +170,7 @@ ul, #ward {
 }
 
 #ward-scroller {
-	height: 600px;
-	width: 100%;
+	height: 71vh;
 	width: -webkit-fill-available;
 	width: -moz-available;	overflow: auto;
 	float: left;
@@ -172,7 +200,6 @@ ul, #ward {
 	background-color: lightgrey;
 	padding: 15px;
 	margin-bottom: 10px;
-	height: 320px;
 }
 
 .section-actions {
@@ -180,7 +207,6 @@ ul, #ward {
 	background-color: lightgrey;
 	padding: 15px;
 	margin-bottom: 10px;
-	height: 381px;
 }
 
 li.calling-row {
@@ -285,7 +311,7 @@ td:hover{
 }
 
 #model-name-scroller {
-	height: 100px;
+	height: 200px;
 	width: 257px;
 	overflow: auto;
 	float: left;
