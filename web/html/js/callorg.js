@@ -367,28 +367,19 @@ function memberSelected(element) {
 
 function filterMembers() {
 	let filter = document.getElementById("member-filter").value.toLowerCase();
-	if (filter.length === 0) {
-		return;
-	}
+	const memberElements = document.getElementById("members").getElementsByTagName("li");
 
-	const memberElements = document.getElementById("members");
-	const currentMemberList = memberElements.getElementsByTagName("li");
-	if (currentMemberList.length === 0) {
-		return;
-	}
-
-	clearContainer(document.getElementById("member-callings"));
-	let filteredList = [];
 	for (let i = 0; i < memberElements.length; i++) {
-		if (memberElements[i].id.toLowerCase().startsWith(filter)) {
-			filteredList.push(memberElements[i]);
+		memberElements[i].classList.remove("filtered");
+		if (!memberElements[i].id.toLowerCase().startsWith(filter)) {
+			memberElements[i].classList.add("filtered");
 		}
 	}
+}
 
-	clearContainer(memberElements);
-	for (let filteredListElement of filteredList) {
-		memberElements.appendChild(filteredListElement);
-	}
+function clearFilter() {
+	document.getElementById("member-filter").value = "";
+	filterMembers();
 }
 
 function displayMemberCallings(name) {

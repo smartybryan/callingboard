@@ -139,7 +139,7 @@ footer {
 	padding: 10px;
 }
 
-#member-filter {
+.input-field {
 	margin-bottom: 2px;
 	padding-left: 15px;
 	border-radius: 20px;
@@ -170,7 +170,7 @@ ul, #ward {
 }
 
 #ward-scroller {
-	height: 71vh;
+	height: 72vh;
 	width: -webkit-fill-available;
 	width: -moz-available;	overflow: auto;
 	float: left;
@@ -297,6 +297,14 @@ li.proposed {
 	border-top: none;
 }
 
+.pointer {
+	cursor: pointer;
+}
+
+.filtered {
+	display: none;
+}
+
 #model-name {
 	margin-right: 5px;
 	font-size: 15px;
@@ -320,6 +328,7 @@ td:hover{
 	border: 1px solid #222;
 	padding: 5px;
 	margin-right: 10px;
+	border-radius: 20px;
 }
 
 td {
