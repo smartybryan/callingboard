@@ -6,34 +6,34 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-#rawdata {
-	height: 25vh;
-	width: 100%;
-	width: -webkit-fill-available;
-	width: -moz-available;
-	padding: 15px;
-	border-radius: 20px;
-	outline: none;
-}
-
-header {
-	height: 50px;
-	background-color: #666;
-	padding: 10px;
-	text-align: left;
-	font-size: 15px;
-	color: white;
+@media (max-width: 600px) {
+	nav, article, import {
+		width: 100%;
+		height: auto;
+	}
 }
 
 #title {
 	font-size: x-large;
 }
 
-input[type=button] {
-	border-radius: 10px;
-	margin-bottom: 5px;
-	margin-left: 10px;
-	font-size: 13px;
+.heading {
+	font-size: 25px;
+	font-weight: bold;
+}
+
+.sub-heading {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+header {
+	height: 50px;
+	background-color: darkslategrey;
+	padding: 10px;
+	text-align: left;
+	font-size: 15px;
+	color: white;
 }
 
 nav {
@@ -44,12 +44,6 @@ nav {
 	padding: 15px;
 	border-radius: 20px;
 	background-color: lightgrey;
-}
-
-nav ul {
-	list-style-type: none;
-	padding: 0;
-	margin-top: 0px;
 }
 
 article {
@@ -72,33 +66,54 @@ import {
 	background-color: lightgray;
 }
 
-/* Clear floats after the columns */
-section::after {
-	content: "";
-	display: table;
-	clear: both;
+/* SHARED */
+
+.pointer, li, td:hover {
+	cursor: pointer;
 }
 
-/* Style the footer */
-footer {
-	background-color: #777;
-	padding: 10px;
-	text-align: center;
-	color: white;
+td {
+	font-size: 15px;
 }
 
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-	nav, article, import {
-		width: 100%;
-		height: auto;
-	}
+nav ul {
+	list-style-type: none;
+	padding: 0;
+	margin-top: 0px;
+}
+
+input[type=button] {
+	font-size: 13px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	border-radius: 10px;
+}
+
+/* MEMBER COLUMN */
+
+#member-filter {
+	margin-left: 10px;
+	margin-bottom: 2px;
+	padding-left: 15px;
+	border-radius: 20px;
+	outline: none;
+}
+
+.filtered {
+	display: none;
+}
+
+li.member-row {
+	border-radius: 20px;
+	text-indent: 15px;
+	margin-bottom: 5px;
+	margin-right: 15px;
+	background-color: #fae596;
 }
 
 #member-scroller {
 	height: 37vh;
-	width: -webkit-fill-available;
-	width: -moz-available;
+	width: 100%;
 	overflow: auto;
 	float: left;
 	position: relative;
@@ -109,16 +124,14 @@ footer {
 
 #member-buttons {
 	height: 100px;
-	width: -webkit-fill-available;
-	width: -moz-available;
+	width: 100%;
 	float: left;
 	position: relative;
 }
 
 #member-callings-scroller {
 	height: 125px;
-	width: -webkit-fill-available;
-	width: -moz-available;
+	width: 100%;
 	overflow: auto;
 	float: left;
 	position: relative;
@@ -126,55 +139,16 @@ footer {
 	padding: 10px;
 }
 
+/* CALLINGS COLUMN */
+
 .release-sustain-scroller {
 	height: 34vh;
-	width: -webkit-fill-available;
-	width: -moz-available;	overflow: auto;
+	width: 100%;
+	overflow: auto;
 	float: left;
 	position: relative;
 	margin-left: 6px;
 	padding: 10px;
-}
-
-#member-filter {
-	margin-left: 10px;
-	margin-bottom: 2px;
-	padding-left: 15px;
-	border-radius: 20px;
-	outline: none;
-}
-
-li {
-	cursor: pointer;
-}
-
-li.member-row {
-	border-radius: 20px;
-	text-indent: 15px;
-	margin-bottom: 5px;
-	background-color: #fae596;
-}
-
-ul, #ward {
-	list-style-type: none;
-}
-
-.instructions {
-	font-size: 15px;
-}
-
-#ward {
-	margin: 0;
-	padding: 8px;
-}
-
-#ward-scroller {
-	height: 72vh;
-	width: -webkit-fill-available;
-	width: -moz-available;	overflow: auto;
-	float: left;
-	position: relative;
-	margin-left: -5px;
 }
 
 #trash {
@@ -184,14 +158,24 @@ ul, #ward {
 	bottom: 10px;
 }
 
-.heading {
-	font-size: 25px;
-	font-weight: bold;
+/* TREE COLUMN */
+
+ul, #ward {
+	list-style-type: none;
 }
 
-.sub-heading {
-	font-size: 20px;
-	font-weight: bold;
+#ward {
+	margin: 0;
+	padding: 8px;
+}
+
+#ward-scroller {
+	height: 72vh;
+	width: 100%;
+	overflow: auto;
+	float: left;
+	position: relative;
+	margin-left: -5px;
 }
 
 li.calling-row {
@@ -224,13 +208,7 @@ li.proposed {
 	display: block;
 }
 
-.pointer {
-	cursor: pointer;
-}
-
-.filtered {
-	display: none;
-}
+/* MODEL MANAGEMENT */
 
 #model-name {
 	width: 54%;
@@ -258,12 +236,18 @@ td.selected {
 	background: lightgray;
 }
 
-td:hover{
-	cursor:pointer;
+/* IMPORT */
+
+.instructions {
+	font-size: 15px;
 }
 
-td {
-	font-size: 15px;
+#rawdata {
+	height: 25vh;
+	width: 100%;
+	padding: 15px;
+	border-radius: 20px;
+	outline: none;
 }
 
 /* TREE CARETS */
