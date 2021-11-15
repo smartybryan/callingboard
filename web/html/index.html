@@ -24,9 +24,10 @@
 			<div class="section-members">
 				<label class="heading" for="members">Members</label>
 				<br>
+				<input id="member-filter" size="20" onclick="this.select()"
+					   onkeyup="filterMembers()" placeholder="Member filter">
+				<span class="pointer" onclick="clearFilter()">&#9447;</span>
 				<div id="member-scroller">
-					<input id="member-filter" class="input-field" size="20" onclick="this.select()" onkeyup="filterMembers()" placeholder="Member filter">
-					<span class="pointer" onclick="clearFilter()">&#9447;</span>
 					<ul id="members" ondragstart="drag(event)">
 					</ul>
 				</div>
@@ -109,7 +110,8 @@
 	<section>
 		<article>
 			<div class="section-members">
-				<input id="model-name" class="input-field" type="text" size="29" onclick="this.select()" placeholder="Model name to save"
+				<input id="model-name" type="text" onclick="this.select()"
+					   placeholder="Model name to save"
 					   value="">
 				<input type="button" onclick="saveModel()" value="Save Model">
 				<br><br>
@@ -163,7 +165,7 @@
 		<import>
 			<label class="heading" for="rawdata">Import Member and Calling Data</label>
 			<br><br>
-			<textarea id="rawdata" class="input-field"
+			<textarea id="rawdata"
 					  placeholder="IMPORTANT: Any unsaved models will be lost when importing data."></textarea>
 			<br><br>
 			<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">

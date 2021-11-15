@@ -11,6 +11,9 @@ body {
 	width: 100%;
 	width: -webkit-fill-available;
 	width: -moz-available;
+	padding: 15px;
+	border-radius: 20px;
+	outline: none;
 }
 
 /* Style the header */
@@ -31,6 +34,7 @@ input[type=button] {
 	border-radius: 10px;
 	margin-bottom: 5px;
 	margin-left: 10px;
+	font-size: 13px;
 }
 
 /* Create two columns/boxes that float next to each other */
@@ -99,7 +103,7 @@ footer {
 }
 
 #member-scroller {
-	height: 40vh;
+	height: 37vh;
 	width: -webkit-fill-available;
 	width: -moz-available;
 	overflow: auto;
@@ -139,10 +143,12 @@ footer {
 	padding: 10px;
 }
 
-.input-field {
+#member-filter {
+	margin-left: 10px;
 	margin-bottom: 2px;
 	padding-left: 15px;
 	border-radius: 20px;
+	outline: none;
 }
 
 li {
@@ -306,8 +312,12 @@ li.proposed {
 }
 
 #model-name {
+	width: 54%;
 	margin-right: 5px;
 	font-size: 15px;
+	padding-left: 15px;
+	border-radius: 20px;
+	outline: none;
 }
 
 td.selected {
