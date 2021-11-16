@@ -19,7 +19,7 @@
 </div>
 
 <div id="modeling" class="tabcontent">
-	<nav>
+	<member-list>
 		<label class="heading" for="members">Members</label>
 		<br>
 		<input id="member-filter" size="20" onclick="this.select()"
@@ -51,9 +51,9 @@
 			</ul>
 		</div>
 		<span>&nbsp;</span>
-	</nav>
+	</member-list>
 
-	<nav>
+	<call-release>
 		<label class="heading" for="releases">Releases</label>
 		<br>
 		<div class="release-sustain-scroller">
@@ -73,9 +73,9 @@
 		<input type="button" class="bottom" onclick="transaction('undo-trans')" value="Undo Last">
 		<input type="button" class="bottom" onclick="transaction('redo-trans')" value="Redo Last">
 		<span id="trash" class="bottom" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
-	</nav>
+	</call-release>
 
-	<article>
+	<ward-tree>
 		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
 		<br><br>
@@ -94,12 +94,12 @@
 				</li>
 			</ul>
 		</div>
-	</article>
+	</ward-tree>
 </div>
 
 <div id="manage-models" class="tabcontent">
-	<import>
-		<importl>
+	<model-man>
+		<model-man-left>
 			<input id="model-name" type="text" onclick="this.select()"
 				   placeholder="Model name to save"
 				   value="">
@@ -107,8 +107,8 @@
 			<div id="model-name-scroller">
 				<table id="model-names" onclick="selectModelFile(event)"></table>
 			</div>
-		</importl>
-		<importr>
+		</model-man-left>
+		<model-man-right>
 			<input type="button" onclick="saveModel()" value="Save Model">
 			<br><br>
 			<input type="button" onclick="listModels()" value="Refresh List">
@@ -116,20 +116,20 @@
 			<input type="button" onclick="loadModel()" value="Load Model">
 			<br>
 			<input type="button" onclick="deleteModel()" value="Delete Model">
-		</importr>
-		<importf>
-			<importl>
+		</model-man-right>
+		<model-man-footer>
+			<model-man-left>
 				<span>Reset the model to imported data</span>
-			</importl>
-			<importr>
+			</model-man-left>
+			<model-man-right>
 				<input type="button" onclick="resetModel()" value="Reset Model">
-			</importr>
-		</importf>
-	</import>
+			</model-man-right>
+		</model-man-footer>
+	</model-man>
 </div>
 
 <div id="import" class="tabcontent">
-	<import>
+	<import-data>
 		<span class="heading">Instructions</span>
 		<br><br>
 		<div class="sub-heading">Members</div>
@@ -154,9 +154,9 @@
 		</div>
 		<div class="instructions">4) Paste in the window and click the <strong>Callings</strong> button.</div>
 		<div>&nbsp;</div>
-	</import>
+	</import-data>
 
-	<import>
+	<import-data>
 		<label class="heading" for="rawdata">Import Member and Calling Data</label>
 		<br><br>
 		<textarea id="rawdata"
@@ -164,7 +164,7 @@
 		<br><br>
 		<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
 		<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">
-	</import>
+	</import-data>
 </div>
 
 <script src="js/callorg.js"></script>

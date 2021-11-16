@@ -9,4 +9,5 @@ and track releasings and sustainings.
 TODO
 - Implement UI for focus member management  
 - Print Report
+- Growl messages
 - Authentication/authorization ?
