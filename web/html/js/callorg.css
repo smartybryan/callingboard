@@ -49,7 +49,7 @@ nav {
 article {
 	float: left;
 	height: 88vh;
-	width: 40%;
+	width: 39%;
 	margin: 10px;
 	padding: 15px;
 	border-radius: 20px;
@@ -64,6 +64,26 @@ import {
 	padding: 15px;
 	border-radius: 20px;
 	background-color: lightgray;
+}
+
+importl {
+	float: left;
+	width: 60%;
+	margin: 10px;
+}
+
+importr {
+	float: left;
+	width: 30%;
+	padding: 10px;
+	margin-left: -20px;
+
+}
+
+importf {
+	float: left;
+	width: 100%;
+	padding: 10px;
 }
 
 /* SHARED */
@@ -216,7 +236,7 @@ li.proposed {
 /* MODEL MANAGEMENT */
 
 #model-name {
-	width: 54%;
+	width: 255px;
 	margin-right: 5px;
 	font-size: 15px;
 	padding-left: 15px;

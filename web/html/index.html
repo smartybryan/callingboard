@@ -99,23 +99,32 @@
 
 <div id="manage-models" class="tabcontent">
 	<import>
-		<input id="model-name" type="text" onclick="this.select()"
-			   placeholder="Model name to save"
-			   value="">
-		<input type="button" onclick="saveModel()" value="Save Model">
-		<br><br>
-		<div id="model-name-scroller">
-			<table id="model-names" onclick="selectModelFile(event)"></table>
-		</div>
-		<input type="button" onclick="listModels()" value="Refresh List">
-		<br>
-		<input type="button" onclick="loadModel()" value="Load Model">
-		<br>
-		<input type="button" onclick="deleteModel()" value="Delete Model">
-		<br><br><br><br><br><br><br><br><br>
-		<label>Reset the model back to imported data</label>
-		<br>
-		<input type="button" onclick="resetModel()" value="Reset Model">
+		<importl>
+			<input id="model-name" type="text" onclick="this.select()"
+				   placeholder="Model name to save"
+				   value="">
+			<br><br>
+			<div id="model-name-scroller">
+				<table id="model-names" onclick="selectModelFile(event)"></table>
+			</div>
+		</importl>
+		<importr>
+			<input type="button" onclick="saveModel()" value="Save Model">
+			<br><br>
+			<input type="button" onclick="listModels()" value="Refresh List">
+			<br>
+			<input type="button" onclick="loadModel()" value="Load Model">
+			<br>
+			<input type="button" onclick="deleteModel()" value="Delete Model">
+		</importr>
+		<importf>
+			<importl>
+				<span>Reset the model to imported data</span>
+			</importl>
+			<importr>
+				<input type="button" onclick="resetModel()" value="Reset Model">
+			</importr>
+		</importf>
 	</import>
 </div>
 
