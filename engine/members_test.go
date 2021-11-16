@@ -56,7 +56,9 @@ func (this *MembersFixture) TestEligibleForACalling() {
 func (this *MembersFixture) TestSaveLoad() {
 	tempFile := "testmembers"
 	members := createTestMembers(tempFile)
+	_ = members.PutFocusMembers([]string{"Focus, One;Focus, Two"})
 	mLength := len(members.MemberMap)
+	fLength := len(members.FocusMembers)
 	_, err := members.Save()
 	this.So(err, should.BeNil)
 
@@ -64,7 +66,7 @@ func (this *MembersFixture) TestSaveLoad() {
 	err = members.Load()
 	this.So(err, should.BeNil)
 	this.So(len(members.MemberMap), should.Equal, mLength)
-
+	this.So(len(members.FocusMembers), should.Equal, fLength)
 	_ = os.Remove(tempFile)
 }
 

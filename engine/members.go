@@ -8,7 +8,8 @@ import (
 )
 
 type Members struct {
-	MemberMap map[string]Member
+	MemberMap    map[string]Member
+	FocusMembers []string
 
 	initialSize int
 	filePath    string
@@ -75,6 +76,15 @@ func (this *Members) Save() (numObjects int, err error) {
 	return len(this.MemberMap), err
 }
 
+func (this *Members) GetFocusMembers() []string {
+	return this.FocusMembers
+}
+
+func (this *Members) PutFocusMembers(members []string) error {
+	this.FocusMembers = members
+	return nil
+}
+
 ///// private /////
 
 func (this *Members) copy() Members {
@@ -99,15 +109,14 @@ func (this *Members) copy() Members {
 //////////////////////////////////////////////////////
 
 type Member struct {
-	Name   string
-	Gender string
+	Name       string
+	Gender     string
 	Birthday   time.Time
 	Unbaptized bool
 
 	Age            int
 	AgeByEndOfYear int
 }
-
 
 func MemberSetDifference(mainSet, subtractSet []string) (names []string) {
 	for _, name := range mainSet {
@@ -123,7 +132,7 @@ func MemberSetDifference(mainSet, subtractSet []string) (names []string) {
 
 func memberInSet(set []string, name string) bool {
 	for _, value := range set {
-		if value ==  name {
+		if value == name {
 			return true
 		}
 	}

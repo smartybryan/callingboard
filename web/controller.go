@@ -77,6 +77,20 @@ func (this *Controller) SaveMembers() detour.Renderer {
 	}
 }
 
+func (this *Controller) GetFocusMembers() detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    this.project.Members.GetFocusMembers(),
+	}
+}
+
+func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    this.project.Members.PutFocusMembers(strings.Split(input.MemberName, ";")),
+	}
+}
+
 func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 	numMembers := this.project.Members.ParseMembersFromRawData(input.RawData)
 	if numMembers < 10 {

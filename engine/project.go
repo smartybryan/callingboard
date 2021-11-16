@@ -17,6 +17,7 @@ const (
 type Project struct {
 	Callings         *Callings
 	Members          *Members
+	FocusMembers     *Members
 	originalCallings Callings
 	transactions     []Transaction
 	undoHistory      []Transaction
@@ -26,9 +27,9 @@ type Project struct {
 }
 
 type DiffResult struct {
-	Sustainings           []Calling
-	Releases              []Calling
-	NewVacancies          []Calling
+	Sustainings  []Calling
+	Releases     []Calling
+	NewVacancies []Calling
 }
 
 func NewProject(callings *Callings, members *Members, dataPath string) *Project {
