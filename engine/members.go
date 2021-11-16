@@ -77,11 +77,18 @@ func (this *Members) Save() (numObjects int, err error) {
 }
 
 func (this *Members) GetFocusMembers() []string {
+	var validatedMembers []string
+	for _, name := range this.FocusMembers {
+		if _, found := this.MemberMap[name]; found {
+			validatedMembers = append(validatedMembers, name)
+		}
+	}
+	this.FocusMembers = validatedMembers
 	return this.FocusMembers
 }
 
-func (this *Members) PutFocusMembers(members []string) error {
-	this.FocusMembers = members
+func (this *Members) PutFocusMembers(names []string) error {
+	this.FocusMembers = names
 	return nil
 }
 

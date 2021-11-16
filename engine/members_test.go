@@ -39,6 +39,15 @@ func (this *MembersFixture) TestGetMembers() {
 		[]string{"Last2, First2", "Last3, First3", "Last4, First4"})
 }
 
+func (this *MembersFixture) TestFocusMembers() {
+	members := createTestMembers("")
+
+	data := []string{"Last2, First2","Last4, First4"}
+	dataWithBogus := append(data, "Bogus")
+	_ = members.PutFocusMembers(dataWithBogus)
+	this.So(members.GetFocusMembers(), should.Resemble, data)
+}
+
 func (this *MembersFixture) TestAdultsWithoutACalling() {
 	members := createTestMembers("")
 	callings := createTestCallings("")
