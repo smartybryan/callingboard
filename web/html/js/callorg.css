@@ -96,7 +96,7 @@ td {
 	font-size: 15px;
 }
 
-nav ul {
+member-list ul, call-release ul {
 	list-style-type: none;
 	padding: 0;
 	margin-top: 0px;
