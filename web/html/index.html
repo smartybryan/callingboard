@@ -15,6 +15,7 @@
 <div class="tab">
 	<button class="tablinks" onclick="openTab(event, 'modeling')" id="default-tab">Modeling</button>
 	<button class="tablinks" onclick="openTab(event, 'manage-models')">Model Management</button>
+	<button class="tablinks" onclick="openTab(event, 'manage-focus-members')">Focus Members</button>
 	<button class="tablinks" onclick="openTab(event, 'import')">Import</button>
 </div>
 
@@ -32,13 +33,10 @@
 		<br>
 		<div id="member-buttons">
 			<input type="button" onclick="displayMembers('members')" value="All Members">
-			<br>
 			<input type="button" onclick="displayMembers('adults-without-calling')"
 				   value="Adults Without Calling">
-			<br>
 			<input type="button" onclick="displayMembers('members-with-callings')"
 				   value="Members With a Calling">
-			<br>
 			<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
 			<!--				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">-->
 			<!--				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">-->
@@ -126,6 +124,23 @@
 			</model-man-right>
 		</model-man-footer>
 	</model-man>
+</div>
+
+<div id="manage-focus-members" class="tabcontent">
+	<focus-member>
+		<div id="focus-member-scroller">
+			<table>
+				<thead>
+				<tr>
+					<td><strong>Member</strong></td>
+					<td><strong>Focus</strong></td>
+				</tr>
+				</thead>
+				<tbody id="focus-member-list">
+				</tbody>
+			</table>
+		</div>
+	</focus-member>
 </div>
 
 <div id="import" class="tabcontent">

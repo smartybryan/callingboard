@@ -11,6 +11,7 @@ window.onload = function () {
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
+	populateFocusList();
 	document.getElementById("default-tab").click();
 };
 
@@ -417,6 +418,33 @@ function clearContainer(element) {
 	}
 }
 
+function populateFocusList() {
+	const tableContainer = document.getElementById("focus-member-list");
+	clearContainer(tableContainer);
+
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			let jsonObject = JSON.parse(this.responseText)
+			jsonObject.forEach(function (member) {
+				let rowElement = document.createElement("tr")
+				let memberElement = document.createElement("td");
+				memberElement.innerHTML = member;
+				let focusElement = document.createElement("td")
+				focusElement.innerHTML = '<input type="checkbox">'
+				rowElement.appendChild(memberElement);
+				rowElement.appendChild(focusElement);
+				tableContainer.appendChild(rowElement);
+			});
+		}
+	};
+
+	let endpoint = "members";
+	xhttp.open("GET", "/v1/" + endpoint);
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
 //// transactions ////
 
 function transaction(endpoint, params) {
@@ -439,7 +467,7 @@ function createTransactionParmsFromTreeElememt(element) {
 
 function createTransactionParmsForMemberElement(memberElement, callingElement) {
 	let callingIdParts = callingElement.id.split("@");
-	return "org=" + callingElement.getAttribute("data-org")  + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
+	return "org=" + callingElement.getAttribute("data-org") + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
 }
 
 //// model file operations ////
