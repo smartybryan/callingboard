@@ -7,7 +7,8 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Implement UI for focus member management  
 - Print Report
+- Convert UI to Flexbox
+- Refactor js api calls
 - Growl messages
-- Authentication/authorization ?
+- Authentication/authorization

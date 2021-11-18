@@ -16,6 +16,8 @@ window.onload = function () {
 };
 
 function openTab(evt, tabName) {
+	tabPreEvent(tabName);
+
 	let i, tabcontent, tablinks, leavingTab;
 	tabcontent = document.getElementsByClassName("tabcontent");
 	for (i = 0; i < tabcontent.length; i++) {
@@ -24,7 +26,7 @@ function openTab(evt, tabName) {
 	tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
 		if (tablinks[i].classList.contains("active")) {
-			leavingTab = tablinks[i].innerText;
+			leavingTab = tablinks[i].id;
 		}
 		tablinks[i].classList.remove("active");
 	}
@@ -34,9 +36,19 @@ function openTab(evt, tabName) {
 	tabPostEvent(leavingTab);
 }
 
+function tabPreEvent(enteringTab) {
+	switch(enteringTab) {
+		case "report":
+			generateReport();
+			break;
+	}
+}
+
 function tabPostEvent(leavingTab) {
-	if (leavingTab === "Focus Members") {
-		saveFocusList();
+	switch(leavingTab) {
+		case "manage-focus-members":
+			saveFocusList();
+			break;
 	}
 }
 
@@ -608,6 +620,14 @@ function modelOperation(endpoint, name) {
 	xhttp.open("GET", "/v1/" + endpoint + encodeURI(params));
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
+}
+
+//// report ////
+
+function generateReport() {
+	let canvas = document.getElementById("report-canvas");
+
+	canvas.innerHTML = "This is the beginnings of a report<br>another line"
 }
 
 //// parsers ////

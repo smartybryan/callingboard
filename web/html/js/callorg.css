@@ -241,6 +241,18 @@ li.proposed {
 	display: block;
 }
 
+/* REPORT */
+
+#report {
+	border: none;
+}
+
+#report-canvas {
+	font-family: "Courier New", serif;
+	font-size: 14pt;
+	margin: 20px;
+}
+
 /* MODEL MANAGEMENT */
 
 #model-name {
