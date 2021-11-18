@@ -33,11 +33,12 @@
 		<br>
 		<div id="member-buttons">
 			<input type="button" onclick="displayMembers('members')" value="All Members">
+			<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
+			<input type="button" onclick="displayMembers('focus-members')" value="Focus Members">
 			<input type="button" onclick="displayMembers('adults-without-calling')"
 				   value="Adults Without Calling">
 			<input type="button" onclick="displayMembers('members-with-callings')"
 				   value="Members With a Calling">
-			<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
 			<!--				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">-->
 			<!--				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">-->
 		</div>
@@ -132,8 +133,8 @@
 			<table>
 				<thead>
 				<tr>
-					<td><strong>Member</strong></td>
-					<td><strong>Focus</strong></td>
+					<td style="text-align: left;"><strong>Member</strong></td>
+					<td style="text-align: center;"><strong>Focus</strong></td>
 				</tr>
 				</thead>
 				<tbody id="focus-member-list">

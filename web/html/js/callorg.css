@@ -27,6 +27,8 @@ body {
 	font-weight: bold;
 }
 
+/* LAYOUT */
+
 header {
 	height: 50px;
 	background-color: darkslategrey;
@@ -89,7 +91,7 @@ model-man-footer {
 focus-member {
 	display: flex;
 	height: 88vh;
-	width: 28%;
+	width: 290px;
 	margin: 10px;
 	padding: 15px;
 	border-radius: 20px;
@@ -100,10 +102,6 @@ focus-member {
 
 .pointer, li, td:hover {
 	cursor: pointer;
-}
-
-td {
-	font-size: 15px;
 }
 
 member-list ul, call-release ul {
@@ -274,14 +272,17 @@ td.selected {
 /* FOCUS MEMBERS */
 
 #focus-member-scroller {
-	/*height: 37vh;*/
-	/*width: 100%;*/
 	overflow: auto;
-	float: left;
 	position: relative;
 	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 15px;
+}
+
+.focus-column {
+	text-align: center;
+}
+
+#focus-member-scroller td {
+	font-size: 16px;
 }
 
 /* IMPORT */

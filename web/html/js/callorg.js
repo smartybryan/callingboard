@@ -16,17 +16,28 @@ window.onload = function () {
 };
 
 function openTab(evt, tabName) {
-	var i, tabcontent, tablinks;
+	let i, tabcontent, tablinks, leavingTab;
 	tabcontent = document.getElementsByClassName("tabcontent");
 	for (i = 0; i < tabcontent.length; i++) {
 		tabcontent[i].style.display = "none";
 	}
 	tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
+		if (tablinks[i].classList.contains("active")) {
+			leavingTab = tablinks[i].innerText;
+		}
 		tablinks[i].classList.remove("active");
 	}
 	document.getElementById(tabName).style.display = "block";
 	evt.currentTarget.classList.add("active");
+
+	tabPostEvent(leavingTab);
+}
+
+function tabPostEvent(leavingTab) {
+	if (leavingTab === "Focus Members") {
+		saveFocusList();
+	}
 }
 
 //// tree functions ////
@@ -426,12 +437,18 @@ function populateFocusList() {
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4 && this.status === 200) {
 			let jsonObject = JSON.parse(this.responseText)
-			jsonObject.forEach(function (member) {
+			jsonObject.forEach(function (memberRecord) {
 				let rowElement = document.createElement("tr")
 				let memberElement = document.createElement("td");
-				memberElement.innerHTML = member;
+				memberElement.innerHTML = memberRecord.Name;
 				let focusElement = document.createElement("td")
-				focusElement.innerHTML = '<input type="checkbox">'
+				focusElement.classList.add("focus-column");
+				let cbElement = document.createElement("input");
+				cbElement.setAttribute("type", "checkbox");
+				if (memberRecord.Focus) {
+					cbElement.checked = true;
+				}
+				focusElement.appendChild(cbElement);
 				rowElement.appendChild(memberElement);
 				rowElement.appendChild(focusElement);
 				tableContainer.appendChild(rowElement);
@@ -439,7 +456,34 @@ function populateFocusList() {
 		}
 	};
 
-	let endpoint = "members";
+	let endpoint = "members-with-focus";
+	xhttp.open("GET", "/v1/" + endpoint);
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
+function saveFocusList() {
+	const tableContainer = document.getElementById("focus-member-list");
+	let focusMembers = "";
+
+	let rows = tableContainer.getElementsByTagName("tr");
+	for (let row of rows) {
+		let columns = row.getElementsByTagName("td");
+		if (columns[1].getElementsByTagName("input")[0].checked) {
+			if (focusMembers.length > 0) {
+				focusMembers += "|";
+			}
+			focusMembers += columns[0].innerText;
+		}
+	}
+
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+		}
+	};
+
+	let endpoint = "put-focus-members?member=" + encodeURI(focusMembers);
 	xhttp.open("GET", "/v1/" + endpoint);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();

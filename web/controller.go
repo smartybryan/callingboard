@@ -77,6 +77,13 @@ func (this *Controller) SaveMembers() detour.Renderer {
 	}
 }
 
+func (this *Controller) GetMembersWithFocus() detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    this.project.Members.GetMembersWithFocus(),
+	}
+}
+
 func (this *Controller) GetFocusMembers() detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
@@ -87,7 +94,7 @@ func (this *Controller) GetFocusMembers() detour.Renderer {
 func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    this.project.Members.PutFocusMembers(strings.Split(input.MemberName, ";")),
+		Content:    this.project.Members.PutFocusMembers(strings.Split(input.MemberName, "|")),
 	}
 }
 

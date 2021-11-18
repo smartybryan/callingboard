@@ -15,6 +15,11 @@ type Members struct {
 	filePath    string
 }
 
+type MemberWithFocus struct {
+	Name string
+	Focus bool
+}
+
 func NewMembers(numMembers int, path string) Members {
 	return Members{
 		MemberMap:   make(map[string]Member, numMembers),
@@ -76,20 +81,26 @@ func (this *Members) Save() (numObjects int, err error) {
 	return len(this.MemberMap), err
 }
 
-func (this *Members) GetFocusMembers() []string {
-	var validatedMembers []string
-	for _, name := range this.FocusMembers {
-		if _, found := this.MemberMap[name]; found {
-			validatedMembers = append(validatedMembers, name)
-		}
+func (this *Members) GetMembersWithFocus() (focusMembers []MemberWithFocus) {
+	members := this.GetMembers(18, 99)
+
+	for _, member := range members {
+		focusMembers = append(focusMembers, MemberWithFocus{
+			Name:  member,
+			Focus: this.isMemberFocused(member),
+		})
 	}
-	this.FocusMembers = validatedMembers
+	return focusMembers
+}
+
+func (this *Members) GetFocusMembers() []string {
 	return this.FocusMembers
 }
 
 func (this *Members) PutFocusMembers(names []string) error {
 	this.FocusMembers = names
-	return nil
+	_, err := this.Save()
+	return err
 }
 
 ///// private /////
@@ -111,6 +122,15 @@ func (this *Members) copy() Members {
 	}
 
 	return newMembers
+}
+
+func (this *Members) isMemberFocused(member string) bool {
+	for _, focusedMember := range this.FocusMembers {
+		if focusedMember == member {
+			return true
+		}
+	}
+	return false
 }
 
 //////////////////////////////////////////////////////

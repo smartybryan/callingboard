@@ -16,7 +16,8 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/eligible-adults", detour.New(controller.AdultsEligibleForCalling))
 	http.Handle("/v1/eligible-youth", detour.New(controller.YouthEligibleForCalling))
 	http.Handle("/v1/newly-available", detour.New(controller.NewlyAvailableMembers))
-	http.Handle("/v1/get-focus-members", detour.New(controller.GetFocusMembers))
+	http.Handle("/v1/members-with-focus", detour.New(controller.GetMembersWithFocus))
+	http.Handle("/v1/focus-members", detour.New(controller.GetFocusMembers))
 	http.Handle("/v1/put-focus-members", detour.New(controller.PutFocusMembers)) // member (list sep by ;)
 	http.Handle("/v1/get-member", detour.New(controller.GetMemberRecord)) // member
 	http.Handle("/v1/load-members", detour.New(controller.LoadMembers))

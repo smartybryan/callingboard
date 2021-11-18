@@ -42,10 +42,14 @@ func (this *MembersFixture) TestGetMembers() {
 func (this *MembersFixture) TestFocusMembers() {
 	members := createTestMembers("")
 
-	data := []string{"Last2, First2","Last4, First4"}
-	dataWithBogus := append(data, "Bogus")
-	_ = members.PutFocusMembers(dataWithBogus)
-	this.So(members.GetFocusMembers(), should.Resemble, data)
+	data := []string{"Last2, First2", "Last4, First4"}
+	expected := []MemberWithFocus{
+		{Name: "Last2, First2", Focus: true},
+		{Name: "Last3, First3", Focus: false},
+		{Name: "Last4, First4", Focus: true},
+	}
+	_ = members.PutFocusMembers(data)
+	this.So(members.GetMembersWithFocus(), should.Resemble, expected)
 }
 
 func (this *MembersFixture) TestAdultsWithoutACalling() {
@@ -71,7 +75,7 @@ func (this *MembersFixture) TestSaveLoad() {
 	_, err := members.Save()
 	this.So(err, should.BeNil)
 
-	members = NewMembers(10,tempFile)
+	members = NewMembers(10, tempFile)
 	err = members.Load()
 	this.So(err, should.BeNil)
 	this.So(len(members.MemberMap), should.Equal, mLength)
@@ -91,7 +95,7 @@ func createTestMembers(path string) Members {
 }
 
 func createTestCallings(path string) Callings {
-	callings := NewCallings(5,path)
+	callings := NewCallings(5, path)
 	calling1 := createCalling("calling1", "Last1, First1", 2, 6)
 	calling2 := createCalling("calling2", "Last2, First2", 1, 6)
 	calling3 := createCalling("calling3", VACANT_CALLING, 0, 6)
