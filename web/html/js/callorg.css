@@ -145,7 +145,7 @@ li.member-row {
 }
 
 #member-scroller {
-	height: 37vh;
+	height: 50vh;
 	width: 100%;
 	overflow: auto;
 	float: left;
@@ -156,7 +156,7 @@ li.member-row {
 }
 
 #member-buttons {
-	height: 100px;
+	height: 75px;
 	width: 100%;
 	float: left;
 	position: relative;
