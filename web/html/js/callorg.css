@@ -27,6 +27,8 @@ body {
 	font-weight: bold;
 }
 
+tr:nth-child(even) {background-color: #f2f2f2;}
+
 /* LAYOUT */
 
 header {
@@ -145,7 +147,7 @@ li.member-row {
 }
 
 #member-scroller {
-	height: 50vh;
+	height: 48vh;
 	width: 100%;
 	overflow: auto;
 	float: left;
@@ -248,9 +250,12 @@ li.proposed {
 }
 
 #report-canvas {
-	font-family: "Courier New", serif;
-	font-size: 14pt;
 	margin: 20px;
+}
+
+.print-button {
+	position: relative;
+	float: right;
 }
 
 /* MODEL MANAGEMENT */
@@ -262,6 +267,10 @@ li.proposed {
 	padding-left: 15px;
 	border-radius: 20px;
 	outline: none;
+}
+
+#model-names {
+	width: 100%;
 }
 
 #model-name-scroller {
