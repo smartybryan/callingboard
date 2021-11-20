@@ -52,21 +52,6 @@ function tabPostEvent(leavingTab) {
 	}
 }
 
-//// api call ////
-
-function apiCall(endpoint, params, callback) {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			callback(this.responseText);
-		}
-	};
-
-	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
-}
-
 //// tree functions ////
 
 function setupTreeStructure() {
@@ -249,30 +234,24 @@ function refreshTree_callback(response) {
 }
 
 function refreshCallingChanges() {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let jsonObject = JSON.parse(this.responseText);
+	apiCall("diff","",refreshCallingChanges_callback)
+}
 
-			let container = document.getElementById("releases");
-			clearContainer(container);
-			addReleaseDropEnabler(container);
-			jsonObject.Releases.forEach(function (calling) {
-				container.appendChild(createCallingElement(calling, 0));
-			});
+function refreshCallingChanges_callback(response) {
+	let jsonObject = JSON.parse(response);
 
-			container = document.getElementById("sustainings");
-			clearContainer(container);
-			jsonObject.Sustainings.forEach(function (calling) {
-				container.appendChild(createCallingElement(calling, 0));
-			});
-		}
-	};
+	let container = document.getElementById("releases");
+	clearContainer(container);
+	addReleaseDropEnabler(container);
+	jsonObject.Releases.forEach(function (calling) {
+		container.appendChild(createCallingElement(calling, 0));
+	});
 
-	let url = "diff";
-	xhttp.open("GET", "/v1/" + url);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	container = document.getElementById("sustainings");
+	clearContainer(container);
+	jsonObject.Sustainings.forEach(function (calling) {
+		container.appendChild(createCallingElement(calling, 0));
+	});
 }
 
 function addReleaseDropEnabler(container) {
@@ -317,7 +296,7 @@ function drop(ev) {
 			alert(MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
-		transaction("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement));
+		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement), refreshFromModel);
 		return
 	}
 
@@ -329,7 +308,7 @@ function drop(ev) {
 		}
 		let idComponents = callingIdComponents(movedElement.id);
 		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
-		transaction("backout-transaction", params);
+		apiCall("backout-transaction", params, refreshFromModel);
 		clearCallingsHeldByMember();
 		return
 	}
@@ -356,7 +335,7 @@ function drop(ev) {
 		return
 	}
 
-	transaction("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement));
+	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement), refreshFromModel);
 }
 
 //// member functions ////
@@ -508,18 +487,6 @@ function saveFocusList() {
 }
 
 //// transactions ////
-
-function transaction(endpoint, params) {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4) {
-			refreshFromModel();
-		}
-	};
-	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
-}
 
 //TODO: remove dup code from the two functions below
 function createTransactionParmsFromTreeElememt(element) {
@@ -710,4 +677,19 @@ function parseRawData(endpoint) {
 	xhttp.open("POST", "/v1/" + endpoint);
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send(rawData.value);
+}
+
+//// api call ////
+
+function apiCall(endpoint, params, callback) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			callback(this.responseText);
+		}
+	};
+
+	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
 }

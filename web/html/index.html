@@ -70,8 +70,8 @@
 		</div>
 
 		<div>&nbsp;</div>
-		<input type="button" class="bottom" onclick="transaction('undo-trans')" value="Undo Last">
-		<input type="button" class="bottom" onclick="transaction('redo-trans')" value="Redo Last">
+		<input type="button" class="bottom" onclick="apiCall('undo-trans','',refreshFromModel)" value="Undo Last">
+		<input type="button" class="bottom" onclick="apiCall('redo-trans','',refreshFromModel)" value="Redo Last">
 		<span id="trash" class="bottom" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
 	</call-release>
 
