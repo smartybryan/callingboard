@@ -12,7 +12,7 @@ window.onload = function () {
 	displayMembers("members-with-callings");
 	listModels();
 	populateFocusList();
-	document.getElementById("default-tab").click();
+	focusDefaultTab();
 };
 
 function openTab(evt, tabName) {
@@ -26,7 +26,7 @@ function openTab(evt, tabName) {
 	tablinks = document.getElementsByClassName("tablinks");
 	for (i = 0; i < tablinks.length; i++) {
 		if (tablinks[i].classList.contains("active")) {
-			leavingTab = tablinks[i].id;
+			leavingTab = tablinks[i].name;
 		}
 		tablinks[i].classList.remove("active");
 	}
@@ -50,6 +50,10 @@ function tabPostEvent(leavingTab) {
 			saveFocusList();
 			break;
 	}
+}
+
+function focusDefaultTab() {
+	document.getElementById("default-tab").click();
 }
 
 //// tree functions ////
@@ -234,7 +238,7 @@ function refreshTree_callback(response) {
 }
 
 function refreshCallingChanges() {
-	apiCall("diff","",refreshCallingChanges_callback)
+	apiCall("diff", "", refreshCallingChanges_callback)
 }
 
 function refreshCallingChanges_callback(response) {
@@ -341,33 +345,29 @@ function drop(ev) {
 //// member functions ////
 
 function displayMembers(endpoint) {
+	apiCall(endpoint, "", displayMembers_callback)
+}
+
+function displayMembers_callback(response) {
 	const membersElement = document.getElementById("members");
 	clearContainer(membersElement);
 	clearContainer(document.getElementById("member-callings"));
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let jsonObject = JSON.parse(this.responseText)
-			jsonObject.forEach(function (member) {
-				let memberElement = document.createElement('li');
-				memberElement.innerHTML = member;
-				memberElement.setAttribute("id", member);
-				memberElement.setAttribute("draggable", "true");
-				memberElement.classList.add("member-row");
-				memberElement.addEventListener("click", function () {
-					memberSelected(memberElement);
-				});
-				membersElement.appendChild(memberElement);
-			});
+	let jsonObject = JSON.parse(response);
+	jsonObject.forEach(function (member) {
+		let memberElement = document.createElement('li');
+		memberElement.innerHTML = member;
+		memberElement.setAttribute("id", member);
+		memberElement.setAttribute("draggable", "true");
+		memberElement.classList.add("member-row");
+		memberElement.addEventListener("click", function () {
+			memberSelected(memberElement);
+		});
+		membersElement.appendChild(memberElement);
+	});
 
-			filterMembers();
-		}
-	};
+	filterMembers();
 
-	xhttp.open("GET", "/v1/" + endpoint);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
 }
 
 function memberSelected(element) {
@@ -392,25 +392,19 @@ function clearFilter() {
 }
 
 function displayMemberCallings(name) {
+	apiCall("callings-for-member", "member=" + name, displayMemberCallings_callback)
+}
+
+function displayMemberCallings_callback(response) {
 	const container = document.getElementById("member-callings");
 	clearContainer(container);
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let jsonObject = JSON.parse(this.responseText)
-			jsonObject.forEach(function (calling) {
-				let callingInfo = createCallingElement(calling, 0);
-				callingInfo.classList.add("member-calling");
-				container.appendChild(callingInfo);
-			});
-		}
-	};
-
-	let endpoint = "callings-for-member?member=" + name;
-	xhttp.open("GET", "/v1/" + encodeURI(endpoint));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	let jsonObject = JSON.parse(response)
+	jsonObject.forEach(function (calling) {
+		let callingInfo = createCallingElement(calling, 0);
+		callingInfo.classList.add("member-calling");
+		container.appendChild(callingInfo);
+	});
 }
 
 function clearCallingsHeldByMember() {
@@ -427,36 +421,30 @@ function clearContainer(element) {
 }
 
 function populateFocusList() {
+	apiCall("members-with-focus", "", populateFocusList_callback)
+}
+
+function populateFocusList_callback(response) {
 	const tableContainer = document.getElementById("focus-member-list");
 	clearContainer(tableContainer);
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let jsonObject = JSON.parse(this.responseText)
-			jsonObject.forEach(function (memberRecord) {
-				let rowElement = document.createElement("tr")
-				let memberElement = document.createElement("td");
-				memberElement.innerHTML = memberRecord.Name;
-				let focusElement = document.createElement("td")
-				focusElement.classList.add("focus-column");
-				let cbElement = document.createElement("input");
-				cbElement.setAttribute("type", "checkbox");
-				if (memberRecord.Focus) {
-					cbElement.checked = true;
-				}
-				focusElement.appendChild(cbElement);
-				rowElement.appendChild(memberElement);
-				rowElement.appendChild(focusElement);
-				tableContainer.appendChild(rowElement);
-			});
+	let jsonObject = JSON.parse(response)
+	jsonObject.forEach(function (memberRecord) {
+		let rowElement = document.createElement("tr")
+		let memberElement = document.createElement("td");
+		memberElement.innerHTML = memberRecord.Name;
+		let focusElement = document.createElement("td")
+		focusElement.classList.add("focus-column");
+		let cbElement = document.createElement("input");
+		cbElement.setAttribute("type", "checkbox");
+		if (memberRecord.Focus) {
+			cbElement.checked = true;
 		}
-	};
-
-	let endpoint = "members-with-focus";
-	xhttp.open("GET", "/v1/" + endpoint);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+		focusElement.appendChild(cbElement);
+		rowElement.appendChild(memberElement);
+		rowElement.appendChild(focusElement);
+		tableContainer.appendChild(rowElement);
+	});
 }
 
 function saveFocusList() {
@@ -474,21 +462,14 @@ function saveFocusList() {
 		}
 	}
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-		}
-	};
+	apiCall("put-focus-members", "member=" + focusMembers, saveFocusList_callback);
+}
 
-	let endpoint = "put-focus-members?member=" + encodeURI(focusMembers);
-	xhttp.open("GET", "/v1/" + endpoint);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+function saveFocusList_callback(response) {
 }
 
 //// transactions ////
 
-//TODO: remove dup code from the two functions below
 function createTransactionParmsFromTreeElememt(element) {
 	let callingIdParts = element.id.split("@");
 	return "org=" + element.getAttribute("data-org") + "&calling=" + callingIdParts[0] + "&member=" + callingIdParts[1];
@@ -637,7 +618,7 @@ function buildReportTable(title, callings) {
 		width: 250px;
 	}
 	</style>
-	<h2>`+title+`</h2>
+	<h2>` + title + `</h2>
 	<table class="report-table">
 	<thead>
 	<tr><th class="report-table"><strong>Member</strong></th>
