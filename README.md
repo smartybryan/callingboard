@@ -7,8 +7,7 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Print Report
-- Convert UI to Flexbox
 - Refactor js api calls
 - Growl messages
+- Convert UI to Flexbox
 - Authentication/authorization

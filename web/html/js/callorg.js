@@ -52,11 +52,29 @@ function tabPostEvent(leavingTab) {
 	}
 }
 
+//// api call ////
+
+function apiCall(endpoint, params, callback) {
+	const xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			callback(this.responseText);
+		}
+	};
+
+	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
 //// tree functions ////
 
 function setupTreeStructure() {
+	apiCall("callings", "org=" + ALL_ORGS, setupTreeStructure_callback);
+}
+
+function setupTreeStructure_callback(response) {
 	const wardOrgs = document.getElementById("ward-organizations");
-	const xhttp = new XMLHttpRequest();
 
 	function setupNestedContainers(containerName, parentContainer, orgContainer, containerId) {
 		let caret = document.createElement("span");
@@ -72,65 +90,38 @@ function setupTreeStructure() {
 		return nested;
 	}
 
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let counter = 0;
-			let jsonObject = JSON.parse(this.responseText);
-			jsonObject.forEach(function (calling) {
-				counter++;
-				let orgContainer = document.getElementById(calling.Org);
-				if (!orgContainer) {
-					let containerId = calling.Org;
-					orgContainer = document.createElement("li");
-					orgContainer = setupNestedContainers(calling.Org, wardOrgs, orgContainer, containerId);
-				}
-
-				if (calling.SubOrg !== "") {
-					let containerId = calling.Org + "@" + calling.SubOrg;
-					let subOrgContainer = document.getElementById(containerId);
-					if (!subOrgContainer) {
-						subOrgContainer = document.createElement("li");
-						subOrgContainer.setAttribute("id", calling.SubOrg)
-						orgContainer = setupNestedContainers(calling.SubOrg, orgContainer, subOrgContainer, containerId);
-					} else {
-						orgContainer = subOrgContainer;
-					}
-				}
-				orgContainer.classList.add("leaf-container")
-				orgContainer.setAttribute("ondrop", "drop(event)")
-				orgContainer.setAttribute("ondragover", "allowDrop(event)")
-				orgContainer.setAttribute("ondragstart", "drag(event)")
-			});
-
-			startTreeListeners();
-			refreshFromModel();
-			expandCollapseTree('c');
+	let counter = 0;
+	let jsonObject = JSON.parse(response);
+	jsonObject.forEach(function (calling) {
+		counter++;
+		let orgContainer = document.getElementById(calling.Org);
+		if (!orgContainer) {
+			let containerId = calling.Org;
+			orgContainer = document.createElement("li");
+			orgContainer = setupNestedContainers(calling.Org, wardOrgs, orgContainer, containerId);
 		}
-	};
 
-	let url = "callings?org=" + encodeURI(ALL_ORGS);
-	xhttp.open("GET", "/v1/" + url);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+		if (calling.SubOrg !== "") {
+			let containerId = calling.Org + "@" + calling.SubOrg;
+			let subOrgContainer = document.getElementById(containerId);
+			if (!subOrgContainer) {
+				subOrgContainer = document.createElement("li");
+				subOrgContainer.setAttribute("id", calling.SubOrg)
+				orgContainer = setupNestedContainers(calling.SubOrg, orgContainer, subOrgContainer, containerId);
+			} else {
+				orgContainer = subOrgContainer;
+			}
+		}
+		orgContainer.classList.add("leaf-container")
+		orgContainer.setAttribute("ondrop", "drop(event)")
+		orgContainer.setAttribute("ondragover", "allowDrop(event)")
+		orgContainer.setAttribute("ondragstart", "drag(event)")
+	});
+
+	startTreeListeners();
+	refreshFromModel();
+	expandCollapseTree('c');
 }
-
-//// calling id functions ////
-
-function callingId(callingName, callingHolder, counter) {
-	return callingName + "@" + callingHolder + "@" + counter;
-}
-
-function callingInnards(callingName, holderName, timeInCalling) {
-	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
-}
-
-function callingIdComponents(id) {
-	let components = id.split("@");
-	let callingName = components[0], holderName = components[1];
-	return {callingName, holderName}
-}
-
-//// tree functions ////
 
 function startTreeListeners() {
 	let caret = document.getElementsByClassName("caret");
@@ -182,6 +173,22 @@ function toggleElement(element) {
 	element.classList.toggle("caret-down");
 }
 
+//// calling id functions ////
+
+function callingId(callingName, callingHolder, counter) {
+	return callingName + "@" + callingHolder + "@" + counter;
+}
+
+function callingInnards(callingName, holderName, timeInCalling) {
+	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
+}
+
+function callingIdComponents(id) {
+	let components = id.split("@");
+	let callingName = components[0], holderName = components[1];
+	return {callingName, holderName}
+}
+
 //// refresh functions ////
 
 function refreshFromModel() {
@@ -204,42 +211,41 @@ function createCallingElement(calling, counter) {
 
 function refreshTree() {
 	let showNewVacancies = document.getElementById("new-vacancies").checked
+
+	let endpoint = "callings";
+	let params = "org=" + ALL_ORGS;
+	if (showNewVacancies) {
+		endpoint = "diff";
+		params = "";
+	}
+	apiCall(endpoint, params, refreshTree_callback)
+}
+
+function refreshTree_callback(response) {
+	let showNewVacancies = document.getElementById("new-vacancies").checked
 	let showAllVacancies = document.getElementById("all-vacancies").checked
 
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			let counter = 0;
-			let jsonObject = JSON.parse(this.responseText);
-			let workingObjects = jsonObject;
-			if (showNewVacancies) {
-				workingObjects = jsonObject.NewVacancies;
-			}
-			// clear all organizations
-			let leafContainers = document.getElementsByClassName("leaf-container");
-			for (let leafContainer of leafContainers) {
-				clearContainer(leafContainer);
-			}
-
-			// repopulate organizations
-			workingObjects.forEach(function (calling) {
-				if (showAllVacancies && calling.Holder != VACANT) {
-					return;
-				}
-				counter++;
-				let container = findContainerFromCalling(calling);
-				container.appendChild(createCallingElement(calling, counter));
-			});
-		}
-	};
-
-	let url = "callings?org=" + ALL_ORGS;
+	let counter = 0;
+	let jsonObject = JSON.parse(response);
+	let workingObjects = jsonObject;
 	if (showNewVacancies) {
-		url = "diff"
+		workingObjects = jsonObject.NewVacancies;
 	}
-	xhttp.open("GET", "/v1/" + url);
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+	// clear all organizations
+	let leafContainers = document.getElementsByClassName("leaf-container");
+	for (let leafContainer of leafContainers) {
+		clearContainer(leafContainer);
+	}
+
+	// repopulate organizations
+	workingObjects.forEach(function (calling) {
+		if (showAllVacancies && calling.Holder != VACANT) {
+			return;
+		}
+		counter++;
+		let container = findContainerFromCalling(calling);
+		container.appendChild(createCallingElement(calling, counter));
+	});
 }
 
 function refreshCallingChanges() {
