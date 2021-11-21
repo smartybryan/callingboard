@@ -30,6 +30,7 @@ type DiffResult struct {
 	Sustainings  []Calling
 	Releases     []Calling
 	NewVacancies []Calling
+	ModelName    string
 }
 
 func NewProject(callings *Callings, members *Members, dataPath string) *Project {
@@ -137,6 +138,7 @@ func (this *Project) LoadTransactions(name string) error {
 	if err != nil {
 		return err
 	}
+	this.diff.ModelName = name
 	this.playTransactions()
 	return nil
 }
@@ -146,6 +148,7 @@ func (this *Project) SaveTransactions(name string) error {
 	if err != nil {
 		return err
 	}
+	this.diff.ModelName = name
 	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
 	return os.WriteFile(path, jsonBytes, 0660)
 }
@@ -160,6 +163,7 @@ func (this *Project) ResetModel() error {
 	this.originalCallings = this.Callings.copy()
 	this.transactions = this.transactions[:0]
 	this.undoHistory = this.undoHistory[:0]
+	this.diff.ModelName = ""
 	return nil
 }
 

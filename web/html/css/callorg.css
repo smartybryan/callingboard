@@ -27,6 +27,12 @@ body {
 	font-weight: bold;
 }
 
+#main-page-save {
+	float: right;
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
 tr:nth-child(even) {background-color: #f2f2f2;}
 
 /* LAYOUT */

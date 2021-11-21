@@ -49,6 +49,11 @@ function deleteModel() {
 		notify(nINFO,"Please select a model name to delete.");
 		return
 	}
+	let currentModel = document.getElementById("model-name").value;
+	if (name === currentModel) {
+		document.getElementById("model-name").value = "";
+		resetModel();
+	}
 	modelOperation("delete-trans", name)
 }
 
@@ -63,6 +68,7 @@ function saveModel() {
 
 function resetModel() {
 	modelOperation("reset-model");
+	document.getElementById("model-name").value = "";
 	notify(nSUCCESS, MESSAGE_MODEL_RESET);
 }
 
@@ -77,6 +83,9 @@ function modelOperation(endpoint, name) {
 				listModels();
 				if (endpoint === "load-trans") {
 					notify(nSUCCESS,MESSAGE_MODEL_LOADED);
+				}
+				if (endpoint === "save-trans") {
+					notify(nSUCCESS,MESSAGE_MODEL_SAVED);
 				}
 			} else {
 				notify(nERROR, this.responseText)
