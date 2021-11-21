@@ -41,6 +41,7 @@ function loadModel() {
 		return
 	}
 	modelOperation("load-trans", name)
+	makeClean()
 }
 
 function deleteModel() {
@@ -64,12 +65,14 @@ function saveModel() {
 		return
 	}
 	modelOperation("save-trans", name)
+	makeClean()
 }
 
 function resetModel() {
 	modelOperation("reset-model");
 	document.getElementById("model-name").value = "";
 	notify(nSUCCESS, MESSAGE_MODEL_RESET);
+	makeClean()
 }
 
 function modelOperation(endpoint, name) {

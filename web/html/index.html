@@ -20,7 +20,7 @@
 		Members
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
-	<input id="main-page-save" type="button" onclick="openTab(event, 'manage-models')" value="Save Model">
+	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')" value="Save Model">
 </div>
 
 <div id="modeling" class="tabcontent">
@@ -117,7 +117,7 @@
 			</div>
 		</model-man-left>
 		<model-man-right>
-			<input type="button" onclick="saveModel()" value="Save Model">
+			<input type="button" onclick="saveModel()"  class="save-button" value="Save Model">
 			<br><br>
 			<input type="button" onclick="listModels()" value="Refresh List">
 			<br>

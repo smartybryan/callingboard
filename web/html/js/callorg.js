@@ -95,6 +95,7 @@ function drop(ev) {
 			return
 		}
 		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement), refreshFromModel);
+		makeDirty()
 		return
 	}
 
@@ -108,6 +109,7 @@ function drop(ev) {
 		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
 		apiCall("backout-transaction", params, refreshFromModel);
 		clearCallingsHeldByMember();
+		makeDirty()
 		return
 	}
 
@@ -134,6 +136,26 @@ function drop(ev) {
 	}
 
 	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement), refreshFromModel);
+	makeDirty()
+}
+
+function makeDirty() {
+	_manageSaveButtons('d')
+}
+
+function makeClean() {
+	_manageSaveButtons('c')
+}
+
+function _manageSaveButtons(op) {
+	let saveButtons = document.getElementsByClassName("save-button");
+	for (let saveButton of saveButtons) {
+		if (op === 'd') {
+			saveButton.classList.add("dirty")
+		} else {
+			saveButton.classList.remove("dirty")
+		}
+	}
 }
 
 //// transactions ////
