@@ -1,12 +1,18 @@
 # CALLORG
 
-This project is the beginnings of a tool to
-assist Ward Bishopric with re-organizing their ward.
+CallOrg is a tool to assist ward Bishopric 
+with the task of reorganization.
 
-It will be a way to model proposed changes
-and track releasings and sustainings.
+It provides a user interface for leadership
+to model a collection of calling releases and
+sustainings and provides a printed report.
+
+Data is imported from reports available in
+LCR on ChurchOfJesusChrist.org.
+
+When run, the program provides an HTTP interface 
+on port 40630.
 
 TODO
-- PlayTransactions() should delete transaction if not applicable.
 - Convert UI to Flexbox
 - Authentication/authorization (for multi-tenant only?)
