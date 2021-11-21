@@ -217,7 +217,7 @@ func (this *Callings) addMemberToACalling(member string, org string, calling str
 	}
 
 	if this.doesMemberHoldCalling(member, org, calling) {
-		return nil
+		return ERROR_MEMBER_INVALID_CALLING
 	}
 
 	callingList := this.CallingMap[org]
