@@ -7,6 +7,5 @@ It will be a way to model proposed changes
 and track releasings and sustainings.
 
 TODO
-- Growl messages
 - Convert UI to Flexbox
-- Authentication/authorization
+- Authentication/authorization (for multi-tenant only?)

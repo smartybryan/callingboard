@@ -2,10 +2,13 @@ const VACANT = "Calling Vacant";
 const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "[Drop calling here] &#10549;";
 const MESSAGE_RELEASE_ONLY = "You can only drag this calling into Releases.";
-const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling into Releases.";
-const MESSAGE_RELEASE_SUSTAINED_DROP = "You may not drop a Released or Sustained calling here. Drop it in the Trash to undo.";
+const MESSAGE_RELEASE_VACANT = "You cannot drag a vacant calling anywhere.";
+const MESSAGE_RELEASE_SUSTAINED_DROP = "Drop this in the Trash to Undo.";
 const MESSAGE_MEMBER_ONLY_TO_TREE = "You can only drag this member into a Vacant Calling.";
-const MESSAGE_MODEL_RESET = "Data has been reloaded and the model has been cleared.";
+const MESSAGE_MODEL_RESET = "Original data has been reloaded.";
+const MESSAGE_MODEL_LOADED = "Model loaded";
+const MESSAGE_IMPORT_SUCCESSFUL = "The data has been imported successfully.";
+const MESSAGE_IMPORT_FAILURE = "Import was not successful.";
 
 window.onload = function () {
 	setupTreeStructure();
@@ -17,7 +20,6 @@ window.onload = function () {
 
 function openTab(evt, tabName) {
 	tabPreEvent(tabName);
-
 	let i, tabcontent, tablinks, leavingTab;
 	tabcontent = document.getElementsByClassName("tabcontent");
 	for (i = 0; i < tabcontent.length; i++) {
@@ -297,7 +299,7 @@ function drop(ev) {
 	// dragging from the member row to a vacant calling in the tree
 	if (movedElement.classList.contains("member-row")) {
 		if (!liElement.classList.contains("vacant")) {
-			alert(MESSAGE_MEMBER_ONLY_TO_TREE)
+			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
 		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement), refreshFromModel);
@@ -307,7 +309,7 @@ function drop(ev) {
 	// dragging from releases or sustainings to trash
 	if (movedElement.parentElement.id === "releases" || movedElement.parentElement.id === "sustainings") {
 		if (ev.target.id !== "trash") {
-			alert(MESSAGE_RELEASE_SUSTAINED_DROP);
+			notify(nALERT, MESSAGE_RELEASE_SUSTAINED_DROP);
 			return
 		}
 		let idComponents = callingIdComponents(movedElement.id);
@@ -319,7 +321,7 @@ function drop(ev) {
 
 	// dragging from ward tree to ward tree, cancel the operation
 	if (dropTarget.classList.contains("nested") && movedElement.parentElement.classList.contains("nested")) {
-		alert(MESSAGE_RELEASE_ONLY)
+		notify(nALERT, MESSAGE_RELEASE_ONLY)
 		return
 	}
 
@@ -327,7 +329,7 @@ function drop(ev) {
 	if (movedElement.classList.contains("member-calling")) {
 		// only allow it to be moved to releases
 		if (dropTarget.id !== "releases") {
-			alert(MESSAGE_RELEASE_ONLY);
+			notify(nALERT, MESSAGE_RELEASE_ONLY);
 			return
 		}
 		movedElement.remove();
@@ -335,7 +337,7 @@ function drop(ev) {
 
 	// dragging a vacant calling from the tree
 	if (movedElement.classList.contains("vacant")) {
-		alert(MESSAGE_RELEASE_VACANT);
+		notify(nALERT, MESSAGE_RELEASE_VACANT);
 		return
 	}
 
@@ -520,7 +522,7 @@ function getSelectedModelFile() {
 function loadModel() {
 	let name = getSelectedModelFile();
 	if (!name) {
-		alert("Please select a model name to load.");
+		notify(nINFO,"Please select a model name to load.");
 		return
 	}
 	modelOperation("load-trans", name)
@@ -529,7 +531,7 @@ function loadModel() {
 function deleteModel() {
 	let name = getSelectedModelFile();
 	if (!name) {
-		alert("Please select a model name to delete.");
+		notify(nINFO,"Please select a model name to delete.");
 		return
 	}
 	modelOperation("delete-trans", name)
@@ -538,7 +540,7 @@ function deleteModel() {
 function saveModel() {
 	let name = document.getElementById("model-name").value;
 	if (!name) {
-		alert("Please provide a model name to save.");
+		notify(nINFO,"Please provide a model name to save.");
 		return
 	}
 	modelOperation("save-trans", name)
@@ -546,7 +548,7 @@ function saveModel() {
 
 function resetModel() {
 	modelOperation("reset-model");
-	alert(MESSAGE_MODEL_RESET);
+	notify(nSUCCESS, MESSAGE_MODEL_RESET);
 }
 
 function modelOperation(endpoint, name) {
@@ -559,10 +561,10 @@ function modelOperation(endpoint, name) {
 				refreshFromModel();
 				listModels();
 				if (endpoint === "load-trans") {
-					alert("Model loaded");
+					notify(nSUCCESS,MESSAGE_MODEL_LOADED);
 				}
 			} else {
-				alert(this.responseText)
+				notify(nERROR, this.responseText)
 			}
 		}
 	};
@@ -647,12 +649,13 @@ function parseRawData(endpoint) {
 		if (this.readyState === 4) {
 			let msg = this.responseText;
 			if (msg === "null\n") {
-				msg = "Import successful"
+				notify(nSUCCESS, MESSAGE_IMPORT_SUCCESSFUL)
+				document.getElementById("rawdata").value = "";
+				resetModel();
+				refreshFromModel();
+			} else {
+				notify(nERROR, MESSAGE_IMPORT_FAILURE)
 			}
-			alert(msg);
-			document.getElementById("rawdata").value = "";
-			resetModel();
-			refreshFromModel();
 		}
 	};
 	xhttp.open("POST", "/v1/" + endpoint);
@@ -673,4 +676,46 @@ function apiCall(endpoint, params, callback) {
 	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
 	xhttp.setRequestHeader("Content-type", "text/plain");
 	xhttp.send();
+}
+
+//// notify ////
+const nSUCCESS = "Success";
+const nERROR = "Error";
+const nALERT = "Alert";
+const nINFO = "Info";
+
+function notify(type, description) {
+	const Notify = new XNotify();
+	let duration = 4000;
+
+	switch (type) {
+		case nSUCCESS:
+			Notify.success({
+				title: type,
+				description: description,
+				duration: duration
+			});
+			break;
+		case nERROR:
+			Notify.error({
+				title: type,
+				description: description,
+				duration: duration
+			});
+			break;
+		case nALERT:
+			Notify.alert({
+				title: type,
+				description: description,
+				duration: duration
+			});
+			break;
+		default:
+			Notify.info({
+				title: type,
+				description: description,
+				duration: duration
+			});
+			break;
+	}
 }
