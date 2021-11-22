@@ -22,7 +22,6 @@ function displayMembers_callback(response) {
 	});
 
 	filterMembers();
-
 }
 
 function memberSelected(element) {

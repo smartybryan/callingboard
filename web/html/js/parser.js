@@ -5,11 +5,12 @@ function parseRawData(endpoint) {
 	xhttp.onreadystatechange = function () {
 		if (this.readyState === 4) {
 			let msg = this.responseText;
-			if (msg === "null\n") {
+			if (msg.indexOf("Imported") > -1) {
 				notify(nSUCCESS, MESSAGE_IMPORT_SUCCESSFUL)
 				document.getElementById("rawdata").value = "";
+
+				initialize();
 				resetModel();
-				refreshFromModel();
 			} else {
 				notify(nERROR, MESSAGE_IMPORT_FAILURE)
 			}

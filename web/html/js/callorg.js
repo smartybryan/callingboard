@@ -3,12 +3,16 @@ const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "[Drop calling here] &#10549;";
 
 window.onload = function () {
+	initialize()
+	focusDefaultTab();
+};
+
+function initialize() {
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
 	populateFocusList();
-	focusDefaultTab();
-};
+}
 
 function openTab(evt, tabName) {
 	tabPreEvent(tabName);
