@@ -14,5 +14,7 @@ When run, the program provides an HTTP interface
 on port 40630.
 
 TODO
+- Initial import says "failed". 
+- After import, reload and reset model.
 - Convert UI to Flexbox
 - Authentication/authorization (for multi-tenant only?)
