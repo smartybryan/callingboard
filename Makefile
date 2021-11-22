@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
-host := ec2-user@ec2-3-141-170-241.us-east-2.compute.amazonaws.com
-keys := /Users/bryan/oldyellowdoor/oldyellowdoor.pem
+host = ${OYDHOST}
+keys := ${OYDKEYS}
 
 clean:
 	rm -rf workspace
