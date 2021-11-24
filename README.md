@@ -14,9 +14,6 @@ When run, the program provides an HTTP interface
 on port 40630.
 
 TODO
-- Handle orphaned transactions.
-- Change tree filters to radio buttons.
-- Change name of project to wardboard
 - HTTPS
 - Convert UI to Flexbox
 - Authentication/authorization (for multi-tenant only?)
