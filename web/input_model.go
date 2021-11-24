@@ -40,7 +40,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.TransactionName = sanitize(request.Form.Get("name"))
 	this.TransactionParams = sanitize(request.Form.Get("params"))
 
-	if request.Body != http.NoBody {
+	if request.Body != http.NoBody && request.Method == "POST" {
 		size := atoi(request.Header.Get("Content-Length"))
 		if size == 0 {
 			size = 128 * 1024
@@ -55,8 +55,8 @@ func (this *InputModel) Bind(request *http.Request) error {
 			copy(this.RawData[currentLoc:currentLoc+numRead], buf)
 			currentLoc += numRead
 		}
-		if numRead == 0 || err != nil && err != io.EOF {
-			return errors.New("cannot read request body")
+		if (numRead == 0 && currentLoc == 0) || err != nil && err != io.EOF {
+			return errors.New("cannot read request body: " + err.Error())
 		}
 		_ = request.Body.Close()
 	}
