@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.org/smartybryan/callorg/engine"
-	"github.org/smartybryan/callorg/util"
+	"github.org/smartybryan/callingboard/engine"
+	"github.org/smartybryan/callingboard/util"
 )
 
 const (
-	RawCallingDataFilePath = "/Users/bryan/callorg/rawcallings.txt"
-	CallingDataFilePath = "/Users/bryan/callorg/callings.csv"
-	RawMembersDataFilePath = "/Users/bryan/callorg/rawmembers.txt"
-	MembersDataFilePath = "/Users/bryan/callorg/members.csv"
+	RawCallingDataFilePath = "/Users/bryan/callingboard/rawcallings.txt"
+	CallingDataFilePath = "/Users/bryan/callingboard/callings.csv"
+	RawMembersDataFilePath = "/Users/bryan/callingboard/rawmembers.txt"
+	MembersDataFilePath = "/Users/bryan/callingboard/members.csv"
 
 	MaxCallings = 300
 	MaxMembers = 500

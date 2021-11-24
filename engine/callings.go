@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.org/smartybryan/callorg/util"
+	"github.org/smartybryan/callingboard/util"
 )
 
 type Callings struct {

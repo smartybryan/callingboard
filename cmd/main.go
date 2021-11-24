@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.org/smartybryan/callorg/config"
-	"github.org/smartybryan/callorg/engine"
-	"github.org/smartybryan/callorg/web"
+	"github.org/smartybryan/callingboard/config"
+	"github.org/smartybryan/callingboard/engine"
+	"github.org/smartybryan/callingboard/web"
 )
 
 func main() {

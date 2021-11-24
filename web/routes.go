@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/smartystreets/detour"
-	"github.org/smartybryan/callorg/config"
+	"github.org/smartybryan/callingboard/config"
 )
 
 func SetupRoutes(appConfig config.Config, controller *Controller) {

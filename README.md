@@ -1,6 +1,6 @@
-# CALLORG
+# CallingBoard
 
-CallOrg is a tool to assist ward Bishopric 
+CallingBoard is a tool to assist ward Bishopric 
 with the task of reorganization.
 
 It provides a user interface for leadership
