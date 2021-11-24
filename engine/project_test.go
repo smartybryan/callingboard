@@ -22,7 +22,7 @@ func (this *ProjectFixture) TestUndoRedoTransactions() {
 
 	project := NewProject(&callings, &members, "")
 	project.addTransaction("op1", "p1", "p2")
-	project.addTransaction("op2", "p3", "p4", true)
+	project.addTransaction("op2", "p3", "p4", boolToString(true))
 	this.So(len(project.transactions), should.Equal, 2)
 
 	project.UndoTransaction()
@@ -98,7 +98,7 @@ func (this *ProjectFixture) TestDiff() {
 	_ = project.MoveMemberToAnotherCalling("Last2, First2","org1", "calling2", "org2", "calling22")
 
 	diff := project.Diff()
-	this.So(len(diff.Sustainings), should.Equal, 2)
+	this.So(len(diff.Sustainings), should.Equal, 1)
 	this.So(len(diff.Releases), should.Equal, 2)
 
 	this.So(len(diff.NewVacancies), should.Equal, 1)

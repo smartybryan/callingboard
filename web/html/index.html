@@ -83,10 +83,12 @@
 		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
 		<br><br>
 		<span><strong>Filter: </strong></span>
-		<input id="all-vacancies" type="checkbox" onclick="refreshFromModel()" value="all-vacancies">
-		<label for="all-vacancies">All Vacant Callings&nbsp;&nbsp;&nbsp;</label>
-		<input id="new-vacancies" type="checkbox" onclick="refreshFromModel()" value="new-vacancies">
-		<label for="new-vacancies">New Vacant Callings Only</label>
+		<input id="filter-none" name="tree-filter" type="radio" onclick="refreshFromModel()" value="none" checked>
+		<label for="filter-none">None&nbsp;</label>
+		<input id="all-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()" value="all-vacancies">
+		<label for="all-vacancies">All Vacant Callings&nbsp;</label>
+		<input id="new-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()" value="new-vacancies">
+		<label for="new-vacancies">New Vacant Callings</label>
 		<br><br>
 		<div id="ward-scroller">
 			<ul id="ward">

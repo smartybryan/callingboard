@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -170,7 +171,7 @@ func (this *Project) ResetModel() error {
 ///// model modification stubs /////
 
 func (this *Project) AddCalling(org string, calling string, custom bool) error {
-	this.addTransaction("addCalling", org, calling, custom)
+	this.addTransaction("addCalling", org, calling, boolToString(custom))
 	return this.Callings.addCalling(org, calling, custom)
 }
 
@@ -180,7 +181,7 @@ func (this *Project) RemoveCalling(org string, calling string) error {
 }
 
 func (this *Project) UpdateCalling(org string, calling string, custom bool) error {
-	this.addTransaction("updateCalling", org, calling, custom)
+	this.addTransaction("updateCalling", org, calling, boolToString(custom))
 	return this.Callings.updateCalling(org, calling, custom)
 }
 
@@ -206,7 +207,7 @@ func (this *Project) RemoveTransaction(operation string, parameters []string) er
 
 ///// private /////
 
-func (this *Project) addTransaction(operation string, parameters ...interface{}) {
+func (this *Project) addTransaction(operation string, parameters ...string) {
 	this.transactions = append(this.transactions, Transaction{
 		Operation:  operation,
 		Parameters: parameters,
@@ -224,15 +225,7 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 		paramsMatched := 0
 		for _, transactionParameter := range transaction.Parameters {
 			for _, functionParameter := range parameters {
-				testResult := false
-				switch transactionParameter.(type) {
-				case string:
-					testResult = functionParameter == transactionParameter
-				case bool:
-					boolVal, _ := strconv.ParseBool(functionParameter)
-					testResult = boolVal == transactionParameter
-				}
-				if testResult {
+				if functionParameter == transactionParameter {
 					paramsMatched++
 				}
 			}
@@ -246,44 +239,60 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 	return nil
 }
 
+func (this *Project) deleteIrrelevantTransactions(invalidTransactions []int) {
+	for i := len(invalidTransactions) - 1; i > -1; i-- {
+		this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)
+	}
+}
+
 func (this *Project) playTransactions() {
+	var err error
 	freshCallings := this.originalCallings.copy()
 	this.Callings = &freshCallings
+	var irrelevantTransactions []int
 
-	for _, transaction := range this.transactions {
+	for idx, transaction := range this.transactions {
 		switch transaction.Operation {
 		case "addCalling":
 			_ = this.Callings.addCalling(
-				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
+				transaction.Parameters[0], transaction.Parameters[1], parseBool(transaction.Parameters[2]))
 		case "removeCalling":
 			_ = this.Callings.removeCalling(
-				transaction.Parameters[0].(string), transaction.Parameters[1].(string))
+				transaction.Parameters[0], transaction.Parameters[1])
 		case "updateCalling":
 			_ = this.Callings.updateCalling(
-				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(bool))
+				transaction.Parameters[0], transaction.Parameters[1], parseBool(transaction.Parameters[2]))
 		case "addMemberToACalling":
-			_ = this.Callings.addMemberToACalling(
-				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(string))
+			err = this.Callings.addMemberToACalling(
+				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2])
 		case "moveMemberToAnotherCalling":
 			_ = this.Callings.moveMemberToAnotherCalling(
-				transaction.Parameters[0].(string),
-				transaction.Parameters[1].(string), transaction.Parameters[2].(string),
-				transaction.Parameters[1].(string), transaction.Parameters[2].(string))
+				transaction.Parameters[0],
+				transaction.Parameters[1], transaction.Parameters[2],
+				transaction.Parameters[1], transaction.Parameters[2])
 		case "removeMemberFromACalling":
-			_ = this.Callings.removeMemberFromACalling(
-				transaction.Parameters[0].(string), transaction.Parameters[1].(string), transaction.Parameters[2].(string))
+			err = this.Callings.removeMemberFromACalling(
+				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2])
+		}
+		if err != nil {
+			irrelevantTransactions = append(irrelevantTransactions, idx)
+			err = nil
 		}
 	}
+
+	// this can occur when the transaction is no longer relevant
+	// such as when a dependent event was removed
+	this.deleteIrrelevantTransactions(irrelevantTransactions)
 }
 
 func (this *Project) newlyAvailableMembers() []string {
 	var releasedMembers, sustainedMembers []string
 	for _, transaction := range this.transactions {
 		if transaction.Operation == "addMemberToACalling" {
-			sustainedMembers = append(sustainedMembers, (transaction.Parameters[0]).(string))
+			sustainedMembers = append(sustainedMembers, transaction.Parameters[0])
 		}
 		if transaction.Operation == "removeMemberFromACalling" {
-			releasedMembers = append(releasedMembers, (transaction.Parameters[0]).(string))
+			releasedMembers = append(releasedMembers, transaction.Parameters[0])
 		}
 	}
 	availMembers := MemberSetDifference(releasedMembers, sustainedMembers)
@@ -291,4 +300,13 @@ func (this *Project) newlyAvailableMembers() []string {
 
 	sort.Strings(availMembers)
 	return availMembers
+}
+
+func boolToString(value bool) string {
+	return fmt.Sprintf("%t", value)
+}
+
+func parseBool(value string) (val bool) {
+	val, _ = strconv.ParseBool(value)
+	return val
 }

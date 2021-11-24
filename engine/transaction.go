@@ -2,7 +2,7 @@ package engine
 
 type Transaction struct {
 	Operation  string
-	Parameters []interface{}
+	Parameters []string
 }
 
 // map a web operation to a transaction operation

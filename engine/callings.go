@@ -229,16 +229,7 @@ func (this *Callings) addMemberToACalling(member string, org string, calling str
 			return nil
 		}
 	}
-	newCalling := Calling{
-		Name:          calling,
-		Holder:        member,
-		CustomCalling: false,
-		Sustained:     time.Time{},
-	}
-	callingList = append(callingList, newCalling)
-	this.CallingMap[org] = callingList
-
-	return nil
+	return ERROR_INVALID_TRANSACTION
 }
 
 func (this *Callings) moveMemberToAnotherCalling(
@@ -274,7 +265,7 @@ func (this *Callings) removeMemberFromACalling(member string, org string, callin
 			return nil
 		}
 	}
-	return ERROR_MEMBER_INVALID_CALLING
+	return ERROR_INVALID_TRANSACTION
 }
 
 ///////////////////////////////////////////////////////

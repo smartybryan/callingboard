@@ -79,8 +79,8 @@ func (this *CallingsFixture) TestAddMemberToACalling() {
 
 	// create a new calling
 	err = callings.addMemberToACalling("Last99, First99", "org1", "calling4")
-	this.So(err, should.BeNil)
-	this.So(callings.doesMemberHoldCalling("Last99, First99", "org1", "calling4"), should.BeTrue)
+	this.So(err, should.NotBeNil)
+	this.So(callings.doesMemberHoldCalling("Last99, First99", "org1", "calling4"), should.BeFalse)
 }
 
 func (this *CallingsFixture) TestRemoveMemberFromACalling() {

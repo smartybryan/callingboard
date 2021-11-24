@@ -157,7 +157,7 @@ function refreshTree_callback(response) {
 
 	// repopulate organizations
 	workingObjects.forEach(function (calling) {
-		if (showAllVacancies && calling.Holder != VACANT) {
+		if (showAllVacancies && calling.Holder !== VACANT) {
 			return;
 		}
 		counter++;
