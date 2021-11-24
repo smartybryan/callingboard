@@ -8,8 +8,9 @@ clean:
 	mkdir workspace
 
 compile: clean
-	cd cmd && go build -o ../workspace/callorg.o .
+	cd cmd && GOOS=linux GOARCH=amd64 go build -o ../workspace/callorg.o .
 
 deploy: compile
-	scp -rp -i $(keys) workspace/callorg.o $(host):/home/ec2-user/callorg
+	ssh -i $(keys) $(host) 'mkdir -p callorg/html'
+	scp -rp -i $(keys) workspace/callorg.o $(host):/home/ec2-user/callorg/callorg.o
 	cd web && scp -rp -i $(keys) html $(host):/home/ec2-user/callorg/

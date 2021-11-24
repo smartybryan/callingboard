@@ -32,7 +32,7 @@ func ParseConfig() Config {
 	config := Config{}
 
 	flag.StringVar(&config.DataPath, "data", DataPathDefault, "The path to the data and html files.")
-	flag.StringVar(&config.ListenPort, "listen", ListenPortDefault, "Listen port. e.g. :8080")
+	flag.StringVar(&config.ListenPort, "listen", ListenPortDefault, "Listen port for TLS. e.g. :443")
 	flag.Parse()
 
 	config.CallingDataPath = path.Join(config.DataPath, CallingDataPathDefault)

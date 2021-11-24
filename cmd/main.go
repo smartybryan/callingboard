@@ -22,7 +22,14 @@ func main() {
 	web.SetupRoutes(appConfig, web.NewController(project))
 
 	fmt.Printf("Listening on port %s\n", appConfig.ListenPort)
-	_ = http.ListenAndServe(appConfig.ListenPort, nil)
+
+	//https://gist.github.com/denji/12b3a568f092ab951456
+	//secPath := path.Join(appConfig.DataPath, "sec")
+	//certPath := path.Join(secPath, "server.crt")
+	//keyPath := path.Join(secPath, "server.key")
+
+	//panicOnError(http.ListenAndServeTLS(appConfig.ListenPort, certPath, keyPath, nil))
+	panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
 }
 
 func panicOnError(err error) {
