@@ -117,7 +117,6 @@ func (this *ProjectFixture) TestSaveLoadTransactions() {
 	_ = project.RemoveCalling("org1", "calling1")
 	_ = project.MoveMemberToAnotherCalling("Last2, First2","org1", "calling2", "org2", "calling22")
 
-	tLength := len(project.transactions)
 	tLastOp := project.transactions[len(project.transactions)-1].Operation
 	tLastPLength := len(project.transactions[len(project.transactions)-1].Parameters)
 	err := project.SaveTransactions(tempFile)
@@ -126,7 +125,7 @@ func (this *ProjectFixture) TestSaveLoadTransactions() {
 	project.transactions = project.transactions[:]
 	err = project.LoadTransactions(tempFile)
 	this.So(err, should.BeNil)
-	this.So(len(project.transactions), should.Equal, tLength)
+	this.So(len(project.transactions), should.Equal, 3)
 	this.So(project.transactions[len(project.transactions)-1].Operation, should.Equal, tLastOp)
 	this.So(len(project.transactions[len(project.transactions)-1].Parameters), should.Equal, tLastPLength)
 
