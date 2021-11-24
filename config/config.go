@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ListenPortDefault           = ":40630"
+	ListenPortDefault           = ":80"
 	DataPathDefault             = "."
 	HtmlServerDefault           = "html"
 	CallingDataPathDefault      = "callings.json"
