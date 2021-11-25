@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+	<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	<meta name="viewport" content="width=800, initial-scale=1.0">
 	<link rel="stylesheet" href="css/callingboard.css">
 	<title>CallingBoard</title>
@@ -20,10 +20,11 @@
 		Members
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
-	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')" value="Save Model">
+	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')"
+		   value="Save Model">
 </div>
 
-<div id="modeling" class="tabcontent">
+<model-layout id="modeling" class="tabcontent">
 	<member-list>
 		<label class="heading" for="members">Members</label>
 		<br>
@@ -100,11 +101,13 @@
 			</ul>
 		</div>
 	</ward-tree>
-</div>
+</model-layout>
 
 <div id="report" class="tabcontent">
-	<input type="button" class="print-button" onclick="window.print()" value="Print">
-	<div id="report-canvas"></div>
+	<report-cont>
+		<input type="button" class="print-button" onclick="window.print()" value="Print">
+		<div id="report-canvas"></div>
+	</report-cont>
 </div>
 
 <div id="manage-models" class="tabcontent">
@@ -119,7 +122,7 @@
 			</div>
 		</model-man-left>
 		<model-man-right>
-			<input type="button" onclick="saveModel()"  class="save-button" value="Save Model">
+			<input type="button" onclick="saveModel()" class="save-button" value="Save Model">
 			<br><br>
 			<input type="button" onclick="listModels()" value="Refresh List">
 			<br>

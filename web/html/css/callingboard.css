@@ -51,7 +51,9 @@ header {
 }
 
 member-list, call-release {
-	float: left;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 	height: 88vh;
 	width: 28%;
 	margin: 10px;
@@ -61,53 +63,15 @@ member-list, call-release {
 }
 
 ward-tree {
-	float: left;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 	height: 88vh;
 	width: 35%;
 	margin: 10px;
 	padding: 15px;
 	border-radius: 20px;
 	background-color: lightgray;
-}
-
-model-man, import-data {
-	float: left;
-	height: 350px;
-	width: 450px;
-	margin: 10px;
-	padding: 15px;
-	border-radius: 20px;
-	background-color: lightgray;
-}
-
-model-man-left {
-	float: left;
-	width: 60%;
-	margin: 10px;
-}
-
-model-man-right {
-	float: left;
-	width: 30%;
-	padding: 10px;
-	margin-left: -20px;
-
-}
-
-model-man-footer {
-	float: left;
-	width: 100%;
-	padding: 10px;
-}
-
-focus-member {
-	display: flex;
-	height: 88vh;
-	width: 290px;
-	margin: 10px;
-	padding: 15px;
-	border-radius: 20px;
-	background-color: lightgrey;
 }
 
 /* SHARED */
@@ -255,8 +219,14 @@ li.proposed {
 
 /* REPORT */
 
+report-cont {
+	float: left;
+	margin: 10px;
+}
+
 #report {
 	border: none;
+	flex-direction: column;
 }
 
 #report-canvas {
@@ -269,6 +239,36 @@ li.proposed {
 }
 
 /* MODEL MANAGEMENT */
+
+model-man, import-data {
+	float: left;
+	height: 350px;
+	width: 450px;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
+	background-color: lightgray;
+}
+
+model-man-left {
+	float: left;
+	width: 60%;
+	margin: 10px;
+}
+
+model-man-right {
+	float: left;
+	width: 30%;
+	padding: 10px;
+	margin-left: -20px;
+
+}
+
+model-man-footer {
+	float: left;
+	width: 100%;
+	padding: 10px;
+}
 
 #model-name {
 	width: 255px;
@@ -301,6 +301,16 @@ td.selected {
 }
 
 /* FOCUS MEMBERS */
+
+focus-member {
+	display: flex;
+	height: 85vh;
+	width: 290px;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
+	background-color: lightgrey;
+}
 
 #focus-member-scroller {
 	overflow: auto;
@@ -381,7 +391,5 @@ td.selected {
 }
 
 .tabcontent {
-	display: none;
 	border: 1px solid #ccc;
-	border-top: none;
 }
