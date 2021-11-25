@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path"
 
 	"github.org/smartybryan/callingboard/config"
 	"github.org/smartybryan/callingboard/engine"
@@ -27,12 +26,12 @@ func main() {
 	//secPath := path.Join(appConfig.DataPath, "sec")
 	//certPath := path.Join(secPath, "server.crt")
 	//keyPath := path.Join(secPath, "server.key")
-	secPath := "/var/lib/acme/live/callingboard.org"
-	certPath := path.Join(secPath, "cert")
-	keyPath := path.Join(secPath, "privkey")
+	//secPath := "/var/lib/acme/live/callingboard.org"
+	//certPath := path.Join(secPath, "cert")
+	//keyPath := path.Join(secPath, "privkey")
 
-	panicOnError(http.ListenAndServeTLS(appConfig.ListenPort, certPath, keyPath, nil))
-	//panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
+	//panicOnError(http.ListenAndServeTLS(appConfig.ListenPort, certPath, keyPath, nil))
+	panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
 }
 
 func panicOnError(err error) {
