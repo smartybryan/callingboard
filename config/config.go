@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	ListenPortClearDefault      = ":80"
 	ListenPortDefault           = ":443"
 	DataPathDefault             = "."
 	HtmlServerDefault           = "html"

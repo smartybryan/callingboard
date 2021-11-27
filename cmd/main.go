@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"path"
@@ -21,18 +20,28 @@ func main() {
 	project := engine.NewProject(&callings, &members, appConfig.DataPath)
 
 	web.SetupRoutes(appConfig, web.NewController(project))
+	
+	switch appConfig.ListenPort {
+	case config.ListenPortClearDefault: // for local debugging
+		log.Printf("Listening on port %s\n", appConfig.ListenPort)
+		panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
+	case config.ListenPortDefault:
+		log.Printf("Listening on port %s\n", appConfig.ListenPort)
+		secPath := "/var/lib/acme/live/callingboard.org"
+		certPath := path.Join(secPath, "cert")
+		keyPath := path.Join(secPath, "privkey")
+		go listenAndRedirectToTLS()
+		panicOnError(http.ListenAndServeTLS(appConfig.ListenPort, certPath, keyPath, nil))
+	}
+}
 
-	fmt.Printf("Listening on port %s\n", appConfig.ListenPort)
+func listenAndRedirectToTLS() {
+	panicOnError(http.ListenAndServe(config.ListenPortClearDefault, http.HandlerFunc(redirectTLS)))
+}
 
-	//secPath := path.Join(appConfig.DataPath, "sec")
-	//certPath := path.Join(secPath, "server.crt")
-	//keyPath := path.Join(secPath, "server.key")
-	secPath := "/var/lib/acme/live/callingboard.org"
-	certPath := path.Join(secPath, "cert")
-	keyPath := path.Join(secPath, "privkey")
-
-	panicOnError(http.ListenAndServeTLS(appConfig.ListenPort, certPath, keyPath, nil))
-	//panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
+func redirectTLS(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Redirect to: %s\n","https://"+r.Host+r.RequestURI)
+	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
 }
 
 func panicOnError(err error) {
