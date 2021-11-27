@@ -3,6 +3,7 @@
 	<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	<meta name="viewport" content="width=800, initial-scale=1.0">
 	<link rel="stylesheet" href="css/callingboard.css">
+	<link rel="shortcut icon" type="image/jpg" href="favicon.ico"/>
 	<title>CallingBoard</title>
 	<meta charset="utf-8">
 </head>
@@ -27,7 +28,6 @@
 <model-layout id="modeling" class="tabcontent">
 	<member-list>
 		<label class="heading" for="members">Members</label>
-		<div>&nbsp;</div>
 		<div class="flex-row">
 			<input id="member-filter" size="20" onclick="this.select()"
 				   onkeyup="filterMembers()" placeholder="Member filter">
@@ -37,8 +37,7 @@
 			<ul id="members" ondragstart="drag(event)">
 			</ul>
 		</div>
-		<div>&nbsp;</div>
-		<div id="member-buttons">
+		<div>
 			<input type="button" onclick="displayMembers('members')" value="All Members">
 			<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
 			<input type="button" onclick="displayMembers('focus-members')" value="Focus">
@@ -51,17 +50,14 @@
 		</div>
 		<div>&nbsp;</div>
 		<label class="heading" for="member-callings-scroller">Member Callings</label>
-		<div>&nbsp;</div>
 		<div id="member-callings-scroller">
 			<ul id="member-callings" ondragstart="drag(event)">
 			</ul>
 		</div>
-		<div>&nbsp;</div>
 	</member-list>
 
 	<call-release>
 		<label class="heading" for="releases">Releases</label>
-		<div>&nbsp;</div>
 		<div class="release-sustain-scroller">
 			<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
 			</ul>
@@ -69,7 +65,6 @@
 
 		<div>&nbsp;</div>
 		<label class="heading" for="sustainings">Sustainings</label>
-		<div>&nbsp;</div>
 		<div class="release-sustain-scroller">
 			<ul id="sustainings" ondragstart="drag(event)">
 			</ul>

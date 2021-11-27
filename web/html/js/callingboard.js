@@ -61,7 +61,7 @@ function callingId(callingName, callingHolder, counter) {
 }
 
 function callingInnards(callingName, holderName, timeInCalling) {
-	return callingName + "<br><span class=\"member\">" + holderName + "</span> (" + timeInCalling + ")";
+	return callingName + "<br><span class=\"member-name\">" + holderName + "</span><br><span class=\"time-in-calling\">(" + timeInCalling + ")</span>";
 }
 
 function callingIdComponents(id) {
