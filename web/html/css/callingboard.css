@@ -34,7 +34,8 @@ body {
 }
 
 .dirty {
-	background-color: lightpink;
+	background-color: orangered;
+	color: white;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2;}
@@ -89,8 +90,12 @@ member-list ul, call-release ul {
 input[type=button] {
 	font-size: 13px;
 	margin-bottom: 5px;
-	margin-left: 10px;
 	border-radius: 10px;
+}
+
+input[type=radio] {
+	margin-right: -2px;
+	margin-left: 0px;
 }
 
 /* MEMBER COLUMN */
@@ -132,7 +137,7 @@ li.member-row {
 }
 
 #member-buttons {
-	height: 75px;
+	height: 100px;
 	width: 100%;
 	float: left;
 	position: relative;
@@ -161,10 +166,8 @@ li.member-row {
 }
 
 #trash {
-	font-size: 30px;
-	float: right;
-	position: relative;
-	bottom: 10px;
+	font-size: 25px;
+	margin-left: 20px;
 }
 
 /* TREE COLUMN */
