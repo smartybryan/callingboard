@@ -28,7 +28,7 @@ function openTab(evt, tabName) {
 		}
 		tablinks[i].classList.remove("active");
 	}
-	document.getElementById(tabName).style.display = "block";
+	document.getElementById(tabName).style.display = "flex";
 	evt.currentTarget.classList.add("active");
 
 	tabPostEvent(leavingTab);

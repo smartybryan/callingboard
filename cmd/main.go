@@ -20,11 +20,11 @@ func main() {
 	project := engine.NewProject(&callings, &members, appConfig.DataPath)
 
 	web.SetupRoutes(appConfig, web.NewController(project))
-	
+
 	switch appConfig.ListenPort {
 	case config.ListenPortClearDefault: // for local debugging
 		log.Printf("Listening on port %s\n", appConfig.ListenPort)
-		panicOnError(http.ListenAndServe(appConfig.ListenPort,nil))
+		panicOnError(http.ListenAndServe(appConfig.ListenPort, nil))
 	case config.ListenPortDefault:
 		log.Printf("Listening on port %s\n", appConfig.ListenPort)
 		secPath := "/var/lib/acme/live/callingboard.org"
@@ -40,7 +40,7 @@ func listenAndRedirectToTLS() {
 }
 
 func redirectTLS(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Redirect to: %s\n","https://"+r.Host+r.RequestURI)
+	log.Printf("Redirect to: %s\n", "https://"+r.Host+r.RequestURI)
 	http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusMovedPermanently)
 }
 

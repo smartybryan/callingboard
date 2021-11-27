@@ -1,10 +1,10 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+	<meta name="viewport" content="width=800, initial-scale=1.0">
 	<link rel="stylesheet" href="css/callingboard.css">
 	<title>CallingBoard</title>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 
@@ -20,45 +20,48 @@
 		Members
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
-	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')" value="Save Model">
+	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')"
+		   value="Save Model">
 </div>
 
-<div id="modeling" class="tabcontent">
+<model-layout id="modeling" class="tabcontent">
 	<member-list>
 		<label class="heading" for="members">Members</label>
-		<br>
-		<input id="member-filter" size="20" onclick="this.select()"
-			   onkeyup="filterMembers()" placeholder="Member filter">
-		<span id="clear-filter" class="pointer" onclick="clearFilter()">&#9447;</span>
+		<div>&nbsp;</div>
+		<div class="flex-row">
+			<input id="member-filter" size="20" onclick="this.select()"
+				   onkeyup="filterMembers()" placeholder="Member filter">
+			<span id="clear-filter" class="pointer" onclick="clearFilter()">&#9447;</span>
+		</div>
 		<div id="member-scroller">
 			<ul id="members" ondragstart="drag(event)">
 			</ul>
 		</div>
-		<br>
+		<div>&nbsp;</div>
 		<div id="member-buttons">
 			<input type="button" onclick="displayMembers('members')" value="All Members">
 			<input type="button" onclick="displayMembers('newly-available')" value="Newly Available">
-			<input type="button" onclick="displayMembers('focus-members')" value="Focus Members">
-			<input type="button" onclick="displayMembers('adults-without-calling')"
-				   value="Adults Without Calling">
+			<input type="button" onclick="displayMembers('focus-members')" value="Focus">
 			<input type="button" onclick="displayMembers('members-with-callings')"
-				   value="Members With a Calling">
+				   value="With Calling">
+			<input type="button" onclick="displayMembers('adults-without-calling')"
+				   value="Without Calling">
 			<!--				<input type="button" onclick="displayMembers('eligible-adults')" value="Eligible Adults">-->
 			<!--				<input type="button" onclick="displayMembers('eligible-youth')" value="Eligible Youth">-->
 		</div>
 		<div>&nbsp;</div>
 		<label class="heading" for="member-callings-scroller">Member Callings</label>
-		<br>
+		<div>&nbsp;</div>
 		<div id="member-callings-scroller">
 			<ul id="member-callings" ondragstart="drag(event)">
 			</ul>
 		</div>
-		<span>&nbsp;</span>
+		<div>&nbsp;</div>
 	</member-list>
 
 	<call-release>
 		<label class="heading" for="releases">Releases</label>
-		<br>
+		<div>&nbsp;</div>
 		<div class="release-sustain-scroller">
 			<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
 			</ul>
@@ -66,30 +69,38 @@
 
 		<div>&nbsp;</div>
 		<label class="heading" for="sustainings">Sustainings</label>
-		<br>
+		<div>&nbsp;</div>
 		<div class="release-sustain-scroller">
 			<ul id="sustainings" ondragstart="drag(event)">
 			</ul>
 		</div>
 
 		<div>&nbsp;</div>
-		<input type="button" class="bottom" onclick="apiCall('undo-trans','',refreshFromModel)" value="Undo Last">
-		<input type="button" class="bottom" onclick="apiCall('redo-trans','',refreshFromModel)" value="Redo Last">
-		<span id="trash" class="bottom" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
+		<div>
+			<input type="button" onclick="apiCall('undo-trans','',refreshFromModel)" value="Undo Last">
+			<input type="button" onclick="apiCall('redo-trans','',refreshFromModel)" value="Redo Last">
+			<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
+		</div>
 	</call-release>
 
 	<ward-tree>
-		<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
-		<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
-		<br><br>
+		<div>
+			<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
+			<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
+		</div>
+		<div>&nbsp;</div>
 		<span><strong>Filter: </strong></span>
-		<input id="filter-none" name="tree-filter" type="radio" onclick="refreshFromModel()" value="none" checked>
-		<label for="filter-none">None&nbsp;</label>
-		<input id="all-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()" value="all-vacancies">
-		<label for="all-vacancies">All Vacant Callings&nbsp;</label>
-		<input id="new-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()" value="new-vacancies">
-		<label for="new-vacancies">New Vacant Callings</label>
-		<br><br>
+		<div>
+			<input id="filter-none" name="tree-filter" type="radio" onclick="refreshFromModel()" value="none" checked>
+			<label for="filter-none">None&nbsp;</label>
+			<input id="all-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()"
+				   value="all-vacancies">
+			<label for="all-vacancies">All Vacant Callings&nbsp;</label>
+			<input id="new-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()"
+				   value="new-vacancies">
+			<label for="new-vacancies">New Vacant Callings</label>
+		</div>
+		<div>&nbsp;</div>
 		<div id="ward-scroller">
 			<ul id="ward">
 				<li><span class="caret">All Organizations</span>
@@ -100,11 +111,13 @@
 			</ul>
 		</div>
 	</ward-tree>
-</div>
+</model-layout>
 
 <div id="report" class="tabcontent">
-	<input type="button" class="print-button" onclick="window.print()" value="Print">
-	<div id="report-canvas"></div>
+	<report-cont>
+		<input type="button" class="print-button" onclick="window.print()" value="Print">
+		<div id="report-canvas"></div>
+	</report-cont>
 </div>
 
 <div id="manage-models" class="tabcontent">
@@ -119,7 +132,7 @@
 			</div>
 		</model-man-left>
 		<model-man-right>
-			<input type="button" onclick="saveModel()"  class="save-button" value="Save Model">
+			<input type="button" onclick="saveModel()" class="save-button" value="Save Model">
 			<br><br>
 			<input type="button" onclick="listModels()" value="Refresh List">
 			<br>
