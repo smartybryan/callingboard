@@ -14,6 +14,6 @@ When run, the program provides an HTTP interface
 on port 40630.
 
 TODO
-- Convert UI to Flexbox
+- If diff is empty, clear dirty flag.
 - Merge models?
 - Authentication/authorization (for multi-tenant only?)
