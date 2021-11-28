@@ -172,7 +172,9 @@ function refreshCallingChanges() {
 
 function refreshCallingChanges_callback(response) {
 	let jsonObject = JSON.parse(response);
-
+	if (jsonObject.Releases.length + jsonObject.Sustainings.length === 0) {
+		makeClean();
+	}
 	document.getElementById("model-name").value = jsonObject.ModelName;
 
 	let container = document.getElementById("releases");
