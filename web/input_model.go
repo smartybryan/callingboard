@@ -9,6 +9,8 @@ import (
 )
 
 type InputModel struct {
+	ProjectHandle string
+
 	MemberMinAge int
 	MemberMaxAge int
 	MemberName   string
@@ -26,6 +28,9 @@ type InputModel struct {
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
+	//TODO: calculate the handle based on cookie
+	this.ProjectHandle = ""
+
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
 	this.MemberName = sanitize(request.Form.Get("member"))

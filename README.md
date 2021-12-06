@@ -15,8 +15,9 @@ on port 40630.
 
 TODO
 - Create engine map for multi-user capabilities. 
-- Login window (username, ward)
-- Write a cookie with ward and username as a value
-  Ward will determine the data path
+- Login controller and UI (username, ward)
   Ward and Username is the key to the engine map
+  Ward will determine the data path
+  Load data into project and add to controller
+  Write a cookie with ward and username as a value
 - Merge models?
