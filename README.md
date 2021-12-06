@@ -14,6 +14,9 @@ When run, the program provides an HTTP interface
 on port 40630.
 
 TODO
-- If diff is empty, clear dirty flag.
+- Create engine map for multi-user capabilities. 
+- Login window (username, ward)
+- Write a cookie with ward and username as a value
+  Ward will determine the data path
+  Ward and Username is the key to the engine map
 - Merge models?
-- Authentication/authorization (for multi-tenant only?)
