@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.org/smartybryan/callingboard/config"
 )
 
 const (
@@ -34,13 +37,18 @@ type DiffResult struct {
 	ModelName    string
 }
 
-func NewProject(callings *Callings, members *Members, dataPath string) *Project {
+func NewProject(appConfig config.Config) *Project {
+	members := NewMembers(config.MaxMembers, appConfig.MembersDataPath)
+	logOnError(members.Load())
+	callings := NewCallings(config.MaxCallings, appConfig.CallingDataPath)
+	logOnError(callings.Load())
+
 	return &Project{
-		Callings:         callings,
+		Callings:         &callings,
 		originalCallings: callings.copy(),
-		Members:          members,
+		Members:          &members,
 		transactions:     make([]Transaction, 0, 100),
-		dataPath:         dataPath,
+		dataPath:         appConfig.DataPath,
 		diff:             NewDiff(),
 	}
 }
@@ -309,4 +317,10 @@ func boolToString(value bool) string {
 func parseBool(value string) (val bool) {
 	val, _ = strconv.ParseBool(value)
 	return val
+}
+
+func logOnError(err error) {
+	if err != nil {
+		log.Println(err)
+	}
 }

@@ -2,18 +2,22 @@ package web
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/smartystreets/detour"
+	"github.org/smartybryan/callingboard/config"
 	"github.org/smartybryan/callingboard/engine"
 )
 
 type Controller struct {
+	appConfig config.Config
 	projects map[string]*engine.Project
 }
 
-func NewController(project *engine.Project) *Controller {
+func NewController(appConfig config.Config) *Controller {
 	return &Controller{
+		appConfig: appConfig,
 		projects: make(map[string]*engine.Project, 10),
 	}
 }
@@ -29,12 +33,45 @@ func (this *Controller) RemoveProject(handle string) {
 }
 
 func (this *Controller) getProject(input *InputModel) *engine.Project {
-	if handle, found := this.projects[input.ProjectHandle]; !found {
-		// TODO: handle error
+	if project, found := this.projects[input.ProjectHandle]; !found {
+		// TODO: handle error or call Login?
 		return &engine.Project{}
 	} else {
-		return handle
+		return project
 	}
+}
+
+/////////////// LOGIN
+
+func (this *Controller) Login(input *InputModel) detour.Renderer {
+	// TODO: if cookie already exists, what should we do?
+	projectHandle := createCookieValue(input)
+	// TODO: clean old projects out
+	// TODO: only add new project if it does not already exist
+	this.AddProject(projectHandle, engine.NewProject(this.appConfig))
+
+	return detour.CookieResult{
+		Cookie1: &http.Cookie{
+			Name:     config.CookieName,
+			Value:    projectHandle,
+			Domain:   "callingboard.org",
+			MaxAge:   216000, // 30 days
+			Secure:   false,
+			HttpOnly: false,
+		},
+	}
+}
+
+func createCookieValue(input *InputModel) string {
+	return input.Username + ":" + input.WardName
+}
+
+func getWardFromCookieValue(value string) string {
+	valueSplit := strings.Split(value, ":")
+	if len(valueSplit) > 1 {
+		return valueSplit[1]
+	}
+	return ""
 }
 
 /////////////// MEMBER
@@ -249,7 +286,7 @@ func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content: project.UpdateCalling(input.Organization, input.Calling, input.CustomCalling),
+		Content:    project.UpdateCalling(input.Organization, input.Calling, input.CustomCalling),
 	}
 }
 
@@ -257,7 +294,7 @@ func (this *Controller) AddMemberToCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content: project.AddMemberToACalling(input.MemberName, input.Organization, input.Calling),
+		Content:    project.AddMemberToACalling(input.MemberName, input.Organization, input.Calling),
 	}
 }
 
@@ -274,7 +311,7 @@ func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Render
 	project := this.getProject(input)
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content: project.RemoveMemberFromACalling(input.MemberName, input.Organization, input.Calling),
+		Content:    project.RemoveMemberFromACalling(input.MemberName, input.Organization, input.Calling),
 	}
 }
 

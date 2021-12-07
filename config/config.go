@@ -15,6 +15,8 @@ const (
 	CallingModelDataPathDefault = "callings_model.json"
 	MembersModelDataPathDefault = "members_model.json"
 
+	CookieName = "callingboard.org"
+
 	MaxCallings = 300
 	MaxMembers  = 500
 )

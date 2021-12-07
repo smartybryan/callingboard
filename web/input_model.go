@@ -6,10 +6,15 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.org/smartybryan/callingboard/config"
 )
 
 type InputModel struct {
 	ProjectHandle string
+	Username      string
+	Password      string
+	WardName      string
 
 	MemberMinAge int
 	MemberMaxAge int
@@ -28,8 +33,10 @@ type InputModel struct {
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
-	//TODO: calculate the handle based on cookie
-	this.ProjectHandle = ""
+	handle, err := request.Cookie(config.CookieName)
+	if err == nil {
+		this.ProjectHandle = handle.Value
+	}
 
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
