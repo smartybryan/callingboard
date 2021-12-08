@@ -42,7 +42,9 @@ func (this *Controller) getProject(input *InputModel) *engine.Project {
 
 /////////////// LOGIN
 
-// TODO: need a process to clean out old projects
+// TODO: need a process to clean out old projects.
+//       update timestamp on project for each getProject() call
+//       then in that same function, delete data not used in two weeks
 
 func (this *Controller) Login(input *InputModel) detour.Renderer {
 	projectHandle := createCookieValue(input)
@@ -52,9 +54,10 @@ func (this *Controller) Login(input *InputModel) detour.Renderer {
 
 	return detour.CookieResult{
 		Cookie1: &http.Cookie{
-			Name:   config.CookieName,
-			Value:  projectHandle,
-			MaxAge: 7200 * 30,
+			Name:       config.CookieName,
+			Value:      projectHandle,
+			Path:       "/",
+			MaxAge:     86400 * 30,
 		},
 	}
 }
