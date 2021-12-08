@@ -21,6 +21,7 @@
 		Members
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
+	<button class="tablinks" name="authentication" onclick="openTab(event, 'authentication')">Login</button>
 	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')"
 		   value="Save Model">
 </div>
@@ -199,6 +200,18 @@
 		<br><br>
 		<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
 		<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">
+	</import-data>
+</div>
+
+<div id="authentication" class="tabcontent">
+	<import-data>
+		<label for="username">Username</label>
+		<input type="text" id="username">
+		<br>
+		<label for="wardid">Ward ID</label>
+		<input type="text" id="wardid">
+		<br><br>
+		<input type="button" onclick="login()" value="Login">
 	</import-data>
 </div>
 

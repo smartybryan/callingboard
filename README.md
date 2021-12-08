@@ -14,10 +14,8 @@ When run, the program provides an HTTP interface
 on port 40630.
 
 TODO
-- Create engine map for multi-user capabilities. 
-- Login controller and UI (username, ward)
-  Ward and Username is the key to the engine map
-  Ward will determine the data path
-  Load data into project and add to controller
-  Write a cookie with ward and username as a value
+- Get cookie value and populate the login tab
+- Implement logout
+- Improve login page
+- Ward will determine the data path (multi-tenant)
 - Merge models?

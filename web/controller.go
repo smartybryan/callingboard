@@ -12,13 +12,13 @@ import (
 
 type Controller struct {
 	appConfig config.Config
-	projects map[string]*engine.Project
+	projects  map[string]*engine.Project
 }
 
 func NewController(appConfig config.Config) *Controller {
 	return &Controller{
 		appConfig: appConfig,
-		projects: make(map[string]*engine.Project, 10),
+		projects:  make(map[string]*engine.Project, 25),
 	}
 }
 
@@ -34,8 +34,7 @@ func (this *Controller) RemoveProject(handle string) {
 
 func (this *Controller) getProject(input *InputModel) *engine.Project {
 	if project, found := this.projects[input.ProjectHandle]; !found {
-		// TODO: handle error or call Login?
-		return &engine.Project{}
+		return nil
 	} else {
 		return project
 	}
@@ -43,27 +42,40 @@ func (this *Controller) getProject(input *InputModel) *engine.Project {
 
 /////////////// LOGIN
 
+// TODO: need a process to clean out old projects
+
 func (this *Controller) Login(input *InputModel) detour.Renderer {
-	// TODO: if cookie already exists, what should we do?
 	projectHandle := createCookieValue(input)
-	// TODO: clean old projects out
-	// TODO: only add new project if it does not already exist
-	this.AddProject(projectHandle, engine.NewProject(this.appConfig))
+	if project := this.getProject(input); project == nil {
+		this.AddProject(projectHandle, engine.NewProject(this.appConfig))
+	}
 
 	return detour.CookieResult{
 		Cookie1: &http.Cookie{
-			Name:     config.CookieName,
-			Value:    projectHandle,
-			Domain:   "callingboard.org",
-			MaxAge:   216000, // 30 days
-			Secure:   false,
-			HttpOnly: false,
+			Name:   config.CookieName,
+			Value:  projectHandle,
+			MaxAge: 0,
 		},
 	}
 }
 
+func (this *Controller) Logout(input *InputModel) detour.Renderer {
+	this.RemoveProject(input.ProjectHandle)
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    "Success",
+	}
+}
+
+func (this *Controller) AuthenticationError() detour.Renderer {
+	return detour.JSONResult{
+		StatusCode: 401,
+		Content:    "Not logged in",
+	}
+}
+
 func createCookieValue(input *InputModel) string {
-	return input.Username + ":" + input.WardName
+	return input.Username + ":" + input.WardId
 }
 
 func getWardFromCookieValue(value string) string {
@@ -78,6 +90,9 @@ func getWardFromCookieValue(value string) string {
 
 func (this *Controller) AdultsEligibleForCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.AdultsEligibleForACalling(),
@@ -86,6 +101,9 @@ func (this *Controller) AdultsEligibleForCalling(input *InputModel) detour.Rende
 
 func (this *Controller) AdultsWithoutCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.AdultsWithoutACalling(*project.Callings),
@@ -94,6 +112,9 @@ func (this *Controller) AdultsWithoutCalling(input *InputModel) detour.Renderer 
 
 func (this *Controller) GetMemberRecord(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.GetMemberRecord(input.MemberName),
@@ -102,6 +123,9 @@ func (this *Controller) GetMemberRecord(input *InputModel) detour.Renderer {
 
 func (this *Controller) Members(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.GetMembers(input.MemberMinAge, input.MemberMaxAge),
@@ -110,6 +134,9 @@ func (this *Controller) Members(input *InputModel) detour.Renderer {
 
 func (this *Controller) YouthEligibleForCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.YouthEligibleForACalling(),
@@ -118,6 +145,9 @@ func (this *Controller) YouthEligibleForCalling(input *InputModel) detour.Render
 
 func (this *Controller) NewlyAvailableMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.NewlyAvailableMembers(),
@@ -126,6 +156,9 @@ func (this *Controller) NewlyAvailableMembers(input *InputModel) detour.Renderer
 
 func (this *Controller) LoadMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.Load(),
@@ -134,6 +167,9 @@ func (this *Controller) LoadMembers(input *InputModel) detour.Renderer {
 
 func (this *Controller) SaveMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	_, err := project.Members.Save()
 	return detour.JSONResult{
 		StatusCode: 200,
@@ -143,6 +179,9 @@ func (this *Controller) SaveMembers(input *InputModel) detour.Renderer {
 
 func (this *Controller) GetMembersWithFocus(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.GetMembersWithFocus(),
@@ -151,6 +190,9 @@ func (this *Controller) GetMembersWithFocus(input *InputModel) detour.Renderer {
 
 func (this *Controller) GetFocusMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.GetFocusMembers(),
@@ -159,6 +201,9 @@ func (this *Controller) GetFocusMembers(input *InputModel) detour.Renderer {
 
 func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.PutFocusMembers(strings.Split(input.MemberName, "|")),
@@ -167,6 +212,9 @@ func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
 
 func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	numMembers := project.Members.ParseMembersFromRawData(input.RawData)
 	if numMembers < 10 {
 		return detour.JSONResult{
@@ -189,6 +237,9 @@ func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 
 func (this *Controller) CallingList(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.CallingList(input.Organization),
@@ -197,6 +248,9 @@ func (this *Controller) CallingList(input *InputModel) detour.Renderer {
 
 func (this *Controller) CallingListForMember(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.CallingListForMember(input.MemberName),
@@ -205,6 +259,9 @@ func (this *Controller) CallingListForMember(input *InputModel) detour.Renderer 
 
 func (this *Controller) MembersWithCallings(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.MembersWithCallings(),
@@ -213,6 +270,9 @@ func (this *Controller) MembersWithCallings(input *InputModel) detour.Renderer {
 
 func (this *Controller) OrganizationList(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.OrganizationList(),
@@ -221,6 +281,9 @@ func (this *Controller) OrganizationList(input *InputModel) detour.Renderer {
 
 func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.VacantCallingList(input.Organization),
@@ -229,6 +292,9 @@ func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 
 func (this *Controller) LoadCallings(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Callings.Load(),
@@ -237,6 +303,9 @@ func (this *Controller) LoadCallings(input *InputModel) detour.Renderer {
 
 func (this *Controller) SaveCallings(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	_, err := project.Callings.Save()
 	return detour.JSONResult{
 		StatusCode: 200,
@@ -246,6 +315,9 @@ func (this *Controller) SaveCallings(input *InputModel) detour.Renderer {
 
 func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	numCallings := project.Callings.ParseCallingsFromRawData(input.RawData)
 	if numCallings < 10 {
 		return detour.JSONResult{
@@ -268,6 +340,9 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 
 func (this *Controller) AddCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.AddCalling(input.Organization, input.Calling, input.CustomCalling),
@@ -276,6 +351,9 @@ func (this *Controller) AddCalling(input *InputModel) detour.Renderer {
 
 func (this *Controller) RemoveCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.RemoveCalling(input.Organization, input.Calling),
@@ -284,6 +362,9 @@ func (this *Controller) RemoveCalling(input *InputModel) detour.Renderer {
 
 func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.UpdateCalling(input.Organization, input.Calling, input.CustomCalling),
@@ -292,6 +373,9 @@ func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 
 func (this *Controller) AddMemberToCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.AddMemberToACalling(input.MemberName, input.Organization, input.Calling),
@@ -300,6 +384,9 @@ func (this *Controller) AddMemberToCalling(input *InputModel) detour.Renderer {
 
 func (this *Controller) MoveMemberToAnotherCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: project.MoveMemberToAnotherCalling(input.MemberName, input.FromOrg, input.FromCalling,
@@ -309,6 +396,9 @@ func (this *Controller) MoveMemberToAnotherCalling(input *InputModel) detour.Ren
 
 func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.RemoveMemberFromACalling(input.MemberName, input.Organization, input.Calling),
@@ -317,6 +407,9 @@ func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Render
 
 func (this *Controller) RemoveTransaction(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content: project.RemoveTransaction(
@@ -326,6 +419,9 @@ func (this *Controller) RemoveTransaction(input *InputModel) detour.Renderer {
 
 func (this *Controller) Diff(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Diff(),
@@ -334,6 +430,9 @@ func (this *Controller) Diff(input *InputModel) detour.Renderer {
 
 func (this *Controller) ListTransactionFiles(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.ListTransactionFiles(),
@@ -342,6 +441,9 @@ func (this *Controller) ListTransactionFiles(input *InputModel) detour.Renderer 
 
 func (this *Controller) LoadTransactions(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.LoadTransactions(input.TransactionName),
@@ -350,6 +452,9 @@ func (this *Controller) LoadTransactions(input *InputModel) detour.Renderer {
 
 func (this *Controller) SaveTransactions(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.SaveTransactions(input.TransactionName),
@@ -358,6 +463,9 @@ func (this *Controller) SaveTransactions(input *InputModel) detour.Renderer {
 
 func (this *Controller) DeleteTransactions(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.DeleteTransactions(input.TransactionName),
@@ -366,6 +474,9 @@ func (this *Controller) DeleteTransactions(input *InputModel) detour.Renderer {
 
 func (this *Controller) ResetModel(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.ResetModel(),
@@ -374,6 +485,9 @@ func (this *Controller) ResetModel(input *InputModel) detour.Renderer {
 
 func (this *Controller) UndoTransaction(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.UndoTransaction(),
@@ -382,6 +496,9 @@ func (this *Controller) UndoTransaction(input *InputModel) detour.Renderer {
 
 func (this *Controller) RedoTransaction(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.RedoTransaction(),

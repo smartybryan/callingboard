@@ -15,6 +15,9 @@ function initialize() {
 }
 
 function openTab(evt, tabName) {
+	let cookie = document.cookie;
+	notify(nINFO, "Cookie: " + cookie);
+
 	tabPreEvent(tabName);
 	let i, tabcontent, tablinks, leavingTab;
 	tabcontent = document.getElementsByClassName("tabcontent");
@@ -52,6 +55,19 @@ function tabPostEvent(leavingTab) {
 
 function focusDefaultTab() {
 	document.getElementById("default-tab").click();
+}
+
+//// login functions ////
+
+function login() {
+	let username = document.getElementById("username").value;
+	let wardid = document.getElementById("wardid").value;
+	let params = "username=" + username + "&wardid=" + wardid;
+	apiCall("login", params, login_callback);
+}
+
+function login_callback(response) {
+	notify(nINFO, "Login: " + response)
 }
 
 //// calling id functions ////
@@ -179,8 +195,12 @@ function createTransactionParmsForMemberElement(memberElement, callingElement) {
 function apiCall(endpoint, params, callback) {
 	const xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			callback(this.responseText);
+		if (this.readyState === 4) {
+			if (this.status === 200) {
+				callback(this.responseText);
+			} else {
+				callback(this.status);
+			}
 		}
 	};
 

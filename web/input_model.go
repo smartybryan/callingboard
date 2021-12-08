@@ -14,7 +14,7 @@ type InputModel struct {
 	ProjectHandle string
 	Username      string
 	Password      string
-	WardName      string
+	WardId        string
 
 	MemberMinAge int
 	MemberMaxAge int
@@ -37,6 +37,9 @@ func (this *InputModel) Bind(request *http.Request) error {
 	if err == nil {
 		this.ProjectHandle = handle.Value
 	}
+
+	this.Username = sanitize(request.Form.Get("username"))
+	this.WardId = sanitize(request.Form.Get("wardid"))
 
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))

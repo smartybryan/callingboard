@@ -4,6 +4,11 @@ function displayMembers(endpoint) {
 }
 
 function displayMembers_callback(response) {
+	if (response === 401) {
+		notify(nERROR, NOT_AUTHENTICATED);
+		return;
+	}
+
 	const membersElement = document.getElementById("members");
 	clearContainer(membersElement);
 	clearContainer(document.getElementById("member-callings"));

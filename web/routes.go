@@ -10,6 +10,10 @@ import (
 func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/", http.FileServer(http.Dir(appConfig.HtmlServerPath)))
 
+	// authentication
+	http.Handle("/v1/login", detour.New(controller.Login)) // username, wardid
+	http.Handle("/v1/logout", detour.New(controller.Logout)) // cookie has key
+
 	// members
 	http.Handle("/v1/members", detour.New(controller.Members)) // min, max
 	http.Handle("/v1/adults-without-calling", detour.New(controller.AdultsWithoutCalling))
