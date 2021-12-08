@@ -54,7 +54,7 @@ func (this *Controller) Login(input *InputModel) detour.Renderer {
 		Cookie1: &http.Cookie{
 			Name:   config.CookieName,
 			Value:  projectHandle,
-			MaxAge: 0,
+			MaxAge: 7200 * 30,
 		},
 	}
 }
