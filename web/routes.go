@@ -12,7 +12,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 
 	// authentication
 	http.Handle("/v1/login", detour.New(controller.Login)) // username, wardid
-	http.Handle("/v1/logout", detour.New(controller.Logout)) // cookie has key
+	http.Handle("/v1/logout", detour.New(controller.Logout)) // username, wardid
 
 	// members
 	http.Handle("/v1/members", detour.New(controller.Members)) // min, max

@@ -98,6 +98,12 @@ input[type=radio] {
 	margin-left: 0px;
 }
 
+/* HEADER */
+
+#header-username {
+	float: right;
+}
+
 /* MEMBER COLUMN */
 
 #member-filter {
@@ -336,6 +342,12 @@ focus-member {
 	padding: 15px;
 	border-radius: 20px;
 	outline: none;
+}
+
+/* LOGIN */
+
+login-panel {
+	margin: 15px;
 }
 
 /* TREE CARETS */

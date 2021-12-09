@@ -80,17 +80,19 @@ function login() {
 
 function login_callback(response) {
 	initialize();
-	//TODO: prepare html for logout
 	focusDefaultTab();
 }
 
 function logout() {
-	apiCall("logout", "", logout_callback)
+	let authData = getAuthValueFromCookie();
+	let params = "username=" + authData.username + "&wardid=" + authData.wardid;
+	apiCall("logout", params, logout_callback)
 	document.cookie = "id=; Max-Age=-9999999"
 }
 
 function logout_callback(response) {
 	initialize();
+	clearLoggedInUsername();
 	//TODO: clear the modeling data on the page
 	//TODO: prepare the html for login
 
@@ -104,8 +106,33 @@ function checkLoginStatus() {
 	let auth = getAuthValueFromCookie();
 	document.getElementById("username").value = auth.username;
 	document.getElementById("wardid").value = auth.wardid;
+
+	setLoggedInUsername();
 	makeTabDefault("modeling");
 	focusDefaultTab();
+}
+
+function clearLoggedInUsername() {
+	let usernameElements = document.getElementsByClassName("logged-in-username");
+	for (let usernameElement of usernameElements) {
+		usernameElement.innerHTML = "";
+	}
+
+	document.getElementById("login-panel").classList.remove("filtered")
+	document.getElementById("logout-panel").classList.add("filtered")
+	document.getElementById("header-logout-button").classList.add("filtered")
+}
+
+function setLoggedInUsername() {
+	let usernameElements = document.getElementsByClassName("logged-in-username");
+	let cookieData = getAuthValueFromCookie();
+	for (let usernameElement of usernameElements) {
+		usernameElement.innerHTML = "Logged in as " + cookieData.username;
+	}
+
+	document.getElementById("login-panel").classList.add("filtered")
+	document.getElementById("logout-panel").classList.remove("filtered")
+	document.getElementById("header-logout-button").classList.remove("filtered")
 }
 
 function getAuthValueFromCookie() {

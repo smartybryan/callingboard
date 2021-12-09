@@ -11,6 +11,12 @@
 
 <header>
 	<span id="title">Calling Board</span>
+
+	<div id="header-username">
+		<span class="logged-in-username"></span>
+		<input type="button" id="header-logout-button" class="filtered"
+			   onclick="logout()" value="Logout">
+	</div>
 </header>
 
 <div class="tab">
@@ -204,16 +210,27 @@
 </div>
 
 <div id="authentication" class="tabcontent">
-	<import-data>
-		<label for="username">Username</label>
-		<input type="text" id="username">
+	<login-panel id="login-panel">
+		<table>
+			<tr>
+				<td>
+					<label for="username">Username</label></td>
+				<td><input type="text" id="username"></td>
+			</tr>
+			<tr>
+				<td>
+					<label for="wardid">Ward ID</label></td>
+				<td><input type="text" id="wardid"></td>
+			</tr>
+		</table>
 		<br>
-		<label for="wardid">Ward ID</label>
-		<input type="text" id="wardid">
-		<br><br>
 		<input type="button" onclick="login()" value="Login">
+	</login-panel>
+	<login-panel id="logout-panel" class="filtered">
+		<span class="logged-in-username"></span>
+		<br><br>
 		<input type="button" onclick="logout()" value="Logout">
-	</import-data>
+	</login-panel>
 </div>
 
 <script src="js/callingboard.js"></script>

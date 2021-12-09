@@ -63,7 +63,7 @@ func (this *Controller) Login(input *InputModel) detour.Renderer {
 }
 
 func (this *Controller) Logout(input *InputModel) detour.Renderer {
-	this.RemoveProject(input.ProjectHandle)
+	this.RemoveProject(input.Username + ":" + input.WardId)
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    "Success",
