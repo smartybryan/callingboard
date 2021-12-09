@@ -8,6 +8,7 @@ window.onload = function () {
 };
 
 function initialize() {
+	checkLoginStatus();
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
@@ -15,9 +16,6 @@ function initialize() {
 }
 
 function openTab(evt, tabName) {
-	let cookie = document.cookie;
-	notify(nINFO, "Cookie: " + cookie);
-
 	tabPreEvent(tabName);
 	let i, tabcontent, tablinks, leavingTab;
 	tabcontent = document.getElementsByClassName("tabcontent");
@@ -53,8 +51,22 @@ function tabPostEvent(leavingTab) {
 	}
 }
 
+function makeTabDefault(tabName) {
+	let tabs = document.getElementsByClassName("tablinks")
+	for (let tab of tabs) {
+		tab.classList.remove("default");
+		if (tab.name === tabName) {
+			tab.classList.add("default");
+		}
+	}
+}
+
 function focusDefaultTab() {
-	document.getElementById("default-tab").click();
+	let tabs = document.getElementsByClassName("default");
+	if (tabs.length === 0) {
+		return
+	}
+	tabs[0].click();
 }
 
 //// login functions ////
@@ -67,7 +79,50 @@ function login() {
 }
 
 function login_callback(response) {
-	notify(nINFO, "Login: " + response)
+	initialize();
+	//TODO: prepare html for logout
+	focusDefaultTab();
+}
+
+function logout() {
+	apiCall("logout", "", logout_callback)
+	document.cookie = "id=; Max-Age=-9999999"
+}
+
+function logout_callback(response) {
+	initialize();
+	//TODO: clear the modeling data on the page
+	//TODO: prepare the html for login
+
+}
+
+function checkLoginStatus() {
+	if (document.cookie.length === 0) {
+		makeTabDefault("authentication");
+		return
+	}
+	let auth = getAuthValueFromCookie();
+	document.getElementById("username").value = auth.username;
+	document.getElementById("wardid").value = auth.wardid;
+	makeTabDefault("modeling");
+	focusDefaultTab();
+}
+
+function getAuthValueFromCookie() {
+	let username = "";
+	let wardid = "";
+	let cookieSplit = document.cookie.split("=");
+	if (cookieSplit.length < 2) {
+		return {username, wardid};
+	}
+
+	let cookieValueSplit = cookieSplit[1].split(":");
+	if (cookieValueSplit.length < 2) {
+		return {username, wardid};
+	}
+	username = cookieValueSplit[0];
+	wardid = cookieValueSplit[1];
+	return {username, wardid};
 }
 
 //// calling id functions ////

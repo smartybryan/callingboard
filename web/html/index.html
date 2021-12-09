@@ -14,7 +14,7 @@
 </header>
 
 <div class="tab">
-	<button class="tablinks" name="modeling" onclick="openTab(event, 'modeling')" id="default-tab">Modeling</button>
+	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
 	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Print Report</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
 	<button class="tablinks" name="manage-focus-members" onclick="openTab(event, 'manage-focus-members')">Focus
@@ -212,6 +212,7 @@
 		<input type="text" id="wardid">
 		<br><br>
 		<input type="button" onclick="login()" value="Login">
+		<input type="button" onclick="logout()" value="Logout">
 	</import-data>
 </div>
 
