@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
+	"sync"
 	"time"
 
 	"github.org/smartybryan/callingboard/util"
@@ -12,6 +13,7 @@ import (
 type Callings struct {
 	CallingMap        map[string][]Calling
 	OrganizationOrder []string
+	mutex             *sync.Mutex
 
 	initialSize int
 	filePath    string
@@ -22,6 +24,7 @@ func NewCallings(numCallings int, path string) Callings {
 		CallingMap:  make(map[string][]Calling, numCallings),
 		initialSize: numCallings,
 		filePath:    path,
+		mutex:       &sync.Mutex{},
 	}
 }
 
@@ -37,9 +40,6 @@ func (this *Callings) CallingList(organization string) (callingList []Calling) {
 			callingList = this.getCallingListByOrganization(callings, callingList)
 		}
 	}
-	//sort.SliceStable(callingList, func(i, j int) bool {
-	//	return callingList[i].Name < callingList[j].Name
-	//})
 	return callingList
 }
 
@@ -93,6 +93,7 @@ func (this *Callings) Load() error {
 	if err != nil {
 		return err
 	}
+
 	return json.Unmarshal(jsonBytes, this)
 }
 
@@ -171,6 +172,7 @@ func (this *Callings) addCalling(org string, calling string, custom bool) error 
 		Sustained:     time.Time{},
 	}
 	callingList = append(callingList, newCalling)
+
 	this.CallingMap[org] = callingList
 
 	return nil

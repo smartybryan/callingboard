@@ -6,14 +6,12 @@ import (
 )
 
 const (
-	ListenPortClearDefault      = ":80"
-	ListenPortDefault           = ":443"
-	DataPathDefault             = "."
-	HtmlServerDefault           = "html"
-	CallingDataPathDefault      = "callings.json"
-	MembersDataPathDefault      = "members.json"
-	CallingModelDataPathDefault = "callings_model.json"
-	MembersModelDataPathDefault = "members_model.json"
+	ListenPortClearDefault = ":80"
+	ListenPortDefault      = ":443"
+	DataPathDefault        = "."
+	HtmlServerDefault      = "html"
+	CallingDataFileDefault = "callings.json"
+	MembersDataFileDefault = "members.json"
 
 	CookieName = "id"
 
@@ -22,13 +20,11 @@ const (
 )
 
 type Config struct {
-	ListenPort           string
-	DataPath             string
-	CallingDataPath      string
-	MembersDataPath      string
-	CallingModelDataPath string
-	MembersModelDataPath string
-	HtmlServerPath       string
+	ListenPort     string
+	DataPath       string
+	CallingFile    string
+	MembersFile    string
+	HtmlServerPath string
 }
 
 func ParseConfig() Config {
@@ -38,11 +34,9 @@ func ParseConfig() Config {
 	flag.StringVar(&config.ListenPort, "listen", ListenPortDefault, "Listen port for TLS. e.g. :443")
 	flag.Parse()
 
-	config.CallingDataPath = path.Join(config.DataPath, CallingDataPathDefault)
-	config.MembersDataPath = path.Join(config.DataPath, MembersDataPathDefault)
-	config.CallingModelDataPath = path.Join(config.DataPath, CallingModelDataPathDefault)
-	config.MembersModelDataPath = path.Join(config.DataPath, MembersModelDataPathDefault)
 	config.HtmlServerPath = path.Join(config.DataPath, HtmlServerDefault)
+	config.CallingFile = CallingDataFileDefault
+	config.MembersFile = MembersDataFileDefault
 
 	return config
 }

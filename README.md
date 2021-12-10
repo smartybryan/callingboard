@@ -11,11 +11,9 @@ Data is imported from reports available in
 LCR on ChurchOfJesusChrist.org.
 
 When run, the program provides an HTTP interface 
-on port 40630.
+on port 80.
 
 TODO
-- Get cookie value and populate the login tab
-- Implement logout
-- Improve login page
-- Ward will determine the data path (multi-tenant)
+- WardId will determine the data path (multi-tenant)
+- Clean up expired projects
 - Merge models?

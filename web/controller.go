@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/smartystreets/detour"
 	"github.org/smartybryan/callingboard/config"
@@ -13,6 +14,7 @@ import (
 type Controller struct {
 	appConfig config.Config
 	projects  map[string]*engine.Project
+	mutex     sync.Mutex
 }
 
 func NewController(appConfig config.Config) *Controller {
@@ -23,16 +25,25 @@ func NewController(appConfig config.Config) *Controller {
 }
 
 func (this *Controller) AddProject(handle string, project *engine.Project) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	this.projects[handle] = project
 }
 
 func (this *Controller) RemoveProject(handle string) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	if _, found := this.projects[handle]; found {
 		delete(this.projects, handle)
 	}
 }
 
 func (this *Controller) getProject(input *InputModel) *engine.Project {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	if project, found := this.projects[input.ProjectHandle]; !found {
 		return nil
 	} else {
@@ -48,16 +59,17 @@ func (this *Controller) getProject(input *InputModel) *engine.Project {
 
 func (this *Controller) Login(input *InputModel) detour.Renderer {
 	projectHandle := createCookieValue(input)
+	input.ProjectHandle = projectHandle
 	if project := this.getProject(input); project == nil {
-		this.AddProject(projectHandle, engine.NewProject(this.appConfig))
+		this.AddProject(projectHandle, engine.NewProject(input.WardId, this.appConfig))
 	}
 
 	return detour.CookieResult{
 		Cookie1: &http.Cookie{
-			Name:       config.CookieName,
-			Value:      projectHandle,
-			Path:       "/",
-			MaxAge:     86400 * 30,
+			Name:   config.CookieName,
+			Value:  projectHandle,
+			Path:   "/",
+			MaxAge: 86400 * 30,
 		},
 	}
 }
@@ -294,6 +306,9 @@ func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 }
 
 func (this *Controller) LoadCallings(input *InputModel) detour.Renderer {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
 	project := this.getProject(input)
 	if project == nil {
 		return this.AuthenticationError()
