@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.org/smartybryan/callingboard/config"
 )
@@ -28,7 +27,6 @@ type Project struct {
 	transactions     []Transaction
 	undoHistory      []Transaction
 	dataPath         string
-	mutex            *sync.Mutex
 
 	diff DiffResult
 }
@@ -56,7 +54,6 @@ func NewProject(wardId string, appConfig config.Config) *Project {
 		transactions:     make([]Transaction, 0, 100),
 		dataPath:         dataPath,
 		diff:             NewDiff(),
-		mutex:            &sync.Mutex{},
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
-	"sync"
 	"time"
 
 	"github.org/smartybryan/callingboard/util"
@@ -13,7 +12,6 @@ import (
 type Callings struct {
 	CallingMap        map[string][]Calling
 	OrganizationOrder []string
-	mutex             *sync.Mutex
 
 	initialSize int
 	filePath    string
@@ -24,7 +22,6 @@ func NewCallings(numCallings int, path string) Callings {
 		CallingMap:  make(map[string][]Calling, numCallings),
 		initialSize: numCallings,
 		filePath:    path,
-		mutex:       &sync.Mutex{},
 	}
 }
 

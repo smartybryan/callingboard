@@ -350,6 +350,13 @@ login-panel {
 	margin: 15px;
 }
 
+#username, #wardid {
+	font-size: 13px;
+	margin: 5px;
+	padding-left: 10px;
+	border-radius: 10px;
+}
+
 /* TREE CARETS */
 
 .caret {
