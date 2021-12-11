@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.org/smartybryan/callingboard/config"
 )
@@ -27,6 +28,7 @@ type Project struct {
 	transactions     []Transaction
 	undoHistory      []Transaction
 	dataPath         string
+	LastAccessed     time.Time
 
 	diff DiffResult
 }

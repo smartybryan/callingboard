@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/smartystreets/detour"
 	"github.org/smartybryan/callingboard/config"
@@ -28,6 +29,7 @@ func (this *Controller) AddProject(handle string, project *engine.Project) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
+	project.LastAccessed = time.Now()
 	this.projects[handle] = project
 }
 
@@ -35,27 +37,40 @@ func (this *Controller) RemoveProject(handle string) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	if _, found := this.projects[handle]; found {
-		delete(this.projects, handle)
-	}
+	delete(this.projects, handle)
 }
 
 func (this *Controller) getProject(input *InputModel) *engine.Project {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
-	if project, found := this.projects[input.ProjectHandle]; !found {
+	this.cleanProjects()
+
+	project, found := this.projects[input.ProjectHandle]
+	if !found {
 		return nil
 	} else {
+		project.LastAccessed = time.Now()
 		return project
 	}
 }
 
-/////////////// LOGIN
+func (this *Controller) cleanProjects() {
+	var handles []string
+	for handle, _ := range this.projects {
+		handles = append(handles, handle)
+	}
+	fmt.Printf("Projects: %d\n", len(this.projects))
 
-// TODO: need a process to clean out old projects.
-//       update timestamp on project for each getProject() call
-//       then in that same function, delete data not used in two weeks
+	for _, handle := range handles {
+		// clean projects from controller after 10 days of inactivity
+		if time.Now().Sub(this.projects[handle].LastAccessed) > time.Hour*24*10 {
+			delete(this.projects, handle)
+		}
+	}
+}
+
+/////////////// LOGIN
 
 func (this *Controller) Login(input *InputModel) detour.Renderer {
 	projectHandle := createCookieValue(input)
@@ -69,7 +84,7 @@ func (this *Controller) Login(input *InputModel) detour.Renderer {
 			Name:   config.CookieName,
 			Value:  projectHandle,
 			Path:   "/",
-			MaxAge: 86400 * 30,
+			MaxAge: 86400 * 10, // 10 days
 		},
 	}
 }
