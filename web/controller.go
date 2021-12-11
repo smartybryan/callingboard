@@ -60,7 +60,6 @@ func (this *Controller) cleanProjects() {
 	for handle, _ := range this.projects {
 		handles = append(handles, handle)
 	}
-	fmt.Printf("Projects: %d\n", len(this.projects))
 
 	for _, handle := range handles {
 		// clean projects from controller after 10 days of inactivity

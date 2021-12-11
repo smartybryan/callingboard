@@ -15,11 +15,9 @@ function displayMembers_do(response) {
 		focusDefaultTab();
 		return;
 	}
+	clearMembersPanel()
 
 	const membersElement = document.getElementById("members");
-	clearContainer(membersElement);
-	clearContainer(document.getElementById("member-callings"));
-
 	let jsonObject = JSON.parse(response);
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
@@ -34,6 +32,12 @@ function displayMembers_do(response) {
 	});
 
 	filterMembers();
+}
+
+function clearMembersPanel() {
+	clearContainer(document.getElementById("members"));
+	clearFilter();
+	clearCallingsHeldByMember();
 }
 
 function memberSelected(element) {

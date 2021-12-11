@@ -69,6 +69,12 @@ function focusDefaultTab() {
 	tabs[0].click();
 }
 
+function clearModeling() {
+	clearMembersPanel();
+	clearCallingsReleases();
+	clearCallingTree();
+}
+
 //// login functions ////
 
 function login() {
@@ -93,7 +99,8 @@ function logout() {
 		.then(data => {
 			clearLoggedInUsername();
 			document.cookie = "id=; Max-Age=-9999999"
-			initialize();
+			clearModeling();
+			makeTabDefault("authentication");
 			focusDefaultTab();
 		})
 		.catch(error => {

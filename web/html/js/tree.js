@@ -1,3 +1,8 @@
+function clearCallingTree() {
+	const wardOrgs = document.getElementById("ward-organizations");
+	clearContainer(wardOrgs);
+}
+
 
 function setupTreeStructure() {
 	apiCall("callings", "org=" + ALL_ORGS)
@@ -11,6 +16,7 @@ function setupTreeStructure() {
 
 function setupTreeStructure_do(response) {
 	const wardOrgs = document.getElementById("ward-organizations");
+	clearCallingTree();
 
 	function setupNestedContainers(containerName, parentContainer, orgContainer, containerId) {
 		let caret = document.createElement("span");
@@ -195,18 +201,26 @@ function refreshCallingChanges_do(response) {
 	}
 	document.getElementById("model-name").value = jsonObject.ModelName;
 
+	clearCallingsReleases();
+
 	let container = document.getElementById("releases");
-	clearContainer(container);
-	addReleaseDropEnabler(container);
 	jsonObject.Releases.forEach(function (calling) {
 		container.appendChild(createCallingElement(calling, 0));
 	});
 
 	container = document.getElementById("sustainings");
-	clearContainer(container);
 	jsonObject.Sustainings.forEach(function (calling) {
 		container.appendChild(createCallingElement(calling, 0));
 	});
+}
+
+function clearCallingsReleases() {
+	let container = document.getElementById("releases");
+	clearContainer(container);
+	addReleaseDropEnabler(container);
+
+	container = document.getElementById("sustainings");
+	clearContainer(container);
 }
 
 function addReleaseDropEnabler(container) {
