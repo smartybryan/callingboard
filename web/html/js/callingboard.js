@@ -75,27 +75,29 @@ function login() {
 	let username = document.getElementById("username").value;
 	let wardid = document.getElementById("wardid").value;
 	let params = "username=" + username + "&wardid=" + wardid;
-	apiCall("login", params, login_callback);
-}
 
-function login_callback(response) {
-	initialize();
-	focusDefaultTab();
+	apiCall("login", params)
+		.then(data => {
+			initialize();
+			focusDefaultTab();
+		})
+		.catch(error => {
+			console.log(error);
+		});
 }
 
 function logout() {
 	let authData = getAuthValueFromCookie();
 	let params = "username=" + authData.username + "&wardid=" + authData.wardid;
-	apiCall("logout", params, logout_callback)
-	document.cookie = "id=; Max-Age=-9999999"
-}
-
-function logout_callback(response) {
-	initialize();
-	clearLoggedInUsername();
-	//TODO: clear the modeling data on the page
-	//TODO: prepare the html for login
-
+	apiCall("logout", params)
+		.then(data => {
+			initialize();
+			clearLoggedInUsername();
+			document.cookie = "id=; Max-Age=-9999999"
+		})
+		.catch(error => {
+			console.log(error);
+		});
 }
 
 function checkLoginStatus() {
@@ -196,8 +198,14 @@ function drop(ev) {
 			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
-		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement), refreshFromModel);
-		makeDirty()
+		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement))
+			.then(data => {
+				refreshFromModel();
+				makeDirty()
+			})
+			.catch(error => {
+				console.log(error);
+			});
 		return
 	}
 
@@ -209,9 +217,15 @@ function drop(ev) {
 		}
 		let idComponents = callingIdComponents(movedElement.id);
 		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
-		apiCall("backout-transaction", params, refreshFromModel);
-		clearCallingsHeldByMember();
-		makeDirty()
+		apiCall("backout-transaction", params)
+			.then(data => {
+				refreshFromModel();
+				clearCallingsHeldByMember();
+				makeDirty()
+			})
+			.catch(error => {
+				console.log(error);
+			})
 		return
 	}
 
@@ -237,8 +251,14 @@ function drop(ev) {
 		return
 	}
 
-	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement), refreshFromModel);
-	makeDirty()
+	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement))
+		.then(data => {
+			refreshFromModel();
+			makeDirty();
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function makeDirty() {
@@ -272,21 +292,43 @@ function createTransactionParmsForMemberElement(memberElement, callingElement) {
 	return "org=" + callingElement.getAttribute("data-org") + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
 }
 
+function undoLast() {
+	apiCall("undo-trans")
+		.then(data => {
+			refreshFromModel();
+		})
+		.catch(error => {
+			console.log(error)
+		})
+}
+
+function redoLast() {
+	apiCall("redo-trans")
+		.then(data => {
+			refreshFromModel();
+		})
+		.catch(error => {
+			console.log(error)
+		})
+}
+
 //// api call ////
 
-function apiCall(endpoint, params, callback) {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4) {
-			if (this.status === 200) {
-				callback(this.responseText);
+let apiCall = (endpoint, params) => {
+	return new Promise((resolve, reject) => {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
+		xhttp.setRequestHeader("Content-type", "text/plain");
+		xhttp.onload = () => {
+			if (xhttp.status >= 200 && xhttp.status < 300) {
+				resolve(xhttp.responseText);
 			} else {
-				callback(this.status);
+				reject(xhttp.statusText);
 			}
 		}
-	};
-
-	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+		xhttp.onerror = () => {
+			reject(xhttp.statusText);
+		}
+		xhttp.send();
+	})
 }

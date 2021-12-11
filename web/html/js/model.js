@@ -1,6 +1,10 @@
 
 function listModels() {
 	modelOperation("list-trans-files")
+		.then(data => {})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function updateFileList(response) {
@@ -41,7 +45,12 @@ function loadModel() {
 		return
 	}
 	modelOperation("load-trans", name)
-	makeClean()
+		.then(data => {
+			makeClean();
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function deleteModel() {
@@ -51,12 +60,17 @@ function deleteModel() {
 		return
 	}
 	let currentModel = document.getElementById("model-name").value;
-	if (name === currentModel) {
-		document.getElementById("model-name").value = "";
-		resetModel();
-	}
-	//TODO: this is a race condition as resetmodel could still be executing
+
 	modelOperation("delete-trans", name)
+		.then(data => {
+			if (name === currentModel) {
+				document.getElementById("model-name").value = "";
+				resetModel();
+			}
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function saveModel() {
@@ -66,42 +80,60 @@ function saveModel() {
 		return
 	}
 	modelOperation("save-trans", name)
-	makeClean()
+		.then(data => {
+			makeClean();
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function resetModel() {
-	modelOperation("reset-model");
-	document.getElementById("model-name").value = "";
-	notify(nSUCCESS, MESSAGE_MODEL_RESET);
-	makeClean()
+	modelOperation("reset-model")
+		.then(data => {
+			document.getElementById("model-name").value = "";
+			notify(nSUCCESS, MESSAGE_MODEL_RESET);
+			makeClean();
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function modelOperation(endpoint, name) {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			if (endpoint === "list-trans-files") {
-				updateFileList(this.responseText);
-			} else if (this.responseText === "null\n") {
-				refreshFromModel();
-				listModels();
-				if (endpoint === "load-trans") {
-					notify(nSUCCESS,MESSAGE_MODEL_LOADED);
-				}
-				if (endpoint === "save-trans") {
-					notify(nSUCCESS,MESSAGE_MODEL_SAVED);
-				}
-			} else {
-				notify(nERROR, this.responseText)
-			}
-		}
-	};
-
+let modelOperation = (endpoint, name) => {
 	let params = ""
 	if (name) {
 		params = "?name=" + name;
 	}
-	xhttp.open("GET", "/v1/" + endpoint + encodeURI(params));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+
+	return new Promise((resolve, reject) => {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/v1/" + endpoint + encodeURI(params));
+		xhttp.setRequestHeader("Content-type", "text/plain");
+		xhttp.onload = () => {
+			if (xhttp.status >= 200 && xhttp.status < 300) {
+				if (endpoint === "list-trans-files") {
+					updateFileList(xhttp.responseText);
+				} else if (xhttp.responseText === "null\n") {
+					refreshFromModel();
+					listModels();
+					if (endpoint === "load-trans") {
+						notify(nSUCCESS,MESSAGE_MODEL_LOADED);
+					}
+					if (endpoint === "save-trans") {
+						notify(nSUCCESS,MESSAGE_MODEL_SAVED);
+					}
+				} else {
+					notify(nERROR, xhttp.responseText)
+				}
+				resolve(xhttp.responseText);
+			} else {
+				reject(xhttp.statusText);
+			}
+		}
+		xhttp.onerror = () => {
+			reject(xhttp.statusText);
+		}
+		xhttp.send();
+	})
 }

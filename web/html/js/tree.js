@@ -1,9 +1,15 @@
 
 function setupTreeStructure() {
-	apiCall("callings", "org=" + ALL_ORGS, setupTreeStructure_callback);
+	apiCall("callings", "org=" + ALL_ORGS)
+		.then(data => {
+			setupTreeStructure_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function setupTreeStructure_callback(response) {
+function setupTreeStructure_do(response) {
 	const wardOrgs = document.getElementById("ward-organizations");
 
 	function setupNestedContainers(containerName, parentContainer, orgContainer, containerId) {
@@ -135,10 +141,16 @@ function refreshTree() {
 		endpoint = "diff";
 		params = "";
 	}
-	apiCall(endpoint, params, refreshTree_callback)
+	apiCall(endpoint, params)
+		.then(data => {
+			refreshTree_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function refreshTree_callback(response) {
+function refreshTree_do(response) {
 	let showNewVacancies = document.getElementById("new-vacancies").checked
 	let showAllVacancies = document.getElementById("all-vacancies").checked
 
@@ -167,10 +179,16 @@ function refreshTree_callback(response) {
 }
 
 function refreshCallingChanges() {
-	apiCall("diff", "", refreshCallingChanges_callback)
+	apiCall("diff", "")
+		.then(data => {
+			refreshCallingChanges_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function refreshCallingChanges_callback(response) {
+function refreshCallingChanges_do(response) {
 	let jsonObject = JSON.parse(response);
 	if (jsonObject.Releases.length + jsonObject.Sustainings.length === 0) {
 		makeClean();
