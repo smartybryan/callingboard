@@ -55,6 +55,7 @@ function deleteModel() {
 		document.getElementById("model-name").value = "";
 		resetModel();
 	}
+	//TODO: this is a race condition as resetmodel could still be executing
 	modelOperation("delete-trans", name)
 }
 
