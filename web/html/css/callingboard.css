@@ -359,6 +359,11 @@ login-panel {
 	margin: 15px;
 }
 
+#authentication {
+	place-content: center;
+	text-align: center;
+}
+
 #username, #wardid {
 	font-size: 13px;
 	margin: 5px;

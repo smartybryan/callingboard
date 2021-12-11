@@ -91,9 +91,10 @@ function logout() {
 	let params = "username=" + authData.username + "&wardid=" + authData.wardid;
 	apiCall("logout", params)
 		.then(data => {
-			initialize();
 			clearLoggedInUsername();
 			document.cookie = "id=; Max-Age=-9999999"
+			initialize();
+			focusDefaultTab();
 		})
 		.catch(error => {
 			console.log(error);
