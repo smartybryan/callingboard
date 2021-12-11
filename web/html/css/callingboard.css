@@ -98,6 +98,12 @@ input[type=radio] {
 	margin-left: 0px;
 }
 
+/* HEADER */
+
+#header-username {
+	float: right;
+}
+
 /* MEMBER COLUMN */
 
 #member-filter {
@@ -271,14 +277,23 @@ model-man-footer {
 #model-name {
 	width: 255px;
 	margin-right: 5px;
-	font-size: 15px;
+	font-size: 16px;
 	padding-left: 15px;
+	padding-top: 2px;
+	padding-bottom: 2px;
 	border-radius: 20px;
 	outline: none;
 }
 
 #model-names {
 	width: 100%;
+}
+
+#model-names tr td {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 10px;
+	border-radius: 15px;
 }
 
 #model-name-scroller {
@@ -336,6 +351,24 @@ focus-member {
 	padding: 15px;
 	border-radius: 20px;
 	outline: none;
+}
+
+/* LOGIN */
+
+login-panel {
+	margin: 15px;
+}
+
+#authentication {
+	place-content: center;
+	text-align: center;
+}
+
+#username, #wardid {
+	font-size: 13px;
+	margin: 5px;
+	padding-left: 10px;
+	border-radius: 10px;
 }
 
 /* TREE CARETS */

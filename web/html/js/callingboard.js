@@ -8,6 +8,7 @@ window.onload = function () {
 };
 
 function initialize() {
+	checkLoginStatus();
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
@@ -50,8 +51,108 @@ function tabPostEvent(leavingTab) {
 	}
 }
 
+function makeTabDefault(tabName) {
+	let tabs = document.getElementsByClassName("tablinks")
+	for (let tab of tabs) {
+		tab.classList.remove("default");
+		if (tab.name === tabName) {
+			tab.classList.add("default");
+		}
+	}
+}
+
 function focusDefaultTab() {
-	document.getElementById("default-tab").click();
+	let tabs = document.getElementsByClassName("default");
+	if (tabs.length === 0) {
+		return
+	}
+	tabs[0].click();
+}
+
+//// login functions ////
+
+function login() {
+	let username = document.getElementById("username").value;
+	let wardid = document.getElementById("wardid").value;
+	let params = "username=" + username + "&wardid=" + wardid;
+
+	apiCall("login", params)
+		.then(data => {
+			initialize();
+			focusDefaultTab();
+		})
+		.catch(error => {
+			console.log(error);
+		});
+}
+
+function logout() {
+	let authData = getAuthValueFromCookie();
+	let params = "username=" + authData.username + "&wardid=" + authData.wardid;
+	apiCall("logout", params)
+		.then(data => {
+			clearLoggedInUsername();
+			document.cookie = "id=; Max-Age=-9999999"
+			initialize();
+			focusDefaultTab();
+		})
+		.catch(error => {
+			console.log(error);
+		});
+}
+
+function checkLoginStatus() {
+	if (document.cookie.length === 0) {
+		makeTabDefault("authentication");
+		return
+	}
+	let auth = getAuthValueFromCookie();
+	document.getElementById("username").value = auth.username;
+	document.getElementById("wardid").value = auth.wardid;
+
+	setLoggedInUsername();
+	makeTabDefault("modeling");
+	focusDefaultTab();
+}
+
+function clearLoggedInUsername() {
+	let usernameElements = document.getElementsByClassName("logged-in-username");
+	for (let usernameElement of usernameElements) {
+		usernameElement.innerHTML = "";
+	}
+
+	document.getElementById("login-panel").classList.remove("filtered")
+	document.getElementById("logout-panel").classList.add("filtered")
+	document.getElementById("header-logout-button").classList.add("filtered")
+}
+
+function setLoggedInUsername() {
+	let usernameElements = document.getElementsByClassName("logged-in-username");
+	let cookieData = getAuthValueFromCookie();
+	for (let usernameElement of usernameElements) {
+		usernameElement.innerHTML = "Logged in as " + cookieData.username;
+	}
+
+	document.getElementById("login-panel").classList.add("filtered")
+	document.getElementById("logout-panel").classList.remove("filtered")
+	document.getElementById("header-logout-button").classList.remove("filtered")
+}
+
+function getAuthValueFromCookie() {
+	let username = "";
+	let wardid = "";
+	let cookieSplit = document.cookie.split("=");
+	if (cookieSplit.length < 2) {
+		return {username, wardid};
+	}
+
+	let cookieValueSplit = cookieSplit[1].split(":");
+	if (cookieValueSplit.length < 2) {
+		return {username, wardid};
+	}
+	username = cookieValueSplit[0];
+	wardid = cookieValueSplit[1];
+	return {username, wardid};
 }
 
 //// calling id functions ////
@@ -98,8 +199,14 @@ function drop(ev) {
 			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
-		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement), refreshFromModel);
-		makeDirty()
+		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement))
+			.then(data => {
+				refreshFromModel();
+				makeDirty()
+			})
+			.catch(error => {
+				console.log(error);
+			});
 		return
 	}
 
@@ -111,9 +218,15 @@ function drop(ev) {
 		}
 		let idComponents = callingIdComponents(movedElement.id);
 		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + idComponents.callingName;
-		apiCall("backout-transaction", params, refreshFromModel);
-		clearCallingsHeldByMember();
-		makeDirty()
+		apiCall("backout-transaction", params)
+			.then(data => {
+				refreshFromModel();
+				clearCallingsHeldByMember();
+				makeDirty()
+			})
+			.catch(error => {
+				console.log(error);
+			})
 		return
 	}
 
@@ -139,8 +252,14 @@ function drop(ev) {
 		return
 	}
 
-	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement), refreshFromModel);
-	makeDirty()
+	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement))
+		.then(data => {
+			refreshFromModel();
+			makeDirty();
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 function makeDirty() {
@@ -174,17 +293,43 @@ function createTransactionParmsForMemberElement(memberElement, callingElement) {
 	return "org=" + callingElement.getAttribute("data-org") + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
 }
 
+function undoLast() {
+	apiCall("undo-trans")
+		.then(data => {
+			refreshFromModel();
+		})
+		.catch(error => {
+			console.log(error)
+		})
+}
+
+function redoLast() {
+	apiCall("redo-trans")
+		.then(data => {
+			refreshFromModel();
+		})
+		.catch(error => {
+			console.log(error)
+		})
+}
+
 //// api call ////
 
-function apiCall(endpoint, params, callback) {
-	const xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			callback(this.responseText);
+let apiCall = (endpoint, params) => {
+	return new Promise((resolve, reject) => {
+		const xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
+		xhttp.setRequestHeader("Content-type", "text/plain");
+		xhttp.onload = () => {
+			if (xhttp.status >= 200 && xhttp.status < 300) {
+				resolve(xhttp.responseText);
+			} else {
+				reject(xhttp.statusText);
+			}
 		}
-	};
-
-	xhttp.open("GET", "/v1/" + endpoint + "?" + encodeURI(params));
-	xhttp.setRequestHeader("Content-type", "text/plain");
-	xhttp.send();
+		xhttp.onerror = () => {
+			reject(xhttp.statusText);
+		}
+		xhttp.send();
+	})
 }

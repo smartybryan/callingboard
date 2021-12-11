@@ -6,20 +6,12 @@ import (
 	"path"
 
 	"github.org/smartybryan/callingboard/config"
-	"github.org/smartybryan/callingboard/engine"
 	"github.org/smartybryan/callingboard/web"
 )
 
 func main() {
 	appConfig := config.ParseConfig()
-
-	members := engine.NewMembers(config.MaxMembers, appConfig.MembersDataPath)
-	logOnError(members.Load())
-	callings := engine.NewCallings(config.MaxCallings, appConfig.CallingDataPath)
-	logOnError(callings.Load())
-	project := engine.NewProject(&callings, &members, appConfig.DataPath)
-
-	web.SetupRoutes(appConfig, web.NewController(project))
+	web.SetupRoutes(appConfig, web.NewController(appConfig))
 
 	switch appConfig.ListenPort {
 	case config.ListenPortClearDefault: // for local debugging
@@ -47,11 +39,5 @@ func redirectTLS(w http.ResponseWriter, r *http.Request) {
 func panicOnError(err error) {
 	if err != nil {
 		panic(err)
-	}
-}
-
-func logOnError(err error) {
-	if err != nil {
-		log.Println(err)
 	}
 }

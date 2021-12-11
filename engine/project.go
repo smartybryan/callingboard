@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.org/smartybryan/callingboard/config"
 )
 
 const (
@@ -23,6 +28,7 @@ type Project struct {
 	transactions     []Transaction
 	undoHistory      []Transaction
 	dataPath         string
+	LastAccessed     time.Time
 
 	diff DiffResult
 }
@@ -34,11 +40,19 @@ type DiffResult struct {
 	ModelName    string
 }
 
-func NewProject(callings *Callings, members *Members, dataPath string) *Project {
+func NewProject(wardId string, appConfig config.Config) *Project {
+	dataPath := path.Join(appConfig.DataPath, wardId)
+	_ = os.Mkdir(dataPath, 0777)
+
+	members := NewMembers(config.MaxMembers, path.Join(dataPath, appConfig.MembersFile))
+	logOnError(members.Load())
+	callings := NewCallings(config.MaxCallings, path.Join(dataPath, appConfig.CallingFile))
+	logOnError(callings.Load())
+
 	return &Project{
-		Callings:         callings,
+		Callings:         &callings,
 		originalCallings: callings.copy(),
-		Members:          members,
+		Members:          &members,
 		transactions:     make([]Transaction, 0, 100),
 		dataPath:         dataPath,
 		diff:             NewDiff(),
@@ -130,8 +144,8 @@ func (this *Project) ListTransactionFiles() (transactionFiles []string) {
 
 func (this *Project) LoadTransactions(name string) error {
 	_ = this.ResetModel()
-	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
-	jsonBytes, err := os.ReadFile(path)
+	dataPath := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	jsonBytes, err := os.ReadFile(dataPath)
 	if err != nil {
 		return err
 	}
@@ -150,13 +164,13 @@ func (this *Project) SaveTransactions(name string) error {
 		return err
 	}
 	this.diff.ModelName = name
-	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
-	return os.WriteFile(path, jsonBytes, 0660)
+	dataPath := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	return os.WriteFile(dataPath, jsonBytes, 0660)
 }
 
 func (this *Project) DeleteTransactions(name string) error {
-	path := filepath.Join(this.dataPath, name+TransactionFileSuffix)
-	return os.Remove(path)
+	dataPath := filepath.Join(this.dataPath, name+TransactionFileSuffix)
+	return os.Remove(dataPath)
 }
 
 func (this *Project) ResetModel() error {
@@ -309,4 +323,10 @@ func boolToString(value bool) string {
 func parseBool(value string) (val bool) {
 	val, _ = strconv.ParseBool(value)
 	return val
+}
+
+func logOnError(err error) {
+	if err != nil {
+		log.Println(err)
+	}
 }

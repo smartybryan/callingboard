@@ -7,6 +7,7 @@ const MESSAGE_MODEL_RESET = "Original data has been reloaded.";
 const MESSAGE_MODEL_SAVED = "Model has been saved.";
 const MESSAGE_IMPORT_SUCCESSFUL = "The data has been imported successfully.";
 const MESSAGE_IMPORT_FAILURE = "Import was not successful.";
+const NOT_AUTHENTICATED = "Please login";
 
 const nSUCCESS = "Success";
 const nERROR = "Error";

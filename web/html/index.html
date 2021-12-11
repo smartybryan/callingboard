@@ -11,16 +11,23 @@
 
 <header>
 	<span id="title">Calling Board</span>
+
+	<div id="header-username">
+		<span class="logged-in-username"></span>
+		<input type="button" id="header-logout-button" class="filtered"
+			   onclick="logout()" value="Logout">
+	</div>
 </header>
 
 <div class="tab">
-	<button class="tablinks" name="modeling" onclick="openTab(event, 'modeling')" id="default-tab">Modeling</button>
+	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
 	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Print Report</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
 	<button class="tablinks" name="manage-focus-members" onclick="openTab(event, 'manage-focus-members')">Focus
 		Members
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
+	<button class="tablinks" name="authentication" onclick="openTab(event, 'authentication')">Login</button>
 	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')"
 		   value="Save Model">
 </div>
@@ -72,8 +79,8 @@
 
 		<div>&nbsp;</div>
 		<div>
-			<input type="button" onclick="apiCall('undo-trans','',refreshFromModel)" value="Undo Last">
-			<input type="button" onclick="apiCall('redo-trans','',refreshFromModel)" value="Redo Last">
+			<input type="button" onclick="undoLast()" value="Undo Last">
+			<input type="button" onclick="redoLast()" value="Redo Last">
 			<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
 		</div>
 	</call-release>
@@ -200,6 +207,29 @@
 		<input type="button" onclick="parseRawData('parse-raw-members')" value="Members">
 		<input type="button" onclick="parseRawData('parse-raw-callings')" value="Callings">
 	</import-data>
+</div>
+
+<div id="authentication" class="tabcontent">
+	<login-panel id="login-panel">
+		<table>
+			<tr>
+				<td><label for="username">Username</label></td>
+				<td><input type="text" id="username"></td>
+			</tr>
+			<tr></tr>
+			<tr>
+				<td><label for="wardid">Unit Number</label></td>
+				<td><input type="text" id="wardid"></td>
+			</tr>
+		</table>
+		<br>
+		<input type="button" onclick="login()" value="Login">
+	</login-panel>
+	<login-panel id="logout-panel" class="filtered">
+		<span class="logged-in-username"></span>
+		<br><br>
+		<input type="button" onclick="logout()" value="Logout">
+	</login-panel>
 </div>
 
 <script src="js/callingboard.js"></script>

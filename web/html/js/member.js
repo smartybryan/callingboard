@@ -1,9 +1,21 @@
 
 function displayMembers(endpoint) {
-	apiCall(endpoint, "", displayMembers_callback)
+	apiCall(endpoint)
+		.then(data => {
+			displayMembers_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function displayMembers_callback(response) {
+function displayMembers_do(response) {
+	if (response === 401) {
+		makeTabDefault("authentication");
+		focusDefaultTab();
+		return;
+	}
+
 	const membersElement = document.getElementById("members");
 	clearContainer(membersElement);
 	clearContainer(document.getElementById("member-callings"));
@@ -46,10 +58,16 @@ function clearFilter() {
 }
 
 function displayMemberCallings(name) {
-	apiCall("callings-for-member", "member=" + name, displayMemberCallings_callback)
+	apiCall("callings-for-member", "member=" + name)
+		.then(data => {
+			displayMemberCallings_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function displayMemberCallings_callback(response) {
+function displayMemberCallings_do(response) {
 	const container = document.getElementById("member-callings");
 	clearContainer(container);
 
@@ -75,10 +93,16 @@ function clearContainer(element) {
 }
 
 function populateFocusList() {
-	apiCall("members-with-focus", "", populateFocusList_callback)
+	apiCall("members-with-focus")
+		.then(data => {
+			populateFocusList_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
-function populateFocusList_callback(response) {
+function populateFocusList_do(response) {
 	const tableContainer = document.getElementById("focus-member-list");
 	clearContainer(tableContainer);
 
@@ -116,8 +140,9 @@ function saveFocusList() {
 		}
 	}
 
-	apiCall("put-focus-members", "member=" + focusMembers, saveFocusList_callback);
-}
-
-function saveFocusList_callback(response) {
+	apiCall("put-focus-members", "member=" + focusMembers)
+		.then(data => {})
+		.catch(error => {
+			console.log(error);
+		})
 }

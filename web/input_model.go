@@ -6,9 +6,16 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.org/smartybryan/callingboard/config"
 )
 
 type InputModel struct {
+	ProjectHandle string
+	Username      string
+	Password      string
+	WardId        string
+
 	MemberMinAge int
 	MemberMaxAge int
 	MemberName   string
@@ -26,6 +33,14 @@ type InputModel struct {
 }
 
 func (this *InputModel) Bind(request *http.Request) error {
+	handle, err := request.Cookie(config.CookieName)
+	if err == nil {
+		this.ProjectHandle = handle.Value
+	}
+
+	this.Username = sanitize(request.Form.Get("username"))
+	this.WardId = sanitize(request.Form.Get("wardid"))
+
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
 	this.MemberName = sanitize(request.Form.Get("member"))
