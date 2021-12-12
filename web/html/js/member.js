@@ -6,6 +6,7 @@ function displayMembers(endpoint) {
 		})
 		.catch(error => {
 			console.log(error);
+			logout();
 		})
 }
 
