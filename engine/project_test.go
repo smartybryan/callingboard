@@ -106,9 +106,13 @@ func (this *ProjectFixture) TestDiff() {
 }
 
 func (this *ProjectFixture) TestSaveLoadTransactions() {
-	tempFile := "testtransactions"
-	callings := createTestCallings("")
-	members := createTestMembers("")
+	tempFile := "tslt-trans"
+	callingsFile, membersFile := "tslt-callings", "tslt-members"
+
+	callings := createTestCallings(callingsFile)
+	callings.Save()
+	members := createTestMembers(membersFile)
+	members.Save()
 	project := NewProject(&callings, &members, "./")
 
 	_ = project.AddCalling("org2", "calling10", true)
@@ -125,30 +129,34 @@ func (this *ProjectFixture) TestSaveLoadTransactions() {
 	project.transactions = project.transactions[:]
 	err = project.LoadTransactions(tempFile, true)
 	this.So(err, should.BeNil)
-	this.So(len(project.transactions), should.Equal, 3)
+	this.So(len(project.transactions), should.Equal, 5)
 	this.So(project.transactions[len(project.transactions)-1].Operation, should.Equal, tLastOp)
 	this.So(len(project.transactions[len(project.transactions)-1].Parameters), should.Equal, tLastPLength)
 
 	os.Remove(tempFile+TransactionFileSuffix)
+	os.Remove(callingsFile)
+	os.Remove(membersFile)
 }
 
 func (this *ProjectFixture) TestLoadTransactionsNoOverwrite() {
-	tempFile, tempFile1 := "testtransactions1", "testtransactions2"
-	callings := createTestCallings("")
-	members := createTestMembers("")
+	tempFile, tempFile1 := "tltno-trans1", "tltno-trans2"
+	callingsFile, membersFile := "tltno-callings", "tltno-members"
+	callings := createTestCallings(callingsFile)
+	callings.Save()
+	members := createTestMembers(membersFile)
+	members.Save()
 	project := NewProject(&callings, &members, "./")
 
 	_ = project.AddCalling("org2", "calling10", true)
-	_ = project.AddCalling("org2", "calling11", true)
-	_ = project.AddMemberToACalling("Last10, First10","org2", "calling10")
+	_ = project.AddMemberToACalling("Last3, First3","org2", "calling10")
 	_ = project.RemoveMemberFromACalling("Last1, First1","org1", "calling1")
-	_ = project.RemoveCalling("org1", "calling1")
 	_ = project.MoveMemberToAnotherCalling("Last2, First2","org1", "calling2", "org2", "calling22")
 	err := project.SaveTransactions(tempFile)
 	this.So(err, should.BeNil)
 
 	project.transactions = project.transactions[:0]
-	_ = project.AddMemberToACalling("Last11, First11","org2", "calling11")
+	_ = project.AddCalling("org2", "calling11", true)
+	_ = project.AddMemberToACalling("Last4, First4","org2", "calling11")
 	tLastOp := project.transactions[len(project.transactions)-1].Operation
 	tLastPLength := len(project.transactions[len(project.transactions)-1].Parameters)
 	err = project.SaveTransactions(tempFile1)
@@ -158,12 +166,14 @@ func (this *ProjectFixture) TestLoadTransactionsNoOverwrite() {
 	this.So(err, should.BeNil)
 	err = project.LoadTransactions(tempFile1, false)
 	this.So(err, should.BeNil)
-	this.So(len(project.transactions), should.Equal, 4)
+	this.So(len(project.transactions), should.Equal, 6)
 	this.So(project.transactions[len(project.transactions)-1].Operation, should.Equal, tLastOp)
 	this.So(len(project.transactions[len(project.transactions)-1].Parameters), should.Equal, tLastPLength)
 
 	os.Remove(tempFile+TransactionFileSuffix)
 	os.Remove(tempFile1+TransactionFileSuffix)
+	os.Remove(callingsFile)
+	os.Remove(membersFile)
 }
 
 func (this *ProjectFixture) TestListTransactionFiles() {

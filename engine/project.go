@@ -155,6 +155,7 @@ func (this *Project) LoadTransactions(name string, overwrite bool) error {
 	}
 	for _, trans := range transactions {
 		this.transactions = append(this.transactions, trans)
+		// redundant transactions will be eliminated in playTransactions
 	}
 	this.playTransactions()
 	return nil
@@ -257,7 +258,8 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 
 func (this *Project) deleteIrrelevantTransactions(invalidTransactions []int) {
 	for i := len(invalidTransactions) - 1; i > -1; i-- {
-		this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)
+		toDelete := invalidTransactions[i]
+		this.transactions = append(this.transactions[:toDelete], this.transactions[toDelete+1:]...)
 	}
 }
 

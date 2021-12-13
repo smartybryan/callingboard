@@ -331,11 +331,11 @@ let apiCall = (endpoint, params) => {
 			if (xhttp.status >= 200 && xhttp.status < 300) {
 				resolve(xhttp.responseText);
 			} else {
-				reject(xhttp.statusText);
+				reject(xhttp.status);
 			}
 		}
 		xhttp.onerror = () => {
-			reject(xhttp.statusText);
+			reject(xhttp.status);
 		}
 		xhttp.send();
 	})

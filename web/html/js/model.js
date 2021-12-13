@@ -127,6 +127,7 @@ let modelOperation = (endpoint, name) => {
 		xhttp.setRequestHeader("Content-type", "text/plain");
 		xhttp.onload = () => {
 			if (xhttp.status >= 200 && xhttp.status < 300) {
+				//TODO: this is pretty messy - we should move some of this to the callers
 				if (endpoint === "list-trans-files") {
 					updateFileList(xhttp.responseText);
 				} else if (xhttp.responseText === "null\n") {
@@ -134,6 +135,9 @@ let modelOperation = (endpoint, name) => {
 					listModels();
 					if (endpoint === "load-trans") {
 						notify(nSUCCESS,MESSAGE_MODEL_LOADED);
+					}
+					if (endpoint === "merge-trans") {
+						notify(nSUCCESS,MESSAGE_MODEL_MERGED);
 					}
 					if (endpoint === "save-trans") {
 						notify(nSUCCESS,MESSAGE_MODEL_SAVED);

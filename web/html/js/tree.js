@@ -153,6 +153,12 @@ function refreshTree() {
 		})
 		.catch(error => {
 			console.log(error);
+			if (error === 401) {
+				logout();
+			} else {
+				makeTabDefault("import");
+				focusDefaultTab();
+			}
 		})
 }
 

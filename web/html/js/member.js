@@ -6,8 +6,12 @@ function displayMembers(endpoint) {
 		})
 		.catch(error => {
 			console.log(error);
-			makeTabDefault("import");
-			focusDefaultTab();
+			if (error === 401) {
+				logout();
+			} else {
+				makeTabDefault("import");
+				focusDefaultTab();
+			}
 		})
 }
 
