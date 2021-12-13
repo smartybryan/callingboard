@@ -53,6 +53,21 @@ function loadModel() {
 		})
 }
 
+function mergeModel() {
+	let name = getSelectedModelFile();
+	if (!name) {
+		notify(nINFO,"Please select a model name to merge with current model.");
+		return
+	}
+	modelOperation("merge-trans", name)
+		.then(data => {
+			makeClean();
+		})
+		.catch(error => {
+			console.log(error);
+		})
+}
+
 function deleteModel() {
 	let name = getSelectedModelFile();
 	if (!name) {

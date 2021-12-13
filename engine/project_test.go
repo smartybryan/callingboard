@@ -123,13 +123,47 @@ func (this *ProjectFixture) TestSaveLoadTransactions() {
 	this.So(err, should.BeNil)
 
 	project.transactions = project.transactions[:]
-	err = project.LoadTransactions(tempFile)
+	err = project.LoadTransactions(tempFile, true)
 	this.So(err, should.BeNil)
 	this.So(len(project.transactions), should.Equal, 3)
 	this.So(project.transactions[len(project.transactions)-1].Operation, should.Equal, tLastOp)
 	this.So(len(project.transactions[len(project.transactions)-1].Parameters), should.Equal, tLastPLength)
 
 	os.Remove(tempFile+TransactionFileSuffix)
+}
+
+func (this *ProjectFixture) TestLoadTransactionsNoOverwrite() {
+	tempFile, tempFile1 := "testtransactions1", "testtransactions2"
+	callings := createTestCallings("")
+	members := createTestMembers("")
+	project := NewProject(&callings, &members, "./")
+
+	_ = project.AddCalling("org2", "calling10", true)
+	_ = project.AddCalling("org2", "calling11", true)
+	_ = project.AddMemberToACalling("Last10, First10","org2", "calling10")
+	_ = project.RemoveMemberFromACalling("Last1, First1","org1", "calling1")
+	_ = project.RemoveCalling("org1", "calling1")
+	_ = project.MoveMemberToAnotherCalling("Last2, First2","org1", "calling2", "org2", "calling22")
+	err := project.SaveTransactions(tempFile)
+	this.So(err, should.BeNil)
+
+	project.transactions = project.transactions[:0]
+	_ = project.AddMemberToACalling("Last11, First11","org2", "calling11")
+	tLastOp := project.transactions[len(project.transactions)-1].Operation
+	tLastPLength := len(project.transactions[len(project.transactions)-1].Parameters)
+	err = project.SaveTransactions(tempFile1)
+	this.So(err, should.BeNil)
+
+	err = project.LoadTransactions(tempFile, true)
+	this.So(err, should.BeNil)
+	err = project.LoadTransactions(tempFile1, false)
+	this.So(err, should.BeNil)
+	this.So(len(project.transactions), should.Equal, 4)
+	this.So(project.transactions[len(project.transactions)-1].Operation, should.Equal, tLastOp)
+	this.So(len(project.transactions[len(project.transactions)-1].Parameters), should.Equal, tLastPLength)
+
+	os.Remove(tempFile+TransactionFileSuffix)
+	os.Remove(tempFile1+TransactionFileSuffix)
 }
 
 func (this *ProjectFixture) TestListTransactionFiles() {

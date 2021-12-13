@@ -21,6 +21,4 @@ TODO - setup certs
 
 
 TODO
-- Promisify api calls https://ccoenraets.github.io/es6-tutorial-data/promisify/
-- Clean up expired projects
-- Merge models?
+- Merge models (Project.LoadTransactions)

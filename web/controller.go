@@ -2,7 +2,10 @@ package web
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -75,7 +78,15 @@ func (this *Controller) Login(input *InputModel) detour.Renderer {
 	projectHandle := createCookieValue(input)
 	input.ProjectHandle = projectHandle
 	if project := this.getProject(input); project == nil {
-		this.AddProject(projectHandle, engine.NewProject(input.WardId, this.appConfig))
+		dataPath := path.Join(this.appConfig.DataPath, input.WardId)
+		_ = os.Mkdir(dataPath, 0777)
+
+		members := engine.NewMembers(config.MaxMembers, path.Join(dataPath, this.appConfig.MembersFile))
+		logOnError(members.Load())
+		callings := engine.NewCallings(config.MaxCallings, path.Join(dataPath, this.appConfig.CallingFile))
+		logOnError(callings.Load())
+
+		this.AddProject(projectHandle, engine.NewProject(&callings, &members, dataPath))
 	}
 
 	return detour.CookieResult{
@@ -478,7 +489,18 @@ func (this *Controller) LoadTransactions(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.LoadTransactions(input.TransactionName),
+		Content:    project.LoadTransactions(input.TransactionName, true),
+	}
+}
+
+func (this *Controller) MergeTransactions(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    project.LoadTransactions(input.TransactionName, false),
 	}
 }
 
@@ -534,5 +556,11 @@ func (this *Controller) RedoTransaction(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.RedoTransaction(),
+	}
+}
+
+func logOnError(err error) {
+	if err != nil {
+		log.Println(err)
 	}
 }

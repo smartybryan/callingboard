@@ -4,16 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.org/smartybryan/callingboard/config"
 )
 
 const (
@@ -40,19 +36,11 @@ type DiffResult struct {
 	ModelName    string
 }
 
-func NewProject(wardId string, appConfig config.Config) *Project {
-	dataPath := path.Join(appConfig.DataPath, wardId)
-	_ = os.Mkdir(dataPath, 0777)
-
-	members := NewMembers(config.MaxMembers, path.Join(dataPath, appConfig.MembersFile))
-	logOnError(members.Load())
-	callings := NewCallings(config.MaxCallings, path.Join(dataPath, appConfig.CallingFile))
-	logOnError(callings.Load())
-
+func NewProject(callings *Callings, members *Members, dataPath string) *Project {
 	return &Project{
-		Callings:         &callings,
+		Callings:         callings,
 		originalCallings: callings.copy(),
-		Members:          &members,
+		Members:          members,
 		transactions:     make([]Transaction, 0, 100),
 		dataPath:         dataPath,
 		diff:             NewDiff(),
@@ -142,18 +130,32 @@ func (this *Project) ListTransactionFiles() (transactionFiles []string) {
 	return transactionFiles
 }
 
-func (this *Project) LoadTransactions(name string) error {
+func (this *Project) LoadTransactions(name string, overwrite bool) error {
+	currentTransactions := len(this.transactions)
+	if overwrite {
+		currentTransactions = 0
+	}
 	_ = this.ResetModel()
+	this.transactions = this.transactions[:currentTransactions]
+
 	dataPath := filepath.Join(this.dataPath, name+TransactionFileSuffix)
 	jsonBytes, err := os.ReadFile(dataPath)
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(jsonBytes, &this.transactions)
+	var transactions []Transaction
+	err = json.Unmarshal(jsonBytes, &transactions)
 	if err != nil {
 		return err
 	}
 	this.diff.ModelName = name
+
+	if overwrite {
+		this.transactions = this.transactions[:0]
+	}
+	for _, trans := range transactions {
+		this.transactions = append(this.transactions, trans)
+	}
 	this.playTransactions()
 	return nil
 }
@@ -323,10 +325,4 @@ func boolToString(value bool) string {
 func parseBool(value string) (val bool) {
 	val, _ = strconv.ParseBool(value)
 	return val
-}
-
-func logOnError(err error) {
-	if err != nil {
-		log.Println(err)
-	}
 }
