@@ -25,7 +25,8 @@ function displayMembers_do(response, endpoint) {
 
 	const membersElement = document.getElementById("members");
 	let jsonObject = JSON.parse(response);
-	if (jsonObject == null && endpoint === "newly-available") {
+	if (jsonObject == null &&
+		(endpoint === "newly-available" || endpoint === "focus-members")) {
 		return;
 	}
 
