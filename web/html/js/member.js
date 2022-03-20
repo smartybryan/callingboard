@@ -2,7 +2,7 @@
 function displayMembers(endpoint) {
 	apiCall(endpoint)
 		.then(data => {
-			displayMembers_do(data);
+			displayMembers_do(data, endpoint);
 		})
 		.catch(error => {
 			console.log(error);
@@ -15,7 +15,7 @@ function displayMembers(endpoint) {
 		})
 }
 
-function displayMembers_do(response) {
+function displayMembers_do(response, endpoint) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
@@ -25,6 +25,10 @@ function displayMembers_do(response) {
 
 	const membersElement = document.getElementById("members");
 	let jsonObject = JSON.parse(response);
+	if (jsonObject == null && endpoint === "newly-available") {
+		return;
+	}
+
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
 		memberElement.innerHTML = member;

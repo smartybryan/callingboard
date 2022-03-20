@@ -3,7 +3,6 @@ function clearCallingTree() {
 	clearContainer(wardOrgs);
 }
 
-
 function setupTreeStructure() {
 	apiCall("callings", "org=" + ALL_ORGS)
 		.then(data => {
@@ -166,17 +165,20 @@ function refreshTree_do(response) {
 	let showNewVacancies = document.getElementById("new-vacancies").checked
 	let showAllVacancies = document.getElementById("all-vacancies").checked
 
+	// clear all organizations
+	let leafContainers = document.getElementsByClassName("leaf-container");
+	for (let leafContainer of leafContainers) {
+		clearContainer(leafContainer);
+	}
+
 	let counter = 0;
 	let jsonObject = JSON.parse(response);
 	let workingObjects = jsonObject;
 	if (showNewVacancies) {
 		workingObjects = jsonObject.NewVacancies;
-	}
-
-	// clear all organizations
-	let leafContainers = document.getElementsByClassName("leaf-container");
-	for (let leafContainer of leafContainers) {
-		clearContainer(leafContainer);
+		if (workingObjects == null) {
+			return;
+		}
 	}
 
 	// repopulate organizations
