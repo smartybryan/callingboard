@@ -229,12 +229,19 @@ function clearCallingsReleases() {
 
 	container = document.getElementById("sustainings");
 	clearContainer(container);
+	addSustainingsMessage(container);
 }
 
 function addReleaseDropEnabler(container) {
 	let dropEnabler = document.createElement("li");
 	dropEnabler.innerHTML = RELEASE_DROP_ENABLER;
 	container.appendChild(dropEnabler);
+}
+
+function addSustainingsMessage(container) {
+	let helperMessage = document.createElement("li");
+	helperMessage.innerHTML = SUSTAIN_DROP_MESSAGE;
+	container.appendChild(helperMessage);
 }
 
 function findContainerFromCalling(calling) {

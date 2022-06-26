@@ -1,6 +1,8 @@
 const VACANT = "Calling Vacant";
 const ALL_ORGS = "All Organizations";
-const RELEASE_DROP_ENABLER = "[Drop calling here] &#10549;";
+const RELEASE_DROP_ENABLER = "[Drop a calling here] &#x2935;";
+const SUSTAIN_DROP_MESSAGE = "[Drop member on a vacant calling] &#x2192;";
+const MEMBER_CALLING_MESSAGE = "[Click on member] &#x2191;";
 
 window.onload = function () {
 	initialize()

@@ -27,6 +27,12 @@ body {
 	font-weight: bold;
 }
 
+.sub-sub-heading {
+	font-size: 18px;
+	font-weight: bold;
+	margin-left: 40px;
+}
+
 #main-page-save {
 	float: right;
 	margin-top: 5px;
@@ -398,6 +404,20 @@ login-panel {
 	margin: 5px;
 	padding-left: 10px;
 	border-radius: 10px;
+}
+
+/* LOGIN */
+
+.help-paragraph {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	margin-left: 15px;
+}
+
+.sub-help-paragraph {
+	margin-top: 10px;
+	margin-bottom: 20px;
+	margin-left: 55px;
 }
 
 /* TREE CARETS */

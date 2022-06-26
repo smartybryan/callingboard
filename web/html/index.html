@@ -28,6 +28,7 @@
 	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
 	<button class="tablinks" name="authentication" onclick="openTab(event, 'authentication')">Login</button>
+	<button class="tablinks" name="help" onclick="openTab(event, 'help')">Help</button>
 	<input id="main-page-save" type="button" class="save-button" onclick="openTab(event, 'manage-models')"
 		   value="Save Model">
 </div>
@@ -87,6 +88,7 @@
 
 	<ward-tree>
 		<div>
+			<label class="heading">Calling Board&nbsp;</label>
 			<input type="button" onclick="expandCollapseTree('e')" value="Expand All">
 			<input type="button" onclick="expandCollapseTree('c')" value="Collapse All">
 		</div>
@@ -240,6 +242,169 @@
 		<br><br>
 		<input type="button" onclick="logout()" value="Logout">
 	</login-panel>
+</div>
+
+<div id="help" class="tabcontent">
+	<report-cont>
+		<span class="heading">Callingboard.org Help</span>
+		<br><br>
+		<div class="sub-heading">Overview</div>
+		<div class="help-paragraph">
+			Callingboard.org is a tool that models releases and sustainings
+			during ward reorganizations.
+			It is designed to be similar to a physical calling board where you move magnets
+			labeled with member's names around on the board to simulate calling changes.
+			It helps you visualize the "ripple affect" that can occur
+			during this process so you know who still needs a calling and which callings
+			need to be filled.
+			<br><br>
+			At least one person in your unit will be responsible for importing data from MLS
+			on churchofjesuschrist.org so you will always be working with the latest information
+			available. Once you have this data, you may begin to model calling changes. Once
+			you have completed modeling, the Print Report page contains a summary of your
+			changes so the ward membership clerk can enter them into MLS.
+			There is no way provided by the church to directly import data or make changes
+			to MLS data outside of the church website, so some manual processes are required.
+		</div>
+
+		<div class="sub-heading">Login</div>
+		<div class="help-paragraph">
+			Logging in to Callingboard.org is not for security, but rather so everyone in your unit
+			can share information. There is no registration process, so the username you choose is arbitrary.
+			The unit number is also arbitrary, but you must use the same value as others in your
+			unit so you can share the imported data and saved models.
+			<br><br>
+			If you are concerned about other users of Callingboard.org seeing your unit's member names and
+			calling data, you may use a secret value as your unit number, much like a shared password,
+			which is known only to your unit.
+			<br><br>
+			Callingboard.org only exposes a members full name and calling information.
+			If you are concerned about this level of information potentially being exposed by a
+			dishonorable person, then the current version of Callingboard.org
+			may be installed on your own server. (See https://github.com/smartybryan/callingboard).
+			If there is sufficient demand, proper authentication may be added to callingboard.org in the future.
+		</div>
+
+		<div class="sub-heading">Importing Data</div>
+		<div class="help-paragraph">
+			At least one person in your unit must import the data from churchofjesuschrist.org.
+			Select the <strong>Import</strong> tab, then follow the instructions to
+			import the member data, then import the calling data.
+			Repeat this process to refresh the data when changes have been made using MLS.
+			<br><br>
+			<strong>Tip:</strong> When importing Members information you must scroll all the way to the bottom of the page.
+			This assures that your browser has downloaded all available member information.
+			When you attempt to select the page, if your browser does not appear to select anything,
+			click on an empty spot on the page then try selecting it again.
+		</div>
+
+		<div class="sub-heading">Modeling</div>
+		<div class="help-paragraph">
+			Modeling is the process of building a list of releases and sustainings.
+		</div>
+
+		<div class="sub-sub-heading">Members</div>
+		<div class="sub-help-paragraph">
+			The Members column allows you to search for and list members. To find a member
+			quickly, start typing their <strong>last name</strong> in the Filter box.
+			Click the little x in the box to clear the filter.
+			Click on a member name to list all of their callings under <strong>Member Callings</strong>
+			at the bottom of the column.
+			If you want to release a member from one of these callings, you can drag the calling into
+			the <strong>Releases</strong> column. (See Releases)
+			<br><br>
+			To list members using the various categories represented as buttons at the bottom of the list,
+			simply click the button. Some of the most helpful buttons are:
+			<ul>
+				<li><strong>Newly Available:</strong> This lists members who have been released in this model
+					and who may need a calling. Note that if a newly released member has multiple callings
+					and they were not released from all of them, they will not be in this list.
+				</li>
+				<br>
+				<li><strong>Focus Members:</strong> This lists members who have been setup in the Focus Members
+					tab. These are members who have your focus as they could use a calling.
+				</li>
+			</ul>
+		</div>
+
+		<div class="sub-sub-heading">Releases</div>
+		<div class="sub-help-paragraph">
+			To release a member from a calling, you need to expand the <strong>Calling Board</strong> tree
+			on the right side of the screen and locate the appropriate member/calling card.
+			You then drag that calling to the <strong>Releases</strong> column
+			until you see a "+" sign, then release the mouse button. You will see the
+			calling appear in that column and will also see that the calling is Vacant
+			in the Calling Board on the right. An alternative method is to click on a member name
+			in the <strong>Members</strong> list which lists all of their current callings, then
+			drag one of those callings into the <strong>Releases</strong> list.
+			<br><br>
+			To immediately undo the last release, click the Undo button at the bottom of the page.
+			To remove any calling under Releases, you may drag the calling into the trash can.
+			Once you do either of these actions, you will see that the calling has been
+			restored in the Calling Board and that it no longer appears in the Releases column.
+		</div>
+
+		<div class="sub-sub-heading">Sustainings</div>
+		<div class="sub-help-paragraph">
+			To assign a member to a calling, locate their name in the <strong>Members</strong> column on the left.
+			You can begin typing their <strong>last name</strong> in the Filter box to quickly find their name.
+			Now simply drag their name onto a vacant calling on the <strong>Calling Board</strong>.
+			You will see the calling appear in the <strong>Sustainings</strong> column and will also see that
+			they have been assigned to that calling in the <strong>Calling Board</strong>.
+			<br><br>
+			To immediately undo the latest sustaining, click the Undo button at the bottom of the page.
+			To undo any calling under Sustainings, you may drag the calling into the trash can.
+			Once you do either of these actions, you will see that the calling has been
+			made vacant in the Calling Board and it no longer appears in the Sustainings column.
+		</div>
+
+		<div class="sub-sub-heading">Calling Board</div>
+		<div class="sub-help-paragraph">
+			This lists all callings for your unit as defined by MLS and has been imported.
+			You may navigate this tree by expanding and collapsing organizations,
+			or click the <strong>Expand All</strong> and <strong>Collapse All</strong> buttons.
+			<br><br>
+			To list all vacant callings which includes all callings flagged as vacant in MLS,
+			click the <strong>All Vacant</strong> button.
+			You may also show only callings that were made vacant in this model as a result of Releases,
+			by clicking the <strong>New Vacant</strong> radio button.
+			<br><br>
+			To release a member from a calling, you may drag any filled calling into the
+			Releases column. (See Releases)
+		</div>
+
+		<div class="sub-heading">Print Report</div>
+		<div class="help-paragraph">
+			This tab shows a printable summary report of the Releases and Sustainings
+			in this model. This report may be helpful to those conducting and for the ward membership
+			clerk to enter this information into MLS. The Print button sends the report to a printer.
+		</div>
+
+		<div class="sub-heading">Model Management</div>
+		<div class="help-paragraph">
+			This tab allows you to manage models (releasings and sustainings) that can be viewed
+			by other users in your unit. The available actions are:
+			<ul>
+				<li><strong>Save Model:</strong> Save the current model as the name in the field.</li>
+				<li><strong>Refresh List:</strong> Refresh the list of models available to your unit.</li>
+				<li><strong>Load Model:</strong> Load the selected model and overwrite any unsaved changes to
+					the current model in the Modeling tab.</li>
+				<li><strong>Merge Model:</strong> Load the selected model and merge it with the current model
+					in the Modeling tab. This allows multiple people to work on parts of a model, then
+					merge them all into a single model.</li>
+				<li><strong>Delete Model:</strong> Deletes the highlighted model in the list.</li>
+				<li><strong>Reset Model:</strong> Clears the current model in the Modeling tab.</li>
+			</ul>
+		</div>
+
+		<div class="sub-heading">Focus Members</div>
+		<div class="help-paragraph">
+			This tab allows you to build a list of members you wish to focus on with regard to callings.
+			The members you select in this tab will be listed in the <strong>Modeling</strong> tab
+			when you click the <strong>Focus Members</strong> button in the <strong>Members</strong> column.
+		</div>
+
+	</report-cont>
 </div>
 
 <script src="js/callingboard.js"></script>

@@ -19,7 +19,7 @@ func main() {
 		panicOnError(http.ListenAndServe(appConfig.ListenPort, nil))
 	case config.ListenPortDefault:
 		log.Printf("Listening on port %s\n", appConfig.ListenPort)
-		secPath := "/etc/letsencrypt/live/callingboard.org"
+		secPath := "/etc/letsencrypt/live/www.callingboard.org"
 		certPath := path.Join(secPath, "fullchain.pem")
 		keyPath := path.Join(secPath, "privkey.pem")
 		go listenAndRedirectToTLS()

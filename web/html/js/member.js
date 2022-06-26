@@ -49,6 +49,7 @@ function clearMembersPanel() {
 	clearContainer(document.getElementById("members"));
 	clearFilter();
 	clearCallingsHeldByMember();
+	addCallingsHeldByMemberMessage();
 }
 
 function memberSelected(element) {
@@ -96,6 +97,13 @@ function displayMemberCallings_do(response) {
 
 function clearCallingsHeldByMember() {
 	clearContainer(document.getElementById("member-callings"));
+}
+
+function addCallingsHeldByMemberMessage() {
+	let memberCallings = document.getElementById("member-callings");
+	let memberCallingsMessage = document.createElement("li");
+	memberCallingsMessage.innerHTML = MEMBER_CALLING_MESSAGE;
+	memberCallings.appendChild(memberCallingsMessage);
 }
 
 function clearContainer(element) {
