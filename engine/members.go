@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	Adult = iota
+	Youth
+)
+
 type Members struct {
 	MemberMap    map[string]Member
 	FocusMembers []string
@@ -16,7 +21,7 @@ type Members struct {
 }
 
 type MemberWithFocus struct {
-	Name string
+	Name  string
 	Focus bool
 }
 
@@ -30,10 +35,6 @@ func NewMembers(numMembers int, path string) Members {
 
 func (this *Members) AdultsWithoutACalling(callings Callings) (names []string) {
 	return MemberSetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
-}
-
-func (this *Members) AdultsEligibleForACalling() (members []string) {
-	return this.GetMembers(18, 99)
 }
 
 func (this *Members) GetMemberRecord(name string) Member {
@@ -55,10 +56,6 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []string) {
 		return names[i] < names[j]
 	})
 	return names
-}
-
-func (this *Members) YouthEligibleForACalling() (members []string) {
-	return this.GetMembers(11, 17)
 }
 
 func (this *Members) Load() error {
@@ -136,13 +133,8 @@ func (this *Members) isMemberFocused(member string) bool {
 //////////////////////////////////////////////////////
 
 type Member struct {
-	Name       string
-	Gender     string
-	Birthday   time.Time
-	Unbaptized bool
-
-	Age            int
-	AgeByEndOfYear int
+	Name            string
+	CallingEligible uint8
 }
 
 func MemberSetDifference(mainSet, subtractSet []string) (names []string) {

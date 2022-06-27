@@ -59,13 +59,6 @@ func (this *MembersFixture) TestAdultsWithoutACalling() {
 	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []string{"Last3, First3", "Last4, First4"})
 }
 
-func (this *MembersFixture) TestEligibleForACalling() {
-	members := createTestMembers("")
-
-	this.So(len(members.AdultsEligibleForACalling()), should.Equal, 3)
-	this.So(len(members.YouthEligibleForACalling()), should.Equal, 1)
-}
-
 func (this *MembersFixture) TestSaveLoad() {
 	tempFile := "testmembers"
 	members := createTestMembers(tempFile)

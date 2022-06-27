@@ -128,17 +128,6 @@ func getWardFromCookieValue(value string) string {
 
 /////////////// MEMBER
 
-func (this *Controller) AdultsEligibleForCalling(input *InputModel) detour.Renderer {
-	project := this.getProject(input)
-	if project == nil {
-		return this.AuthenticationError()
-	}
-	return detour.JSONResult{
-		StatusCode: 200,
-		Content:    project.Members.AdultsEligibleForACalling(),
-	}
-}
-
 func (this *Controller) AdultsWithoutCalling(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	if project == nil {
@@ -150,17 +139,6 @@ func (this *Controller) AdultsWithoutCalling(input *InputModel) detour.Renderer 
 	}
 }
 
-func (this *Controller) GetMemberRecord(input *InputModel) detour.Renderer {
-	project := this.getProject(input)
-	if project == nil {
-		return this.AuthenticationError()
-	}
-	return detour.JSONResult{
-		StatusCode: 200,
-		Content:    project.Members.GetMemberRecord(input.MemberName),
-	}
-}
-
 func (this *Controller) Members(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	if project == nil {
@@ -169,17 +147,6 @@ func (this *Controller) Members(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.GetMembers(input.MemberMinAge, input.MemberMaxAge),
-	}
-}
-
-func (this *Controller) YouthEligibleForCalling(input *InputModel) detour.Renderer {
-	project := this.getProject(input)
-	if project == nil {
-		return this.AuthenticationError()
-	}
-	return detour.JSONResult{
-		StatusCode: 200,
-		Content:    project.Members.YouthEligibleForACalling(),
 	}
 }
 
