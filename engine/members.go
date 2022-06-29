@@ -4,7 +4,14 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
-	"time"
+)
+
+const (
+	CallingNotEligible = iota
+	CallingYouth
+	CallingAdult
+	AllEligible
+	AllMembers
 )
 
 type Members struct {
@@ -16,7 +23,7 @@ type Members struct {
 }
 
 type MemberWithFocus struct {
-	Name string
+	Name  string
 	Focus bool
 }
 
@@ -29,25 +36,23 @@ func NewMembers(numMembers int, path string) Members {
 }
 
 func (this *Members) AdultsWithoutACalling(callings Callings) (names []string) {
-	return MemberSetDifference(this.GetMembers(18, 120), callings.MembersWithCallings())
-}
-
-func (this *Members) AdultsEligibleForACalling() (members []string) {
-	return this.GetMembers(18, 99)
+	return MemberSetDifference(this.GetMembers(CallingAdult), callings.MembersWithCallings())
 }
 
 func (this *Members) GetMemberRecord(name string) Member {
 	if member, found := this.MemberMap[name]; found {
-		member.Age = member.age()
-		member.AgeByEndOfYear = member.ageByEndOfYear()
 		return member
 	}
 	return Member{}
 }
 
-func (this *Members) GetMembers(minAge, maxAge int) (names []string) {
+func (this *Members) GetMembers(eligibility uint8) (names []string) {
 	for name, member := range this.MemberMap {
-		if !member.Unbaptized && member.age() >= minAge && member.age() <= maxAge {
+		if eligibility == AllMembers ||
+			(eligibility == AllEligible && (member.Eligibility == CallingYouth || member.Eligibility == CallingAdult)) ||
+			(eligibility == CallingYouth && member.Eligibility == CallingYouth) ||
+			(eligibility == CallingAdult && member.Eligibility == CallingAdult) {
+
 			names = append(names, name)
 		}
 	}
@@ -55,10 +60,6 @@ func (this *Members) GetMembers(minAge, maxAge int) (names []string) {
 		return names[i] < names[j]
 	})
 	return names
-}
-
-func (this *Members) YouthEligibleForACalling() (members []string) {
-	return this.GetMembers(11, 17)
 }
 
 func (this *Members) Load() error {
@@ -82,7 +83,7 @@ func (this *Members) Save() (numObjects int, err error) {
 }
 
 func (this *Members) GetMembersWithFocus() (focusMembers []MemberWithFocus) {
-	members := this.GetMembers(18, 99)
+	members := this.GetMembers(CallingAdult)
 
 	for _, member := range members {
 		focusMembers = append(focusMembers, MemberWithFocus{
@@ -112,12 +113,8 @@ func (this *Members) copy() Members {
 
 	for name, member := range this.MemberMap {
 		newMembers.MemberMap[name] = Member{
-			Name:           member.Name,
-			Gender:         member.Gender,
-			Birthday:       member.Birthday,
-			Unbaptized:     member.Unbaptized,
-			Age:            0,
-			AgeByEndOfYear: 0,
+			Name:        member.Name,
+			Eligibility: member.Eligibility,
 		}
 	}
 
@@ -136,13 +133,8 @@ func (this *Members) isMemberFocused(member string) bool {
 //////////////////////////////////////////////////////
 
 type Member struct {
-	Name       string
-	Gender     string
-	Birthday   time.Time
-	Unbaptized bool
-
-	Age            int
-	AgeByEndOfYear int
+	Name        string
+	Eligibility uint8
 }
 
 func MemberSetDifference(mainSet, subtractSet []string) (names []string) {
@@ -164,43 +156,4 @@ func memberInSet(set []string, name string) bool {
 		}
 	}
 	return false
-}
-
-func (this *Member) age() int {
-	today := time.Now()
-	birthdate := this.Birthday
-	today = today.In(birthdate.Location())
-	ty, tm, td := today.Date()
-	today = time.Date(ty, tm, td, 0, 0, 0, 0, time.UTC)
-	by, bm, bd := birthdate.Date()
-	birthdate = time.Date(by, bm, bd, 0, 0, 0, 0, time.UTC)
-	if today.Before(birthdate) {
-		return 0
-	}
-	age := ty - by
-	anniversary := birthdate.AddDate(age, 0, 0)
-	if anniversary.After(today) {
-		age--
-	}
-	return age
-}
-
-func (this *Member) ageByEndOfYear() int {
-	age := this.age()
-	_, bm, bd := this.Birthday.Date()
-	_, tm, td := time.Now().Date()
-
-	if bm < tm {
-		return age
-	}
-
-	if bm > tm {
-		return age + 1
-	}
-
-	if bd <= td {
-		return age
-	}
-
-	return age + 1
 }

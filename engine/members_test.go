@@ -17,25 +17,12 @@ type MembersFixture struct {
 	*gunit.Fixture
 }
 
-func (this *MembersFixture) TestAgeFunctions() {
-	member := createMember("User, Joe", 0)
-
-	member.Birthday = setDate(-20, 0, 0)
-	this.So(member.age(), should.Equal, 20)
-
-	member.Birthday = setDate(-20, 0, 2)
-	this.So(member.age(), should.Equal, 19)
-
-	member.Birthday = setDate(-20, 0, 2)
-	this.So(member.ageByEndOfYear(), should.Equal, 20)
-}
-
 func (this *MembersFixture) TestGetMembers() {
 	members := createTestMembers("")
 
-	this.So(len(members.GetMembers(11, 17)), should.Equal, 1)
-	this.So(len(members.GetMembers(18, 99)), should.Equal, 3)
-	this.So(members.GetMembers(18, 99), should.Resemble,
+	this.So(len(members.GetMembers(CallingYouth)), should.Equal, 1)
+	this.So(len(members.GetMembers(CallingAdult)), should.Equal, 3)
+	this.So(members.GetMembers(CallingAdult), should.Resemble,
 		[]string{"Last2, First2", "Last3, First3", "Last4, First4"})
 }
 
@@ -59,13 +46,6 @@ func (this *MembersFixture) TestAdultsWithoutACalling() {
 	this.So(members.AdultsWithoutACalling(callings), should.Resemble, []string{"Last3, First3", "Last4, First4"})
 }
 
-func (this *MembersFixture) TestEligibleForACalling() {
-	members := createTestMembers("")
-
-	this.So(len(members.AdultsEligibleForACalling()), should.Equal, 3)
-	this.So(len(members.YouthEligibleForACalling()), should.Equal, 1)
-}
-
 func (this *MembersFixture) TestSaveLoad() {
 	tempFile := "testmembers"
 	members := createTestMembers(tempFile)
@@ -87,10 +67,10 @@ func (this *MembersFixture) TestSaveLoad() {
 
 func createTestMembers(path string) Members {
 	members := NewMembers(5, path)
-	members.MemberMap["Last1, First1"] = createMember("Last1, First1", 15)
-	members.MemberMap["Last2, First2"] = createMember("Last2, First2", 20)
-	members.MemberMap["Last3, First3"] = createMember("Last3, First3", 55)
-	members.MemberMap["Last4, First4"] = createMember("Last4, First4", 30)
+	members.MemberMap["Last1, First1"] = createMember("Last1, First1", "2 Jul 2007")
+	members.MemberMap["Last2, First2"] = createMember("Last2, First2", "15 Jan 2001")
+	members.MemberMap["Last3, First3"] = createMember("Last3, First3", "10 Feb 1965")
+	members.MemberMap["Last4, First4"] = createMember("Last4, First4", "5 Mar 1992")
 	return members
 }
 
@@ -106,8 +86,8 @@ func createTestCallings(path string) Callings {
 	return callings
 }
 
-func createMember(name string, age int) Member {
-	return Member{Name: string(name), Birthday: setDate(-age, 0, 0)}
+func createMember(name string, birthdate string) Member {
+	return Member{Name: name, Eligibility: calculateEligibility(birthdate, true)}
 }
 
 func createCalling(name, memberName string, years, months int) Calling {
