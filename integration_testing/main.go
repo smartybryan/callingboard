@@ -10,12 +10,12 @@ import (
 
 const (
 	RawCallingDataFilePath = "/Users/bryan/callingboard/rawcallings.txt"
-	CallingDataFilePath = "/Users/bryan/callingboard/callings.csv"
+	CallingDataFilePath    = "/Users/bryan/callingboard/callings.csv"
 	RawMembersDataFilePath = "/Users/bryan/callingboard/rawmembers.txt"
-	MembersDataFilePath = "/Users/bryan/callingboard/members.csv"
+	MembersDataFilePath    = "/Users/bryan/callingboard/members.csv"
 
 	MaxCallings = 300
-	MaxMembers = 500
+	MaxMembers  = 500
 )
 
 func main() {
@@ -73,10 +73,9 @@ func parseAndPrintMembers() {
 
 	fmt.Println()
 
-	for _, name := range membership.GetMembers(0,120) {
+	for _, name := range membership.GetMembers(engine.AllMembers) {
 		memberRecord := membership.GetMemberRecord(name)
-		fmt.Printf("%s %s %s (%d) (eoy:%d) %t\n",
-			memberRecord.Name, memberRecord.Gender, util.PrintableDate(memberRecord.Birthday),
-			memberRecord.Age, memberRecord.AgeByEndOfYear, memberRecord.Unbaptized)
+		fmt.Printf("%s %d\n",
+			memberRecord.Name, memberRecord.Eligibility)
 	}
 }

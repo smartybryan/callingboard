@@ -15,7 +15,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/logout", detour.New(controller.Logout)) // username, wardid
 
 	// members
-	http.Handle("/v1/members", detour.New(controller.Members)) // min, max
+	http.Handle("/v1/members", detour.New(controller.Members))
 	http.Handle("/v1/adults-without-calling", detour.New(controller.AdultsWithoutCalling))
 	http.Handle("/v1/newly-available", detour.New(controller.NewlyAvailableMembers))
 	http.Handle("/v1/members-with-focus", detour.New(controller.GetMembersWithFocus))

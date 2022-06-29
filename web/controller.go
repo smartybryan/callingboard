@@ -146,7 +146,7 @@ func (this *Controller) Members(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.GetMembers(input.MemberMinAge, input.MemberMaxAge),
+		Content:    project.Members.GetMembers(engine.AllEligible),
 	}
 }
 
