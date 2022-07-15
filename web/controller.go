@@ -135,7 +135,7 @@ func (this *Controller) AdultsWithoutCalling(input *InputModel) detour.Renderer 
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.AdultsWithoutACalling(*project.Callings),
+		Content:    project.Members.GetMembersWithType(project.Members.AdultsWithoutACalling(*project.Callings)),
 	}
 }
 
@@ -146,7 +146,7 @@ func (this *Controller) Members(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.GetMembers(engine.AllEligible),
+		Content:    project.Members.GetMembersWithType(project.Members.GetMembers(engine.AllEligible)),
 	}
 }
 
@@ -157,7 +157,7 @@ func (this *Controller) NewlyAvailableMembers(input *InputModel) detour.Renderer
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.NewlyAvailableMembers(),
+		Content:    project.Members.GetMembersWithType(project.NewlyAvailableMembers()),
 	}
 }
 
@@ -202,7 +202,7 @@ func (this *Controller) GetFocusMembers(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.GetFocusMembers(),
+		Content:    project.Members.GetMembersWithType(project.Members.GetFocusMembers()),
 	}
 }
 
@@ -214,6 +214,17 @@ func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    project.Members.PutFocusMembers(strings.Split(input.MemberName, "|")),
+	}
+}
+
+func (this *Controller) GetMembersWithType(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    project.Members.GetMembersWithType(strings.Split(input.MemberName, "|")),
 	}
 }
 
@@ -271,7 +282,7 @@ func (this *Controller) MembersWithCallings(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Callings.MembersWithCallings(),
+		Content:    project.Members.GetMembersWithType(project.Callings.MembersWithCallings()),
 	}
 }
 

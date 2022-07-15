@@ -120,6 +120,7 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 		member := Member{
 			Name:        memberRecord[0],
 			Eligibility: calculateEligibility(memberRecord[3], baptized),
+			Type:        calculateType(memberRecord[1]),
 		}
 		this.MemberMap[member.Name] = member
 	}
@@ -131,6 +132,17 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 	}
 
 	return memberCount
+}
+
+func calculateType(gender string) uint8 {
+	switch gender {
+	case "M":
+		return 1
+	case "F":
+		return 2
+	default:
+		return 0
+	}
 }
 
 func calculateEligibility(birthdate string, baptized bool) uint8 {

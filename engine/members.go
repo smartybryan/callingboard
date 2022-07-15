@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
 )
@@ -59,6 +60,7 @@ func (this *Members) GetMembers(eligibility uint8) (names []string) {
 	sort.SliceStable(names, func(i, j int) bool {
 		return names[i] < names[j]
 	})
+
 	return names
 }
 
@@ -80,6 +82,13 @@ func (this *Members) Save() (numObjects int, err error) {
 	}
 	err = os.WriteFile(this.filePath, jsonBytes, 0660)
 	return len(this.MemberMap), err
+}
+
+func (this *Members) GetMembersWithType(memberNames []string) (names []string) {
+	for _, name := range memberNames {
+		names = append(names, this.GetMemberRecord(name).BuildMemberName())
+	}
+	return names
 }
 
 func (this *Members) GetMembersWithFocus() (focusMembers []MemberWithFocus) {
@@ -135,6 +144,11 @@ func (this *Members) isMemberFocused(member string) bool {
 type Member struct {
 	Name        string
 	Eligibility uint8
+	Type        uint8
+}
+
+func (this Member) BuildMemberName() string {
+	return fmt.Sprintf("%s;%d", this.Name, this.Type)
 }
 
 func MemberSetDifference(mainSet, subtractSet []string) (names []string) {

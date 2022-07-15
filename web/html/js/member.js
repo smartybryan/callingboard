@@ -32,8 +32,10 @@ function displayMembers_do(response, endpoint) {
 
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
-		memberElement.innerHTML = member;
-		memberElement.setAttribute("id", member);
+		let memberParts = member.split(";")
+		memberElement.innerHTML = memberParts[0];
+		memberElement.classList.add(memberTypeClass(memberParts[1]))
+		memberElement.setAttribute("id", memberParts[0]);
 		memberElement.setAttribute("draggable", "true");
 		memberElement.classList.add("member-row");
 		memberElement.addEventListener("click", function () {
@@ -43,6 +45,16 @@ function displayMembers_do(response, endpoint) {
 	});
 
 	filterMembers();
+}
+
+function memberTypeClass(memberType) {
+	switch (memberType) {
+		case "1":
+			return "male";
+		case "2":
+			return "female";
+	}
+	return "none";
 }
 
 function clearMembersPanel() {
