@@ -3,9 +3,15 @@ function generateReport() {
 	let canvas = document.getElementById("report-canvas");
 	let releases = getCallingDataFromContainer("releases");
 	let sustainings = getCallingDataFromContainer("sustainings");
-	let content = buildReportTable("Release", releases);
+	let content = buildReportTable(
+		"We have released the following.",
+		"Those who wish to express appreciation for their service, please raise your hand.",
+		"Release", releases);
 	content += "<br><br><br>";
-	content += buildReportTable("Sustain", sustainings);
+	content += buildReportTable(
+		"We have called the following and ask that you stand when your name is read, and remain standing until the vote is taken.",
+		"We propose that they be sustained. All in favor, please raise your hand. [Wait] Those opposed by the same sign.",
+		"Sustain", sustainings);
 	canvas.innerHTML = content;
 }
 
@@ -26,7 +32,7 @@ function getCallingDataFromContainer(id) {
 	return callingList;
 }
 
-function buildReportTable(title, callings) {
+function buildReportTable(pretable, posttable, title, callings) {
 	let content = `
 	<style>
 	.report-table {
@@ -40,6 +46,8 @@ function buildReportTable(title, callings) {
 	}
 	</style>
 	<h2>` + title + `</h2>
+	<div class="report-verbiage">` + pretable + `</div>
+	<br>
 	<table class="report-table">
 	<thead>
 	<tr><th class="report-table"><strong>Member</strong></th>
@@ -55,6 +63,8 @@ function buildReportTable(title, callings) {
 		content += '<td class="report-table">' + call.org + "</td>";
 		content += "</tr>";
 	}
-	content += "</tbody></table>";
+	content += `</tbody></table>
+	<br>
+	<div class="report-verbiage">` + posttable + `</div>`;
 	return content
 }
