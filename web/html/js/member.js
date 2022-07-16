@@ -74,7 +74,7 @@ function filterMembers() {
 
 	for (let i = 0; i < memberElements.length; i++) {
 		memberElements[i].classList.remove("filtered");
-		if (!memberElements[i].id.toLowerCase().startsWith(filter)) {
+		if (!memberElements[i].id.toLowerCase().includes(filter)) {
 			memberElements[i].classList.add("filtered");
 		}
 	}
