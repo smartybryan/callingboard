@@ -9,17 +9,17 @@
 </head>
 <body>
 
-<header>
+<header class="no-print">
 	<span id="title">Calling Board</span>
 
-	<div id="header-username">
+	<div id="header-username" class="no-print">
 		<span class="logged-in-username"></span>
 		<input type="button" id="header-logout-button" class="filtered"
 			   onclick="logout()" value="Logout">
 	</div>
 </header>
 
-<div class="tab">
+<div class="tab no-print">
 	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
 	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Print Report</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
@@ -117,7 +117,7 @@
 
 <div id="report" class="tabcontent">
 	<report-cont>
-		<input type="button" class="print-button" onclick="window.print()" value="Print">
+		<input type="button" class="print-button no-print" onclick="window.print()" value="Print">
 		<div id="report-canvas"></div>
 	</report-cont>
 </div>

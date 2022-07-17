@@ -1,13 +1,18 @@
 
 function generateReport() {
+	let dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
+	let today  = new Date();
+	let dateTime = today.toLocaleDateString("en-US", dateOptions);
+
 	let canvas = document.getElementById("report-canvas");
 	let releases = getCallingDataFromContainer("releases");
 	let sustainings = getCallingDataFromContainer("sustainings");
-	let content = buildReportTable(
+	let content = "<div>Printed " + dateTime + " from Callingboard.org</div>"
+	content += buildReportTable(
 		"We have released the following.",
 		"Those who wish to express appreciation for their service, please raise your hand.",
 		"Release", releases);
-	content += "<br><br><br>";
+	content += "<br><br>";
 	content += buildReportTable(
 		"We have called the following and ask that you stand when your name is read, and remain standing until the vote is taken.",
 		"We propose that they be sustained. All in favor, please raise your hand. [Wait] Those opposed by the same sign.",
@@ -34,17 +39,6 @@ function getCallingDataFromContainer(id) {
 
 function buildReportTable(pretable, posttable, title, callings) {
 	let content = `
-	<style>
-	.report-table {
-	  border: 1px solid black;
-	  border-collapse: collapse;
-	  padding: 5px;
-	}
-	.report-table th {
-		background-color: aliceblue;
-		width: 250px;
-	}
-	</style>
 	<h2>` + title + `</h2>
 	<div class="report-verbiage">` + pretable + `</div>
 	<br>
@@ -52,7 +46,9 @@ function buildReportTable(pretable, posttable, title, callings) {
 	<thead>
 	<tr><th class="report-table"><strong>Member</strong></th>
 	<th class="report-table"><strong>Calling</strong></th>
-	<th class="report-table"><strong>Organization</strong></th></tr>
+	<th class="report-table"  style="width: 150px;"><strong>Organization</strong></th>
+	<th class="report-table" style="width: 100px;"><strong>Sustained</strong></th>
+	<th class="report-table"><strong>Set Apart By/Date</strong></th></tr>
 	</thead>
 	<tbody>`;
 
@@ -61,6 +57,8 @@ function buildReportTable(pretable, posttable, title, callings) {
 		content += '<td class="report-table">' + call.holder + "</td>";
 		content += '<td class="report-table">' + call.calling + "</td>";
 		content += '<td class="report-table">' + call.org + "</td>";
+		content += '<td class="report-table" style="text-align: center;">☐</td>';
+		content += '<td class="report-table"></td>';
 		content += "</tr>";
 	}
 	content += `</tbody></table>

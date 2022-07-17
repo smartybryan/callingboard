@@ -13,6 +13,14 @@ body {
 	}
 }
 
+@media print
+{
+	.no-print, .no-print *
+	{
+		display: none !important;
+	}
+}
+
 #title {
 	font-size: x-large;
 }
@@ -275,6 +283,22 @@ report-cont {
 
 #report-canvas {
 	margin: 20px;
+	table-layout: auto;
+}
+
+.report-table {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 5px;
+}
+.report-table th {
+	background-color: aliceblue;
+	width: 250px;
+}
+
+.small-column {
+	width: 100px;
+	alignment: center;
 }
 
 .print-button {
