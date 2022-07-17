@@ -177,6 +177,16 @@ li.member-row {
 	margin-right: 15px;
 }
 
+.thumbnail {
+	margin-left: 0px;
+	height: 100px;
+	border-radius: 10px;
+}
+
+.thumbnail-container {
+	text-align: right;
+}
+
 #member-scroller {
 	height: 52vh;
 	width: 100%;

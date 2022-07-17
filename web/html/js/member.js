@@ -30,14 +30,18 @@ function displayMembers_do(response, endpoint) {
 		return;
 	}
 
+	let wardId = getAuthValueFromCookie().wardid;
+	wardId = "256137";
+
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
 		let memberParts = member.split(";")
-		memberElement.innerHTML = memberParts[0];
+
+		memberElement.innerHTML = "<div class='thumbnail-container'><img class='thumbnail' style='display: none' onload='this.style.display=\"\"' src='" + wardId + "/" + memberParts[0] + ".jpg'</img></div><div>"+memberParts[0]+"</div>";
 		memberElement.classList.add(memberTypeClass(memberParts[1]))
+		memberElement.classList.add("member-row");
 		memberElement.setAttribute("id", memberParts[0]);
 		memberElement.setAttribute("draggable", "true");
-		memberElement.classList.add("member-row");
 		memberElement.addEventListener("click", function () {
 			memberSelected(memberElement);
 		});
