@@ -251,6 +251,29 @@ func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+	//numMembers := project.Members.ParseMembersFromRawData(input.RawData)
+	//if numMembers < 10 {
+	//	return detour.JSONResult{
+	//		StatusCode: 422,
+	//		Content:    "Unable to parse Member data",
+	//	}
+	//}
+	//numObjects, err := project.Members.Save()
+	//msg := fmt.Sprintf("Imported %d members", numObjects)
+	//if err != nil {
+	//	msg = err.Error()
+	//}
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    "msg",
+	}
+}
+
 ///////////// CALLINGS
 
 func (this *Controller) CallingList(input *InputModel) detour.Renderer {
