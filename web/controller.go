@@ -256,18 +256,15 @@ func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
 	if project == nil {
 		return this.AuthenticationError()
 	}
-	//numMembers := project.Members.ParseMembersFromRawData(input.RawData)
-	//if numMembers < 10 {
-	//	return detour.JSONResult{
-	//		StatusCode: 422,
-	//		Content:    "Unable to parse Member data",
-	//	}
-	//}
-	//numObjects, err := project.Members.Save()
-	//msg := fmt.Sprintf("Imported %d members", numObjects)
-	//if err != nil {
-	//	msg = err.Error()
-	//}
+
+	err := project.Members.UploadMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"), input.RawData)
+	if err != nil {
+		return detour.JSONResult{
+			StatusCode: 422,
+			Content:    "Unable to upload Member Image: " + err.Error(),
+		}
+	}
+
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    "msg",

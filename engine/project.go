@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -220,6 +221,12 @@ func (this *Project) RemoveMemberFromACalling(member string, org string, calling
 
 func (this *Project) RemoveTransaction(operation string, parameters []string) error {
 	return this.removeTransaction(operation, parameters)
+}
+
+func (this *Project) GetImagePath() string {
+	imagePath := path.Join(path.Dir(this.dataPath), "html", path.Base(this.dataPath))
+	_ = os.Mkdir(imagePath, os.FileMode(0777))
+	return imagePath
 }
 
 ///// private /////

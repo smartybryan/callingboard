@@ -2,7 +2,6 @@ package web
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -63,35 +62,19 @@ func (this *InputModel) Bind(request *http.Request) error {
 		if err != nil {
 			return err
 		}
-		file, handler, errr := request.FormFile("imageFile")
-		if errr == nil {
+		file, _, err2 := request.FormFile("imageFile")
+		if err2 == nil {
 			fileUploadRequested = true
 		}
-		defer file.Close()
 
 		// upload image file
 		if fileUploadRequested {
-			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-			fmt.Printf("File Size: %+v\n", handler.Size)
-			fmt.Printf("MIME Header: %+v\n", handler.Header)
-
-			// Create a temporary file within our temp-images directory that follows
-			// a particular naming pattern
-			tempFile, errtf := ioutil.TempFile("temp-images", "upload-*.png")
-			if errtf != nil {
-				fmt.Println(errtf)
-			}
-			defer tempFile.Close()
-
-			// read all of the contents of our uploaded file into a
-			// byte array
-			fileBytes, err := ioutil.ReadAll(file)
+			defer func() { _ = file.Close() }()
+			
+			this.RawData, err = ioutil.ReadAll(file)
 			if err != nil {
-				fmt.Println(err)
+				return err
 			}
-			// write this byte array to our temporary file
-			tempFile.Write(fileBytes)
-
 			return nil
 		}
 
