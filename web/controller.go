@@ -267,7 +267,7 @@ func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
 
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    "msg",
+		Content:    "success",
 	}
 }
 
