@@ -574,10 +574,10 @@ login-panel {
 
 .box
 {
-	font-size: 1.25rem; /* 20 */
-	background-color: #c8dadf;
-	position: relative;
-	padding: 100px 20px;
+	/*font-size: 1.25rem; !* 20 *!*/
+	/*background-color: #c8dadf;*/
+	/*position: relative;*/
+	/*padding: 100px 20px;*/
 }
 .box.has-advanced-upload
 {

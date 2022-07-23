@@ -4,7 +4,7 @@
 let maxImageFileSizeMB = 2;
 let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 
-(function (document) {
+function initImageForms(document) {
 	// applying the effect for every form
 	let forms = document.querySelectorAll('.box');
 	Array.prototype.forEach.call(forms, function (form) {
@@ -93,6 +93,7 @@ let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 					form.classList.add(success ? 'is-success' : 'is-error');
 					if (success) {
 						notify(nSUCCESS, "File uploaded");
+						filterMembers();
 					} else {
 						errorMsg.textContent = data;
 					}
@@ -127,4 +128,4 @@ let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 		});
 
 	});
-}(document));
+}
