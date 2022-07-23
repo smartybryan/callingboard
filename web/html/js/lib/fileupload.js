@@ -1,13 +1,10 @@
 // https://css-tricks.com/examples/DragAndDropFileUploading/
 'use strict';
 
-;(function (document, window, index) {
-	// feature detection for drag&drop upload
-	let isAdvancedUpload = function () {
-		let div = document.createElement('div');
-		return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
-	}();
+let maxImageFileSizeMB = 2;
+let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 
+(function (document) {
 	// applying the effect for every form
 	let forms = document.querySelectorAll('.box');
 	Array.prototype.forEach.call(forms, function (form) {
@@ -16,9 +13,6 @@
 			errorMsg = form.querySelector('.box__error span'),
 			restart = form.querySelectorAll('.box__restart'),
 			droppedFiles = false,
-			showFiles = function (files) {
-				label.textContent = files.length > 1 ? (input.getAttribute('data-multiple-caption') || '').replace('{count}', files.length) : files[0].name;
-			},
 			triggerFormSubmit = function () {
 				let event = document.createEvent('HTMLEvents');
 				event.initEvent('submit', true, false);
@@ -34,45 +28,30 @@
 
 		// automatically submit the form on file select
 		input.addEventListener('change', function (e) {
-			showFiles(e.target.files);
-
-
 			triggerFormSubmit();
-
-
 		});
 
-		// drag&drop files if the feature is available
-		if (isAdvancedUpload) {
-			form.classList.add('has-advanced-upload'); // letting the CSS part to know drag&drop is supported by the browser
-
-			['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (event) {
-				form.addEventListener(event, function (e) {
-					// preventing the unwanted behaviours
-					e.preventDefault();
-					e.stopPropagation();
-				});
+		['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (event) {
+			form.addEventListener(event, function (e) {
+				// preventing the unwanted behaviours
+				e.preventDefault();
+				e.stopPropagation();
 			});
-			['dragover', 'dragenter'].forEach(function (event) {
-				form.addEventListener(event, function () {
-					form.classList.add('is-dragover');
-				});
+		});
+		['dragover', 'dragenter'].forEach(function (event) {
+			form.addEventListener(event, function () {
+				form.classList.add('is-dragover');
 			});
-			['dragleave', 'dragend', 'drop'].forEach(function (event) {
-				form.addEventListener(event, function () {
-					form.classList.remove('is-dragover');
-				});
+		});
+		['dragleave', 'dragend', 'drop'].forEach(function (event) {
+			form.addEventListener(event, function () {
+				form.classList.remove('is-dragover');
 			});
-			form.addEventListener('drop', function (e) {
-				droppedFiles = e.dataTransfer.files; // the files that were dropped
-				showFiles(droppedFiles);
-
-
-				triggerFormSubmit();
-
-			});
-		}
-
+		});
+		form.addEventListener('drop', function (e) {
+			droppedFiles = e.dataTransfer.files; // the files that were dropped
+			triggerFormSubmit();
+		});
 
 		// if the form was submitted
 		form.addEventListener('submit', function (e) {
@@ -82,59 +61,53 @@
 			form.classList.add('is-uploading');
 			form.classList.remove('is-error');
 
-			if (isAdvancedUpload) // ajax file upload for modern browsers
-			{
-				e.preventDefault();
+			e.preventDefault();
 
-				// gathering the form data
-				let ajaxData = new FormData(form);
-				if (droppedFiles) {
-					Array.prototype.forEach.call(droppedFiles, function (file) {
-						ajaxData.append(input.getAttribute('name'), file);
-					});
-				}
-
-				// ajax request
-				let ajax = new XMLHttpRequest();
-				ajax.open(form.getAttribute('method'), form.getAttribute('action'), true);
-
-				ajax.onload = function () {
-					form.classList.remove('is-uploading');
-					if (ajax.status >= 200 && ajax.status < 400) {
-						let data = ajax.responseText;
-						form.classList.add(data === "success" ? 'is-success' : 'is-error');
-						if (data !== "success") errorMsg.textContent = data;
-					} else notify(nERROR, ajax.responseText);
-				};
-
-				ajax.onerror = function () {
-					form.classList.remove('is-uploading');
-					notify(nERROR, "Something went wrong - " + ajax.responseText);
-				};
-
-				ajax.send(ajaxData);
-			} else // fallback Ajax solution upload for older browsers
-			{
-				let iframeName = 'uploadiframe' + new Date().getTime(),
-					iframe = document.createElement('iframe');
-
-				iframe.setAttribute('name', iframeName);
-				iframe.style.display = 'none';
-
-				document.body.appendChild(iframe);
-				form.setAttribute('target', iframeName);
-
-				iframe.addEventListener('load', function () {
-					let data = JSON.parse(iframe.contentDocument.body.innerHTML);
-					form.classList.remove('is-uploading')
-					form.classList.add(data.success === true ? 'is-success' : 'is-error')
-					form.removeAttribute('target');
-					if (!data.success) errorMsg.textContent = data.error;
-					iframe.parentNode.removeChild(iframe);
+			// gathering the form data
+			let fileName = "";
+			let fileSize = 0;
+			let ajaxData = new FormData(form);
+			if (droppedFiles) {
+				Array.prototype.forEach.call(droppedFiles, function (file) {
+					ajaxData.append(input.getAttribute('name'), file);
+					fileName = file.name.toLowerCase();
+					fileSize = file.size;
 				});
 			}
-		});
 
+			if (fileSize > maxImageFileSize || (!fileName.endsWith("jpg") && !fileName.endsWith("png") && !fileName.endsWith("gif"))) {
+				notify(nERROR, "You can only upload image files (jpg, png, gif) with a max size of "+maxImageFileSizeMB+"MB.");
+				form.classList.remove('is-uploading');
+				return false;
+			}
+
+			// ajax request
+			let ajax = new XMLHttpRequest();
+			ajax.open(form.getAttribute('method'), form.getAttribute('action'), true);
+
+			ajax.onload = function () {
+				form.classList.remove('is-uploading');
+				if (ajax.status === 200) {
+					let data = ajax.responseText;
+					let success = data === "success";
+					form.classList.add(success ? 'is-success' : 'is-error');
+					if (success) {
+						notify(nSUCCESS, "File uploaded");
+					} else {
+						errorMsg.textContent = data;
+					}
+				} else {
+					notify(nERROR, ajax.responseText);
+				}
+			};
+
+			ajax.onerror = function () {
+				form.classList.remove('is-uploading');
+				notify(nERROR, "Something went wrong: " + ajax.responseText);
+			};
+
+			ajax.send(ajaxData);
+		});
 
 		// restart the form if has a state of error/success
 		Array.prototype.forEach.call(restart, function (entry) {
@@ -154,4 +127,4 @@
 		});
 
 	});
-}(document, window, 0));
+}(document));

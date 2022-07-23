@@ -1,4 +1,3 @@
-
 function displayMembers(endpoint) {
 	apiCall(endpoint)
 		.then(data => {
@@ -31,13 +30,28 @@ function displayMembers_do(response, endpoint) {
 	}
 
 	let wardId = getAuthValueFromCookie().wardid;
+	//TODO: remove this after testing
 	wardId = "256137";
 
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
 		let memberParts = member.split(";")
+		let memberName = encodeURI(memberParts[0]);
+		let memberImage = wardId + "/" + memberName + ".jpg";
+		let memberHTML = `
+<form method="POST" action="/v1/image-upload?member=`+memberName+`" enctype="multipart/form-data" novalidate class="box">
+	<div class="box__input">
+		<div class='thumbnail-container'>
+			<img class="thumbnail" style="display: none" onload="this.style.display=''" src="` + memberImage + `">
+		</div>
+		<div>` + memberParts[0] + `</div>
+		<input type="file" name="imageFile" id="file" class="box__file"/>
+		<button type="submit" class="box__button">Upload</button>
+	</div>
+</form>
+`
 
-		memberElement.innerHTML = "<div class='thumbnail-container'><img class='thumbnail' style='display: none' onload='this.style.display=\"\"' src='" + wardId + "/" + memberParts[0] + ".jpg'</img></div><div>"+memberParts[0]+"</div>";
+		memberElement.innerHTML = memberHTML;
 		memberElement.classList.add(memberTypeClass(memberParts[1]))
 		memberElement.classList.add("member-row");
 		memberElement.setAttribute("id", memberParts[0]);
@@ -180,7 +194,8 @@ function saveFocusList() {
 	}
 
 	apiCall("put-focus-members", "member=" + focusMembers)
-		.then(data => {})
+		.then(data => {
+		})
 		.catch(error => {
 			console.log(error);
 		})

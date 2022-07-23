@@ -58,7 +58,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	if request.Body != http.NoBody && request.Method == "POST" {
 		fileUploadRequested := false
-		err = request.ParseMultipartForm(10 << 20)
+		err = request.ParseMultipartForm(5 * 1024 * 1024) // 5mb
 		if err != nil {
 			return err
 		}
@@ -70,7 +70,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 		// upload image file
 		if fileUploadRequested {
 			defer func() { _ = file.Close() }()
-			
+
 			this.RawData, err = ioutil.ReadAll(file)
 			if err != nil {
 				return err
