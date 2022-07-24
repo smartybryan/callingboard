@@ -93,7 +93,8 @@ function initImageForms(document) {
 					form.classList.add(success ? 'is-success' : 'is-error');
 					if (success) {
 						notify(nSUCCESS, "File uploaded");
-						filterMembers();
+						populateMemberPhotoList();
+						displayMembers();
 					} else {
 						errorMsg.textContent = data;
 					}

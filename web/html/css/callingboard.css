@@ -431,7 +431,6 @@ focus-member {
 member-photos {
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
 	height: 88vh;
 	width: 28%;
 	margin: 10px;
@@ -441,12 +440,20 @@ member-photos {
 }
 
 #member-photos-list {
+	column-count: 3;
+	column-width: 200px;
 	list-style-type: none;
 	padding: 0;
 	margin: 10px;
 }
 
+#member-photos-list li {
+	margin-bottom: -10px;
+}
+
 #member-photos-scroller {
+	column-count: 3;
+	column-width: 200px;
 	width: 100%;
 	overflow: auto;
 	float: left;

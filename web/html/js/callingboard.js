@@ -3,6 +3,7 @@ const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "[Drop a calling here] &#x2935;";
 const SUSTAIN_DROP_MESSAGE = "[Drop member on a vacant calling] &#x2192;";
 const MEMBER_CALLING_MESSAGE = "[Click on member] &#x2191;";
+let currentMemberListEndpoint = "";
 
 window.onload = function () {
 	initialize()

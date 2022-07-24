@@ -1,7 +1,13 @@
 function displayMembers(endpoint) {
+	if (endpoint && endpoint.length > 0) {
+		currentMemberListEndpoint = endpoint;
+	} else {
+		endpoint = currentMemberListEndpoint;
+	}
 	apiCall(endpoint)
 		.then(data => {
-			displayMembers_do(data, endpoint);
+			displayMembersImageUploader_do(data, endpoint);
+			// displayMembers_do(data, endpoint);
 		})
 		.catch(error => {
 			console.log(error);
@@ -67,10 +73,14 @@ function displayMembersImageUploader_do(response) {
 		focusDefaultTab();
 		return;
 	}
-	clearContainer(document.getElementById("member-photos-list"));
+	clearMembersPanel();
 
-	const membersElement = document.getElementById("member-photos-list");
+	const membersElement = document.getElementById("members");
 	let jsonObject = JSON.parse(response);
+	if (jsonObject == null &&
+		(endpoint === "newly-available" || endpoint === "focus-members")) {
+		return;
+	}
 
 	let wardId = getAuthValueFromCookie().wardid;
 	//TODO: remove this after testing
@@ -81,11 +91,14 @@ function displayMembersImageUploader_do(response) {
 		let memberParts = member.split(";")
 		let memberName = encodeURI(memberParts[0]);
 		let memberImage = wardId + "/" + memberName + ".jpg";
+		// in order the drag the image to a calling as well as the member li element,
+		// the member element and the thumbnail have the same id
 		let memberHTMLWithUpload = `
 <form method="POST" action="/v1/image-upload?member=` + memberName + `" enctype="multipart/form-data" novalidate class="box">
 	<div class="box__input">
 		<div class='thumbnail-container'>
-			<img class="thumbnail" style="display: none" onload="this.style.display=''" src="` + memberImage + `">
+			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
+			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `">
 		</div>
 		<div>` + memberParts[0] + `</div>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
@@ -97,6 +110,7 @@ function displayMembersImageUploader_do(response) {
 		memberElement.classList.add(memberTypeClass(memberParts[1]))
 		memberElement.classList.add("member-row");
 		memberElement.setAttribute("id", memberParts[0]);
+		memberElement.setAttribute("draggable", "true");
 		memberElement.addEventListener("click", function () {
 			memberSelected(memberElement);
 		});
@@ -104,6 +118,7 @@ function displayMembersImageUploader_do(response) {
 	});
 
 	initImageForms(document)
+	filterMembers();
 }
 
 function memberTypeClass(memberType) {
