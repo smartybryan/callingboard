@@ -1,7 +1,11 @@
-function displayMembers(endpoint) {
+function displayMembers(endpoint, imageUploader) {
 	apiCall(endpoint)
 		.then(data => {
-			displayMembers_do(data, endpoint);
+			if (imageUploader) {
+				displayMembersImageUploader_do(data, endpoint);
+			} else {
+				displayMembers_do(data, endpoint);
+			}
 		})
 		.catch(error => {
 			console.log(error);
@@ -14,7 +18,7 @@ function displayMembers(endpoint) {
 		})
 }
 
-function displayMembers_do(response, endpoint) {
+function displayMembers_do(response, endpoint, imageUploader) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
@@ -38,12 +42,53 @@ function displayMembers_do(response, endpoint) {
 		let memberParts = member.split(";")
 		let memberName = encodeURI(memberParts[0]);
 		let memberImage = wardId + "/" + memberName + ".jpg";
+		// in order the drag the image to a calling as well as the member li element,
+		// the member element and the thumbnail have the same id
 		let memberHTMLDisplay = `
 <div class='thumbnail-container'>
-	<img class="thumbnail" style="display: none" onload="this.style.display=''" src="` + memberImage + `">
+	<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
+	style="display: none" id="`+memberParts[0]+`" onload="this.style.display=''" src="` + memberImage + `">
 </div>
 <div>` + memberParts[0] + `</div>
 `
+		memberElement.innerHTML = memberHTMLDisplay;
+		memberElement.classList.add(memberTypeClass(memberParts[1]))
+		memberElement.classList.add("member-row");
+		memberElement.setAttribute("id", memberParts[0]);
+		memberElement.setAttribute("draggable", "true");
+		memberElement.addEventListener("click", function () {
+			memberSelected(memberElement);
+		});
+		membersElement.appendChild(memberElement);
+	});
+
+	filterMembers();
+}
+
+function displayMembersImageUploader_do(response, endpoint, imageUploader) {
+	if (response === 401) {
+		makeTabDefault("authentication");
+		focusDefaultTab();
+		return;
+	}
+	clearMembersPanel()
+
+	const membersElement = document.getElementById("members");
+	let jsonObject = JSON.parse(response);
+	if (jsonObject == null &&
+		(endpoint === "newly-available" || endpoint === "focus-members")) {
+		return;
+	}
+
+	let wardId = getAuthValueFromCookie().wardid;
+	//TODO: remove this after testing
+	wardId = "256137";
+
+	jsonObject.forEach(function (member) {
+		let memberElement = document.createElement('li');
+		let memberParts = member.split(";")
+		let memberName = encodeURI(memberParts[0]);
+		let memberImage = wardId + "/" + memberName + ".jpg";
 		let memberHTMLWithUpload = `
 <form method="POST" action="/v1/image-upload?member=\` + memberName + \`" enctype="multipart/form-data" novalidate class="box">
 	<div class="box__input">

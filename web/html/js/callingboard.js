@@ -203,7 +203,7 @@ function drop(ev) {
 	let dropTarget = liElement.parentElement;
 
 	// dragging from the member row to a vacant calling in the tree
-	if (movedElement.classList.contains("member-row")) {
+	if (movedElement.classList.contains("member-row") || movedElement.classList.contains("thumbnail")) {
 		if (!liElement.classList.contains("vacant")) {
 			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
