@@ -426,6 +426,36 @@ focus-member {
 	outline: none;
 }
 
+/* MEMBER PHOTOS */
+
+member-photos {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	height: 88vh;
+	width: 28%;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
+	background-color: lightgrey;
+}
+
+#member-photos-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 10px;
+}
+
+#member-photos-scroller {
+	width: 100%;
+	overflow: auto;
+	float: left;
+	position: relative;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 15px;
+}
+
 /* LOGIN */
 
 login-panel {
@@ -572,6 +602,8 @@ login-panel {
 {
 	color: #39bfd3;
 }
+
+/* File uploader */
 
 .box
 {

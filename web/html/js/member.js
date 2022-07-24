@@ -1,11 +1,7 @@
-function displayMembers(endpoint, imageUploader) {
+function displayMembers(endpoint) {
 	apiCall(endpoint)
 		.then(data => {
-			if (imageUploader) {
-				displayMembersImageUploader_do(data, endpoint);
-			} else {
-				displayMembers_do(data, endpoint);
-			}
+			displayMembers_do(data, endpoint);
 		})
 		.catch(error => {
 			console.log(error);
@@ -18,7 +14,7 @@ function displayMembers(endpoint, imageUploader) {
 		})
 }
 
-function displayMembers_do(response, endpoint, imageUploader) {
+function displayMembers_do(response, endpoint) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
@@ -47,7 +43,7 @@ function displayMembers_do(response, endpoint, imageUploader) {
 		let memberHTMLDisplay = `
 <div class='thumbnail-container'>
 	<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
-	style="display: none" id="`+memberParts[0]+`" onload="this.style.display=''" src="` + memberImage + `">
+	style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `">
 </div>
 <div>` + memberParts[0] + `</div>
 `
@@ -65,20 +61,16 @@ function displayMembers_do(response, endpoint, imageUploader) {
 	filterMembers();
 }
 
-function displayMembersImageUploader_do(response, endpoint, imageUploader) {
+function displayMembersImageUploader_do(response) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
 		return;
 	}
-	clearMembersPanel()
+	clearContainer(document.getElementById("member-photos-list"));
 
-	const membersElement = document.getElementById("members");
+	const membersElement = document.getElementById("member-photos-list");
 	let jsonObject = JSON.parse(response);
-	if (jsonObject == null &&
-		(endpoint === "newly-available" || endpoint === "focus-members")) {
-		return;
-	}
 
 	let wardId = getAuthValueFromCookie().wardid;
 	//TODO: remove this after testing
@@ -90,24 +82,21 @@ function displayMembersImageUploader_do(response, endpoint, imageUploader) {
 		let memberName = encodeURI(memberParts[0]);
 		let memberImage = wardId + "/" + memberName + ".jpg";
 		let memberHTMLWithUpload = `
-<form method="POST" action="/v1/image-upload?member=\` + memberName + \`" enctype="multipart/form-data" novalidate class="box">
+<form method="POST" action="/v1/image-upload?member=` + memberName + `" enctype="multipart/form-data" novalidate class="box">
 	<div class="box__input">
 		<div class='thumbnail-container'>
-			<img class="thumbnail" style="display: none" onload="this.style.display=''" src="\` + memberImage + \`">
+			<img class="thumbnail" style="display: none" onload="this.style.display=''" src="` + memberImage + `">
 		</div>
-		<div>\` + memberParts[0] + \`</div>
+		<div>` + memberParts[0] + `</div>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
 		<button type="submit" class="box__button">Upload</button>
 	</div>
 </form>		
 `
-
-
-		memberElement.innerHTML = memberHTMLDisplay;
+		memberElement.innerHTML = memberHTMLWithUpload;
 		memberElement.classList.add(memberTypeClass(memberParts[1]))
 		memberElement.classList.add("member-row");
 		memberElement.setAttribute("id", memberParts[0]);
-		memberElement.setAttribute("draggable", "true");
 		memberElement.addEventListener("click", function () {
 			memberSelected(memberElement);
 		});
@@ -115,7 +104,6 @@ function displayMembersImageUploader_do(response, endpoint, imageUploader) {
 	});
 
 	initImageForms(document)
-	filterMembers();
 }
 
 function memberTypeClass(memberType) {
@@ -252,4 +240,18 @@ function saveFocusList() {
 		.catch(error => {
 			console.log(error);
 		})
+}
+
+function populateMemberPhotoList() {
+	apiCall("members")
+		.then(data => {
+			populateMemberPhotoList_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
+}
+
+function populateMemberPhotoList_do(response) {
+	displayMembersImageUploader_do(response)
 }

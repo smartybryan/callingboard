@@ -42,6 +42,9 @@ function tabPreEvent(enteringTab) {
 		case "report":
 			generateReport();
 			break;
+		case "photos":
+			populateMemberPhotoList();
+			break;
 	}
 }
 
