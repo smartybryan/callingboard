@@ -31,7 +31,7 @@ function initImageForms(document) {
 			triggerFormSubmit();
 		});
 
-		['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (event) {
+		['dragover', 'dragenter', 'dragleave', 'drop'].forEach(function (event) {
 			form.addEventListener(event, function (e) {
 				// preventing the unwanted behaviours
 				e.preventDefault();
