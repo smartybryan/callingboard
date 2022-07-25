@@ -3,14 +3,18 @@ const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "[Drop a calling here] &#x2935;";
 const SUSTAIN_DROP_MESSAGE = "[Drop member on a vacant calling] &#x2192;";
 const MEMBER_CALLING_MESSAGE = "[Click on member] &#x2191;";
-let currentMemberListEndpoint = "";
+let currentMemberListEndpoint = ""; // the last member query endpoint
+// We use the image version in the member list img tag to assure
+// the cache is not misrepresenting the current state of the images on the server.
+let imageVersion = 0; // the current image version
 
 window.onload = function () {
-	initialize()
+	initialize();
 	focusDefaultTab();
 };
 
 function initialize() {
+	imageVersion = Date.now();
 	checkLoginStatus();
 	setupTreeStructure();
 	displayMembers("members-with-callings");
@@ -206,8 +210,22 @@ function drop(ev) {
 	}
 	let dropTarget = liElement.parentElement;
 
-	// dragging from the member row to a vacant calling in the tree
+	// dragging from the member row to a vacant calling in the tree, or to trash
 	if (movedElement.classList.contains("member-row") || movedElement.classList.contains("thumbnail")) {
+		if (ev.target.id === "trash") {
+			apiCall("image-delete", "member="+encodeURI(movedElement.id))
+				.then(data => {
+					notify(nSUCCESS, "Image deleted");
+					imageVersion++;
+					displayMembers("");
+				})
+				.catch(error => {
+					notify(nERROR, error);
+					imageVersion++;
+					displayMembers("");
+				});
+			return
+		}
 		if (!liElement.classList.contains("vacant")) {
 			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
@@ -224,7 +242,8 @@ function drop(ev) {
 	}
 
 	// dragging from releases or sustainings to trash
-	if (movedElement.parentElement.id === "releases" || movedElement.parentElement.id === "sustainings") {
+	if (movedElement.parentElement.id === "releases" ||
+		movedElement.parentElement.id === "sustainings") {
 		if (ev.target.id !== "trash") {
 			notify(nALERT, MESSAGE_RELEASE_SUSTAINED_DROP);
 			return
@@ -337,11 +356,11 @@ let apiCall = (endpoint, params) => {
 			if (xhttp.status >= 200 && xhttp.status < 300) {
 				resolve(xhttp.responseText);
 			} else {
-				reject(xhttp.status);
+				reject(xhttp.responseText);
 			}
 		}
 		xhttp.onerror = () => {
-			reject(xhttp.status);
+			reject(xhttp.responseText);
 		}
 		xhttp.send();
 	})

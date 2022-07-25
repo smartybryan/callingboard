@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -44,7 +45,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
-	this.MemberName = sanitize(request.Form.Get("member"))
+	this.MemberName = unescape(sanitize(request.Form.Get("member")))
 
 	this.Organization = sanitize(request.Form.Get("org"))
 	this.FromOrg = sanitize(request.Form.Get("from-org"))
@@ -100,6 +101,11 @@ func (this *InputModel) Bind(request *http.Request) error {
 	}
 
 	return nil
+}
+
+func unescape(value string) string {
+	val, _ := url.QueryUnescape(value)
+	return val
 }
 
 func (this *InputModel) Validate() error {

@@ -25,6 +25,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/save-members", detour.New(controller.SaveMembers))
 	http.Handle("/v1/parse-raw-members", detour.New(controller.ParseRawMembers))
 	http.Handle("/v1/image-upload", detour.New(controller.ImageUpload))
+	http.Handle("/v1/image-delete", detour.New(controller.ImageDelete))
 
 	// callings
 	http.Handle("/v1/organizations", detour.New(controller.OrganizationList))

@@ -271,6 +271,26 @@ func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) ImageDelete(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+
+	err := project.Members.DeleteMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"))
+	if err != nil {
+		return detour.ContentResult{
+			StatusCode: 422,
+			Content:    "Unable to delete Member Image: " + err.Error(),
+		}
+	}
+
+	return detour.ContentResult{
+		StatusCode: 200,
+		Content:    "success",
+	}
+}
+
 ///////////// CALLINGS
 
 func (this *Controller) CallingList(input *InputModel) detour.Renderer {

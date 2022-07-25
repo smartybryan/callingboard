@@ -19,7 +19,7 @@ function displayMembers(endpoint) {
 		})
 }
 
-function displayMembersImageUploader_do(response) {
+function displayMembersImageUploader_do(response, endpoint) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
@@ -62,7 +62,7 @@ function displayMembersImageUploader_do(response) {
 		</span>
 		<span class='thumbnail-container'>
 			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
-			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `">
+			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `?v=` + imageVersion + `">
 		</span>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
 		<button type="submit" class="box__button">Upload</button>

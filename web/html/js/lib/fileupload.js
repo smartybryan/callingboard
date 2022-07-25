@@ -94,7 +94,8 @@ function initImageForms(document) {
 					if (success) {
 						notify(nSUCCESS, "File uploaded");
 						populateMemberPhotoList();
-						displayMembers();
+						imageVersion++;
+						displayMembers("");
 					} else {
 						errorMsg.textContent = data;
 					}

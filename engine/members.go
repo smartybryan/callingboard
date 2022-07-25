@@ -118,6 +118,10 @@ func (this *Members) UploadMemberImage(path string, image []byte) error {
 	return ioutil.WriteFile(path, image, os.FileMode(0666))
 }
 
+func (this *Members) DeleteMemberImage(path string) error {
+	return os.Remove(path)
+}
+
 ///// private /////
 
 func (this *Members) copy() Members {
