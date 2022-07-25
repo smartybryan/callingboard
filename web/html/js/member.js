@@ -43,16 +43,27 @@ function displayMembersImageUploader_do(response) {
 		let memberParts = member.split(";")
 		let memberName = encodeURI(memberParts[0]);
 		let memberImage = wardId + "/" + memberName + ".jpg";
+		let memberNameParts = memberParts[0].split(",");
+		if (memberNameParts.length < 2) {
+			return false;
+		}
+		let memberLast = memberNameParts[0]
+		let memberFirst = memberNameParts[1]
 		// in order the drag the image to a calling as well as the member li element,
 		// the member element and the thumbnail have the same id
 		let memberHTMLWithUpload = `
 <form method="POST" action="/v1/image-upload?member=` + memberName + `" enctype="multipart/form-data" novalidate class="box">
-	<div class="box__input">
-		<div class='thumbnail-container'>
+	<div class="box__input member-container">
+		<span class="member-name-container">
+			<div class="name-margins">
+				<div class="member-name">` + memberLast + `,</div>
+				<div class="indent-small">` + memberFirst + `</div>
+			</div>
+		</span>
+		<span class='thumbnail-container'>
 			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
 			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `">
-		</div>
-		<div>` + memberParts[0] + `</div>
+		</span>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
 		<button type="submit" class="box__button">Upload</button>
 	</div>

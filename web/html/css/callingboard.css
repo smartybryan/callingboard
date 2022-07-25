@@ -177,19 +177,35 @@ input[type=radio] {
 li.member-row {
 	border-radius: 20px;
 	text-indent: 15px;
-	margin-bottom: 0px;
 	margin-right: 15px;
 }
 
-.thumbnail {
-	height: 100px;
-	margin: 3px;
-	margin-bottom: -1px;
-	border-radius: 15px;
+.member-container {
+	display: flex;
+}
+
+.member-name-container {
+	width: 50%
 }
 
 .thumbnail-container {
-	text-align: right;
+	width: 50%;
+}
+
+.thumbnail {
+	float: right;
+	height: 100px;
+	margin: 3px;
+	border-radius: 15px;
+}
+
+.indent-small {
+	margin-left: 5px;
+}
+
+.name-margins {
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 #member-scroller {
@@ -269,10 +285,9 @@ li.proposed {
 .member-name {
 	color: darkred;
 	font-weight: bold;
-	margin-left: 30px;
 }
 
-.time-in-calling {
+.indent {
 	margin-left: 30px;
 }
 
