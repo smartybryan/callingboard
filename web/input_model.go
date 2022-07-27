@@ -18,9 +18,10 @@ type InputModel struct {
 	Password      string
 	WardId        string
 
-	MemberMinAge int
-	MemberMaxAge int
-	MemberName   string
+	MemberMinAge  int
+	MemberMaxAge  int
+	MemberName    string
+	ImageFileName string
 
 	Organization string
 	FromOrg      string
@@ -46,6 +47,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
 	this.MemberName = unescape(sanitize(request.Form.Get("member")))
+	this.ImageFileName = unescape(sanitize(request.Form.Get("file")))
 
 	this.Organization = sanitize(request.Form.Get("org"))
 	this.FromOrg = sanitize(request.Form.Get("from-org"))

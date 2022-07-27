@@ -1,7 +1,7 @@
 // https://css-tricks.com/examples/DragAndDropFileUploading/
 'use strict';
 
-let maxImageFileSizeMB = 2;
+let maxImageFileSizeMB = 5;
 let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 
 function initImageForms(document) {
@@ -75,15 +75,16 @@ function initImageForms(document) {
 				});
 			}
 
-			if (fileSize > maxImageFileSize || (!fileName.endsWith("jpg") && !fileName.endsWith("png") && !fileName.endsWith("gif"))) {
-				notify(nERROR, "You can only upload image files (jpg, png, gif) with a max size of "+maxImageFileSizeMB+"MB.");
+			if (fileSize > maxImageFileSize ||
+				(!fileName.endsWith("jpg") && !fileName.endsWith("jpeg") && !fileName.endsWith("png") && !fileName.endsWith("heic"))) {
+				notify(nERROR, "You can only upload image files (jpg, png, heic) with a max size of "+maxImageFileSizeMB+"MB.");
 				form.classList.remove('is-uploading');
 				return false;
 			}
 
 			// ajax request
 			let ajax = new XMLHttpRequest();
-			ajax.open(form.getAttribute('method'), form.getAttribute('action'), true);
+			ajax.open(form.getAttribute('method'), form.getAttribute('action') + "&file=" + encodeURI(fileName), true);
 
 			ajax.onload = function () {
 				form.classList.remove('is-uploading');

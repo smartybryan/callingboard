@@ -257,7 +257,7 @@ func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
 		return this.AuthenticationError()
 	}
 
-	err := project.Members.UploadMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"), input.RawData)
+	err := project.Members.UploadMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"), input.ImageFileName, input.RawData)
 	if err != nil {
 		return detour.ContentResult{
 			StatusCode: 422,
