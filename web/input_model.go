@@ -3,7 +3,10 @@ package web
 import (
 	"errors"
 	"io"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -16,9 +19,10 @@ type InputModel struct {
 	Password      string
 	WardId        string
 
-	MemberMinAge int
-	MemberMaxAge int
-	MemberName   string
+	MemberMinAge  int
+	MemberMaxAge  int
+	MemberName    string
+	ImageFileName string
 
 	Organization string
 	FromOrg      string
@@ -43,7 +47,8 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	this.MemberMinAge = atoi(request.Form.Get("min"))
 	this.MemberMaxAge = atoi(request.Form.Get("max"))
-	this.MemberName = sanitize(request.Form.Get("member"))
+	this.MemberName = unescape(sanitize(request.Form.Get("member")))
+	this.ImageFileName = unescape(sanitize(request.Form.Get("file")))
 
 	this.Organization = sanitize(request.Form.Get("org"))
 	this.FromOrg = sanitize(request.Form.Get("from-org"))
@@ -56,6 +61,28 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.TransactionParams = sanitize(request.Form.Get("params"))
 
 	if request.Body != http.NoBody && request.Method == "POST" {
+		fileUploadRequested := false
+		err = request.ParseMultipartForm(5 * 1024 * 1024) // 5mb
+		var file multipart.File
+		if err == nil {
+			file, _, err = request.FormFile("imageFile")
+			if err == nil {
+				fileUploadRequested = true
+			}
+		}
+
+		// upload image file
+		if fileUploadRequested {
+			defer func() { _ = file.Close() }()
+
+			this.RawData, err = ioutil.ReadAll(file)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+		// upload import data
 		size := atoi(request.Header.Get("Content-Length"))
 		if size == 0 {
 			size = 128 * 1024
@@ -77,6 +104,11 @@ func (this *InputModel) Bind(request *http.Request) error {
 	}
 
 	return nil
+}
+
+func unescape(value string) string {
+	val, _ := url.QueryUnescape(value)
+	return val
 }
 
 func (this *InputModel) Validate() error {

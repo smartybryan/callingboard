@@ -1,8 +1,12 @@
-
 function displayMembers(endpoint) {
+	if (endpoint && endpoint.length > 0) {
+		currentMemberListEndpoint = endpoint;
+	} else {
+		endpoint = currentMemberListEndpoint;
+	}
 	apiCall(endpoint)
 		.then(data => {
-			displayMembers_do(data, endpoint);
+			displayMembersImageUploader_do(data, endpoint);
 		})
 		.catch(error => {
 			console.log(error);
@@ -15,13 +19,13 @@ function displayMembers(endpoint) {
 		})
 }
 
-function displayMembers_do(response, endpoint) {
+function displayMembersImageUploader_do(response, endpoint) {
 	if (response === 401) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
 		return;
 	}
-	clearMembersPanel()
+	clearMembersPanel();
 
 	const membersElement = document.getElementById("members");
 	let jsonObject = JSON.parse(response);
@@ -30,20 +34,51 @@ function displayMembers_do(response, endpoint) {
 		return;
 	}
 
+	let wardId = getAuthValueFromCookie().wardid;
+
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
 		let memberParts = member.split(";")
-		memberElement.innerHTML = memberParts[0];
+		let memberName = encodeURI(memberParts[0]);
+		let memberImage = wardId + "/" + memberName + ".jpg";
+		let memberNameParts = memberParts[0].split(",");
+		if (memberNameParts.length < 2) {
+			return false;
+		}
+		let memberLast = memberNameParts[0]
+		let memberFirst = memberNameParts[1]
+		// in order the drag the image to a calling as well as the member li element,
+		// the member element and the thumbnail have the same id
+		let memberHTMLWithUpload = `
+<form method="POST" action="/v1/image-upload?member=` + memberName + `" enctype="multipart/form-data" novalidate class="box">
+	<div class="box__input member-container">
+		<span class="member-name-container">
+			<div class="name-margins">
+				<div class="member-name">` + memberLast + `,</div>
+				<div class="indent-small">` + memberFirst + `</div>
+			</div>
+		</span>
+		<span class='thumbnail-container'>
+			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
+			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `?v=` + imageVersion + `">
+		</span>
+		<input type="file" name="imageFile" id="file" class="box__file"/>
+		<button type="submit" class="box__button">Upload</button>
+	</div>
+</form>		
+`
+		memberElement.innerHTML = memberHTMLWithUpload;
 		memberElement.classList.add(memberTypeClass(memberParts[1]))
+		memberElement.classList.add("member-row");
 		memberElement.setAttribute("id", memberParts[0]);
 		memberElement.setAttribute("draggable", "true");
-		memberElement.classList.add("member-row");
 		memberElement.addEventListener("click", function () {
 			memberSelected(memberElement);
 		});
 		membersElement.appendChild(memberElement);
 	});
 
+	initImageForms(document)
 	filterMembers();
 }
 
@@ -176,8 +211,23 @@ function saveFocusList() {
 	}
 
 	apiCall("put-focus-members", "member=" + focusMembers)
-		.then(data => {})
+		.then(data => {
+		})
 		.catch(error => {
 			console.log(error);
 		})
+}
+
+function populateMemberPhotoList() {
+	apiCall("members")
+		.then(data => {
+			populateMemberPhotoList_do(data);
+		})
+		.catch(error => {
+			console.log(error);
+		})
+}
+
+function populateMemberPhotoList_do(response) {
+	displayMembersImageUploader_do(response)
 }

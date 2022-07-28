@@ -235,7 +235,7 @@ func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 	}
 	numMembers := project.Members.ParseMembersFromRawData(input.RawData)
 	if numMembers < 10 {
-		return detour.JSONResult{
+		return detour.ContentResult{
 			StatusCode: 422,
 			Content:    "Unable to parse Member data",
 		}
@@ -245,9 +245,49 @@ func (this *Controller) ParseRawMembers(input *InputModel) detour.Renderer {
 	if err != nil {
 		msg = err.Error()
 	}
-	return detour.JSONResult{
+	return detour.ContentResult{
 		StatusCode: 200,
 		Content:    msg,
+	}
+}
+
+func (this *Controller) ImageUpload(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+
+	err := project.Members.UploadMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"), input.ImageFileName, input.RawData)
+	if err != nil {
+		return detour.ContentResult{
+			StatusCode: 422,
+			Content:    "Unable to upload Member Image: " + err.Error(),
+		}
+	}
+
+	return detour.ContentResult{
+		StatusCode: 200,
+		Content:    "success",
+	}
+}
+
+func (this *Controller) ImageDelete(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+
+	err := project.Members.DeleteMemberImage(path.Join(project.GetImagePath(), input.MemberName+".jpg"))
+	if err != nil {
+		return detour.ContentResult{
+			StatusCode: 422,
+			Content:    "Unable to delete Member Image: " + err.Error(),
+		}
+	}
+
+	return detour.ContentResult{
+		StatusCode: 200,
+		Content:    "success",
 	}
 }
 
@@ -341,7 +381,7 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 	}
 	numCallings := project.Callings.ParseCallingsFromRawData(input.RawData)
 	if numCallings < 10 {
-		return detour.JSONResult{
+		return detour.ContentResult{
 			StatusCode: 422,
 			Content:    "Unable to parse Calling data",
 		}
@@ -351,7 +391,7 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 	if err != nil {
 		msg = err.Error()
 	}
-	return detour.JSONResult{
+	return detour.ContentResult{
 		StatusCode: 200,
 		Content:    msg,
 	}

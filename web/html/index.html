@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/html">
+<html xmlns="http://www.w3.org/1999/html" class="no-js">
 <head>
 	<!--	<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 	<meta name="viewport" content="width=800, initial-scale=1.0">
@@ -291,7 +291,8 @@
 			import the member data, then import the calling data.
 			Repeat this process to refresh the data when changes have been made using LCR.
 			<br><br>
-			<strong>Tip:</strong> When importing Members information you must scroll all the way to the bottom of the page.
+			<strong>Tip:</strong> When importing Members information you must scroll all the way to the bottom of the
+			page.
 			This assures that your browser has downloaded all available member information.
 			When you attempt to select the page, if your browser does not appear to select anything,
 			click on an empty spot on the page then try selecting it again.
@@ -312,7 +313,8 @@
 			To assign a member to a calling, drag their name into a vacant calling in the <strong>Calling Board</strong>.
 			(See Sustainings)
 			<br>
-			To release a member from one of their callings, you can drag the calling from <strong>Member Callngs</strong> into
+			To release a member from one of their callings, you can drag the calling from <strong>Member
+			Callngs</strong> into
 			the <strong>Releases</strong> column. (See Releases)
 			<br><br>
 			To list members using the various categories represented as buttons at the bottom of the list,
@@ -327,6 +329,12 @@
 					tab. These are members who have your focus as they could use a calling.
 				</li>
 			</ul>
+			<br>
+			To <strong>add</strong> a <strong>thumbnail</strong> image to a member, simply drag a JPG or PNG image (5MB limit) onto a member tile.
+			<br>
+			To <strong>remove</strong> a <strong>thumbnail</strong> image, drag the image to the trash.
+			<br>
+			FUTURE: We are working on support for Apple HEIC format images.
 		</div>
 
 		<div class="sub-sub-heading">Releases</div>
@@ -390,10 +398,12 @@
 				<li><strong>Save Model:</strong> Save the current model as the name in the field.</li>
 				<li><strong>Refresh List:</strong> Refresh the list of models available to your unit.</li>
 				<li><strong>Load Model:</strong> Load the selected model and overwrite any unsaved changes to
-					the current model in the Modeling tab.</li>
+					the current model in the Modeling tab.
+				</li>
 				<li><strong>Merge Model:</strong> Load the selected model and merge it with the current model
 					in the Modeling tab. This allows multiple people to work on parts of a model, then
-					merge them all into a single model.</li>
+					merge them all into a single model.
+				</li>
 				<li><strong>Delete Model:</strong> Deletes the highlighted model in the list.</li>
 				<li><strong>Reset Model:</strong> Clears the current model in the Modeling tab.</li>
 			</ul>
@@ -409,6 +419,13 @@
 	</report-cont>
 </div>
 
+<!-- remove this if you use Modernizr -->
+<script>
+	(function (e, t, n) {
+		let r = e.querySelectorAll("html")[0];
+		r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2")
+	})(document, window, 0);
+</script>
 <script src="js/callingboard.js"></script>
 <script src="js/member.js"></script>
 <script src="js/model.js"></script>
@@ -417,5 +434,6 @@
 <script src="js/report.js"></script>
 <script src="js/tree.js"></script>
 <script src="js/lib/x-notify.min.js"></script>
+<script src="js/lib/fileupload.js"></script>
 </body>
 </html>

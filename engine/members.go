@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"sort"
 )
@@ -111,6 +112,14 @@ func (this *Members) PutFocusMembers(names []string) error {
 	this.FocusMembers = names
 	_, err := this.Save()
 	return err
+}
+
+func (this *Members) UploadMemberImage(path, originalFile string, image []byte) error {
+	return ioutil.WriteFile(path, image, os.FileMode(0666))
+}
+
+func (this *Members) DeleteMemberImage(path string) error {
+	return os.Remove(path)
 }
 
 ///// private /////
