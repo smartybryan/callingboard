@@ -115,7 +115,6 @@ func (this *Members) PutFocusMembers(names []string) error {
 }
 
 func (this *Members) UploadMemberImage(path, originalFile string, image []byte) error {
-	// TODO: convert the original file to jpg
 	return ioutil.WriteFile(path, image, os.FileMode(0666))
 }
 

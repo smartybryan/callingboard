@@ -35,8 +35,6 @@ function displayMembersImageUploader_do(response, endpoint) {
 	}
 
 	let wardId = getAuthValueFromCookie().wardid;
-	//TODO: remove this after testing
-	wardId = "256137";
 
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');

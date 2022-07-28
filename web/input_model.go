@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -62,12 +63,12 @@ func (this *InputModel) Bind(request *http.Request) error {
 	if request.Body != http.NoBody && request.Method == "POST" {
 		fileUploadRequested := false
 		err = request.ParseMultipartForm(5 * 1024 * 1024) // 5mb
-		if err != nil {
-			return err
-		}
-		file, _, err2 := request.FormFile("imageFile")
-		if err2 == nil {
-			fileUploadRequested = true
+		var file multipart.File
+		if err == nil {
+			file, _, err = request.FormFile("imageFile")
+			if err == nil {
+				fileUploadRequested = true
+			}
 		}
 
 		// upload image file

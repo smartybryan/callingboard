@@ -76,8 +76,8 @@ function initImageForms(document) {
 			}
 
 			if (fileSize > maxImageFileSize ||
-				(!fileName.endsWith("jpg") && !fileName.endsWith("jpeg") && !fileName.endsWith("png") && !fileName.endsWith("heic"))) {
-				notify(nERROR, "You can only upload image files (jpg, png, heic) with a max size of "+maxImageFileSizeMB+"MB.");
+				(!fileName.endsWith("jpg") && !fileName.endsWith("jpeg") && !fileName.endsWith("png"))) {
+				notify(nERROR, "You can only upload image files (jpg, png) with a max size of "+maxImageFileSizeMB+"MB.");
 				form.classList.remove('is-uploading');
 				return false;
 			}
