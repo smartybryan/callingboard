@@ -1,7 +1,7 @@
 // https://css-tricks.com/examples/DragAndDropFileUploading/
 'use strict';
 
-let maxImageFileSizeMB = 5;
+let maxImageFileSizeMB = 10;
 let maxImageFileSize = maxImageFileSizeMB*1024*1024;
 
 function initImageForms(document) {

@@ -13,6 +13,8 @@ import (
 	"github.org/smartybryan/callingboard/config"
 )
 
+const maxImageFileSize = 1024 * 1024 * 10
+
 type InputModel struct {
 	ProjectHandle string
 	Username      string
@@ -62,7 +64,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	if request.Body != http.NoBody && request.Method == "POST" {
 		fileUploadRequested := false
-		err = request.ParseMultipartForm(5 * 1024 * 1024) // 5mb
+		err = request.ParseMultipartForm(maxImageFileSize)
 		var file multipart.File
 		if err == nil {
 			file, _, err = request.FormFile("imageFile")

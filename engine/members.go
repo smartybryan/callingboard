@@ -1,11 +1,18 @@
 package engine
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io/ioutil"
 	"os"
+	"path"
 	"sort"
+
+	"github.com/nfnt/resize"
 )
 
 const (
@@ -114,8 +121,35 @@ func (this *Members) PutFocusMembers(names []string) error {
 	return err
 }
 
-func (this *Members) UploadMemberImage(path, originalFile string, image []byte) error {
-	return ioutil.WriteFile(path, image, os.FileMode(0666))
+func (this *Members) UploadMemberImage(imagePath, originalFile string, imageBytes []byte) error {
+	imageType := path.Ext(originalFile)
+
+	switch imageType {
+	case ".jpg", ".jpeg":
+		img, err := jpeg.Decode(bytes.NewReader(imageBytes))
+		if err != nil {
+			return err
+		}
+		return this.resizeAndWriteImage(imagePath, img, err)
+	case ".png":
+		img, err := png.Decode(bytes.NewReader(imageBytes))
+		if err != nil {
+			return err
+		}
+		return this.resizeAndWriteImage(imagePath, img, err)
+	default:
+		return ERROR_UNSUPPORTED_IMAGE
+	}
+}
+
+func (this *Members) resizeAndWriteImage(imagePath string, img image.Image, err error) error {
+	newImg := resize.Resize(0, 300, img, resize.Lanczos3)
+	var outBuffer bytes.Buffer
+	err = jpeg.Encode(&outBuffer, newImg, nil)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(imagePath, outBuffer.Bytes(), os.FileMode(0666))
 }
 
 func (this *Members) DeleteMemberImage(path string) error {
