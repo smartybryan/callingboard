@@ -104,7 +104,7 @@ function clearModeling() {
 
 function login() {
 	let username = document.getElementById("username").value;
-	let wardid = document.getElementById("wardid").value;
+	let wardid = document.getElementById("wardid").value.toLowerCase();
 	let params = "username=" + username + "&wardid=" + wardid;
 
 	apiCall("login", params)
