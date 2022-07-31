@@ -94,9 +94,8 @@ function initImageForms(document) {
 					form.classList.add(success ? 'is-success' : 'is-error');
 					if (success) {
 						notify(nSUCCESS, "File uploaded");
-						populateMemberPhotoList();
 						imageVersion++;
-						displayMembers("");
+						displayMembers(currentMemberListEndpoint);
 					} else {
 						errorMsg.textContent = data;
 					}

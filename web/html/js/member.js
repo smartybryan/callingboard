@@ -4,6 +4,7 @@ function displayMembers(endpoint) {
 	} else {
 		endpoint = currentMemberListEndpoint;
 	}
+
 	apiCall(endpoint)
 		.then(data => {
 			displayMembersImageUploader_do(data, endpoint);
@@ -61,7 +62,9 @@ function displayMembersImageUploader_do(response, endpoint) {
 		</span>
 		<span class='thumbnail-container'>
 			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
-			style="display: none" id="` + memberParts[0] + `" onload="this.style.display=''" src="` + memberImage + `?v=` + imageVersion + `">
+			onload="this.style.display=''" style="display: none" id="` + memberParts[0] + `" 
+			src="` + memberImage + `?v=` + imageVersion + `">
+			<img class="box__uploading" alt="" src="loading.gif">
 		</span>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
 		<button type="submit" class="box__button">Upload</button>
@@ -217,18 +220,4 @@ function saveFocusList() {
 		.catch(error => {
 			console.log(error);
 		})
-}
-
-function populateMemberPhotoList() {
-	apiCall("members")
-		.then(data => {
-			populateMemberPhotoList_do(data);
-		})
-		.catch(error => {
-			console.log(error);
-		})
-}
-
-function populateMemberPhotoList_do(response) {
-	displayMembersImageUploader_do(response)
 }
