@@ -12,7 +12,13 @@ function parseRawData(endpoint) {
 				initialize();
 				resetModel();
 			} else {
-				notify(nERROR, MESSAGE_IMPORT_FAILURE)
+				if (!isLoggedIn()) {
+					notify(nERROR, NOT_AUTHENTICATED);
+					makeTabDefault("authentication");
+					focusDefaultTab();
+				} else {
+					notify(nERROR, MESSAGE_IMPORT_FAILURE);
+				}
 			}
 		}
 	};

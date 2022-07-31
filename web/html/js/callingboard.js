@@ -9,6 +9,7 @@ let currentMemberListEndpoint = ""; // the last member query endpoint
 let imageVersion = 0; // the current image version
 
 window.onload = function () {
+	registerDefaultEvents();
 	initialize();
 	focusDefaultTab();
 };
@@ -16,10 +17,24 @@ window.onload = function () {
 function initialize() {
 	imageVersion = Date.now();
 	checkLoginStatus();
+	if (!isLoggedIn()) {
+		return;
+	}
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
 	populateFocusList();
+}
+
+function registerDefaultEvents() {
+	// Pressing enter on wardid will login
+	let input = document.getElementById("wardid");
+	input.addEventListener("keypress", function(event) {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			login();
+		}
+	});
 }
 
 function openTab(evt, tabName) {
@@ -119,8 +134,9 @@ function logout() {
 }
 
 function checkLoginStatus() {
-	if (document.cookie.length === 0) {
+	if (!isLoggedIn()) {
 		makeTabDefault("authentication");
+		focusDefaultTab();
 		return
 	}
 	let auth = getAuthValueFromCookie();
@@ -130,6 +146,10 @@ function checkLoginStatus() {
 	setLoggedInUsername();
 	makeTabDefault("modeling");
 	focusDefaultTab();
+}
+
+function isLoggedIn() {
+	return document.cookie.length > 0;
 }
 
 function clearLoggedInUsername() {
@@ -213,7 +233,7 @@ function drop(ev) {
 	// dragging from the member row to a vacant calling in the tree, or to trash
 	if (movedElement.classList.contains("member-row") || movedElement.classList.contains("thumbnail")) {
 		if (ev.target.id === "trash") {
-			apiCall("image-delete", "member="+encodeURI(movedElement.id))
+			apiCall("image-delete", "member=" + encodeURI(movedElement.id))
 				.then(data => {
 					notify(nSUCCESS, "Image deleted");
 					imageVersion++;
