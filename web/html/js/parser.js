@@ -12,7 +12,7 @@ function parseRawData(endpoint) {
 				initialize();
 				resetModel();
 			} else {
-				if (!isLoggedIn()) {
+				if (!authCookieExists()) {
 					notify(nERROR, NOT_AUTHENTICATED);
 					makeTabDefault("authentication");
 					focusDefaultTab();

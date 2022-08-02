@@ -10,6 +10,9 @@ function setupTreeStructure() {
 		})
 		.catch(error => {
 			console.log(error);
+			if (error === "Not logged in") {
+				logout();
+			}
 		})
 }
 

@@ -108,7 +108,7 @@ func (this *Controller) Logout(input *InputModel) detour.Renderer {
 }
 
 func (this *Controller) AuthenticationError() detour.Renderer {
-	return detour.JSONResult{
+	return detour.ContentResult{
 		StatusCode: 401,
 		Content:    "Not logged in",
 	}

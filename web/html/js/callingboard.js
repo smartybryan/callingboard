@@ -17,7 +17,7 @@ window.onload = function () {
 function initialize() {
 	imageVersion = Date.now();
 	checkLoginStatus();
-	if (!isLoggedIn()) {
+	if (!authCookieExists()) {
 		return;
 	}
 	setupTreeStructure();
@@ -29,7 +29,7 @@ function initialize() {
 function registerDefaultEvents() {
 	// Pressing enter on wardid will login
 	let input = document.getElementById("wardid");
-	input.addEventListener("keypress", function(event) {
+	input.addEventListener("keypress", function (event) {
 		if (event.key === "Enter") {
 			event.preventDefault();
 			login();
@@ -62,8 +62,9 @@ function tabPreEvent(enteringTab) {
 		case "report":
 			generateReport();
 			break;
-		case "photos":
-			populateMemberPhotoList();
+		case "authentication":
+			let element = document.getElementById("username");
+			element.focus();
 			break;
 	}
 }
@@ -92,6 +93,7 @@ function focusDefaultTab() {
 		return
 	}
 	tabs[0].click();
+	tabPreEvent(tabs[0].name);
 }
 
 function clearModeling() {
@@ -134,7 +136,7 @@ function logout() {
 }
 
 function checkLoginStatus() {
-	if (!isLoggedIn()) {
+	if (!authCookieExists()) {
 		makeTabDefault("authentication");
 		focusDefaultTab();
 		return
@@ -142,13 +144,12 @@ function checkLoginStatus() {
 	let auth = getAuthValueFromCookie();
 	document.getElementById("username").value = auth.username;
 	document.getElementById("wardid").value = auth.wardid;
-
 	setLoggedInUsername();
 	makeTabDefault("modeling");
 	focusDefaultTab();
 }
 
-function isLoggedIn() {
+function authCookieExists() {
 	return document.cookie.length > 0;
 }
 
