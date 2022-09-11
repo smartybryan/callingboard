@@ -185,11 +185,11 @@ li.member-row {
 }
 
 .member-name-container {
-	width: 50%
+	width: 70%
 }
 
 .thumbnail-container {
-	width: 50%;
+	width: 30%;
 }
 
 .thumbnail {
@@ -271,7 +271,7 @@ ul, #ward {
 }
 
 .calling-name-container {
-	width: 100%
+	width: 70%
 }
 
 li.calling-row {
