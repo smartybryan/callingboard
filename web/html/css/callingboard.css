@@ -266,6 +266,14 @@ ul, #ward {
 	margin-left: -5px;
 }
 
+.calling-container {
+	display: flex;
+}
+
+.calling-name-container {
+	width: 100%
+}
+
 li.calling-row {
 	border-radius: 20px;
 	text-indent: 15px;
