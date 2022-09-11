@@ -111,12 +111,16 @@ function filterMembers() {
 	let filter = document.getElementById("member-filter").value.toLowerCase();
 	const memberElements = document.getElementById("members").getElementsByTagName("li");
 
+	let count = memberElements.length;
 	for (let i = 0; i < memberElements.length; i++) {
 		memberElements[i].classList.remove("filtered");
 		if (!memberElements[i].id.toLowerCase().includes(filter)) {
 			memberElements[i].classList.add("filtered");
+			count--
 		}
 	}
+
+	document.getElementById("member-count").innerText = "" + count;
 }
 
 function clearFilter() {
