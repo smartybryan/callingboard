@@ -83,6 +83,14 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 	return callingCount
 }
 
+const (
+	MemberRecordMinLength  = 3
+	MemberNameElement      = 0
+	MemberGenderElement    = 1
+	MemberAgeElement       = 2
+	MemberBirthdateElement = 3
+)
+
 func (this *Members) ParseMembersFromRawData(data []byte) int {
 	saveMembers := this.copy()
 	*this = NewMembers(this.initialSize, this.filePath)
@@ -107,20 +115,25 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 		}
 
 		memberRecord := strings.Split(fileLines[idx], "\t")
-		if len(memberRecord) < 3 {
+		if len(memberRecord) < MemberRecordMinLength {
 			continue
 		}
 
 		baptized := true
-		if memberRecord[0][0] == '*' {
+		if memberRecord[MemberNameElement][0] == '*' { // one * means the person is unbaptized
 			baptized = false
-			memberRecord[0] = memberRecord[0][1:]
+			memberRecord[MemberNameElement] = memberRecord[MemberNameElement][1:]
+
+			if memberRecord[MemberNameElement][0] == '*' { // two *'s mean a YSA adult leader
+				baptized = true
+				memberRecord[MemberNameElement] = memberRecord[MemberNameElement][1:]
+			}
 		}
 
 		member := Member{
-			Name:        memberRecord[0],
-			Eligibility: calculateEligibility(memberRecord[3], baptized),
-			Type:        calculateType(memberRecord[1]),
+			Name:        memberRecord[MemberNameElement],
+			Eligibility: calculateEligibility(memberRecord[MemberBirthdateElement], baptized),
+			Type:        calculateType(memberRecord[MemberGenderElement]),
 		}
 		this.MemberMap[member.Name] = member
 	}
