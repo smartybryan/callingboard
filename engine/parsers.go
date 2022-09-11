@@ -123,11 +123,13 @@ func (this *Members) ParseMembersFromRawData(data []byte) int {
 		if memberRecord[MemberNameElement][0] == '*' { // one * means the person is unbaptized
 			baptized = false
 			memberRecord[MemberNameElement] = memberRecord[MemberNameElement][1:]
-
-			if memberRecord[MemberNameElement][0] == '*' { // two *'s mean a YSA adult leader
-				baptized = true
-				memberRecord[MemberNameElement] = memberRecord[MemberNameElement][1:]
-			}
+			// Out of unit callings (**) should remain hidden, so we will
+			// treat them as "unbaptized" and they will not show in the member list.
+			// They will still show in the calling list.
+			//if memberRecord[MemberNameElement][0] == '*' { // two *'s mean out of unit calling
+			//	baptized = true
+			//	memberRecord[MemberNameElement] = memberRecord[MemberNameElement][1:]
+			//}
 		}
 
 		member := Member{
