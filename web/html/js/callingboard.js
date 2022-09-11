@@ -200,7 +200,12 @@ function callingId(callingName, callingHolder, counter) {
 }
 
 function callingInnards(callingName, holderName, timeInCalling) {
-	return callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span>";
+	let wardId = getAuthValueFromCookie().wardid;
+	let memberName = encodeURI(holderName);
+	let memberImage = wardId + "/" + memberName + ".jpg";
+	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\""+memberImage+"?v=" + imageVersion + "\" alt></span>";
+
+	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "</div>";
 }
 
 function callingIdComponents(id) {
