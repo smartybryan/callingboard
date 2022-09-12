@@ -131,12 +131,16 @@ function memberSelected(element) {
 
 function filterMembers() {
 	let filter = document.getElementById("member-filter").value.toLowerCase();
+	let male = document.getElementById("member-male").checked;
+	let female = document.getElementById("member-female").checked;
 	const memberElements = document.getElementById("members").getElementsByTagName("li");
 
 	let count = memberElements.length;
 	for (let i = 0; i < memberElements.length; i++) {
 		memberElements[i].classList.remove("filtered");
-		if (!memberElements[i].id.toLowerCase().includes(filter)) {
+		if ((!memberElements[i].id.toLowerCase().includes(filter)) ||
+		(!male && memberElements[i].classList.contains("male")) ||
+		(!female && memberElements[i].classList.contains("female"))) {
 			memberElements[i].classList.add("filtered");
 			count--
 		}
