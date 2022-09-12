@@ -37,9 +37,16 @@
 	<member-list>
 		<label class="heading" for="members">Members</label>
 		<div class="flex-row">
-			<input id="member-filter" size="20" onclick="this.select()"
-				   onkeyup="filterMembers()" placeholder="Member filter">
-			<span id="clear-filter" class="pointer" onclick="clearFilter()">&#9447;</span>
+			<span>
+				<input class="filter" id="member-filter" size="20" onclick="this.select()"
+					   onkeyup="filterMembers()" placeholder="Member filter">
+				<span id="clear-filter" class="pointer" onclick="clearFilter()">&#9447;</span>
+			</span>
+		</div>
+		<div class="flex-row">
+			<span>
+				<input class="filter" onclick="displayMembers()" type="checkbox" id="member-sort-firstname">Sort by first name</span>
+			</span>
 		</div>
 		<div id="member-scroller">
 			<ul id="members" ondragstart="drag(event)">
@@ -331,7 +338,8 @@
 				</li>
 			</ul>
 			<br>
-			To <strong>add</strong> a <strong>thumbnail</strong> image to a member, simply drag a JPG or PNG image (10MB limit) onto a member tile.
+			To <strong>add</strong> a <strong>thumbnail</strong> image to a member, simply drag a JPG or PNG image (10MB
+			limit) onto a member tile.
 			<br>
 			To <strong>remove</strong> a <strong>thumbnail</strong> image, drag the image to the trash.
 			<br>

@@ -38,6 +38,12 @@ function displayMembersImageUploader_do(response, endpoint) {
 	let wardId = getAuthValueFromCookie().wardid;
 	// wardId = "123";
 
+	if (document.getElementById("member-sort-firstname").checked) {
+		jsonObject.sort(function(a, b){
+			return compareFirstNames(a, b);
+		});
+	}
+
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
 		let memberParts = member.split(";")
@@ -84,6 +90,22 @@ function displayMembersImageUploader_do(response, endpoint) {
 
 	initImageForms(document)
 	filterMembers();
+}
+
+function compareFirstNames(a, b) {
+	return buildFirstName(a).localeCompare(buildFirstName(b));
+}
+
+function buildFirstName(name) {
+	let parts = name.split(";");
+	if (parts.length < 2) {
+		return name;
+	}
+	let name_parts = parts[0].split(",");
+	if (name_parts.length < 2) {
+		return name
+	}
+	return name_parts[1] + " " + name_parts[0];
 }
 
 function memberTypeClass(memberType) {
