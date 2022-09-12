@@ -3,8 +3,9 @@ function generateReport() {
 	let dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric" };
 	let today  = new Date();
 	let dateTime = today.toLocaleDateString("en-US", dateOptions);
-
 	let canvas = document.getElementById("report-canvas");
+	let reportType = document.getElementById("reports").value;
+
 	let releases = getCallingDataFromContainer("releases");
 	let sustainings = getCallingDataFromContainer("sustainings");
 	let content = "<div>Printed " + dateTime + " from Callingboard.org</div>"

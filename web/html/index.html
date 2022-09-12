@@ -21,7 +21,7 @@
 
 <div class="tab no-print">
 	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
-	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Print Report</button>
+	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Print Reports</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
 	<button class="tablinks" name="manage-focus-members" onclick="openTab(event, 'manage-focus-members')">Focus
 		Members
@@ -46,8 +46,8 @@
 		<div class="flex-row">
 			<span>
 				<input class="filter" onclick="displayMembers()" type="checkbox" id="member-sort-firstname">Sort by first name</span>
-				<input onclick="displayMembers()" type="checkbox" id="member-male" checked>M</span>
-				<input onclick="displayMembers()" type="checkbox" id="member-female" checked>F</span>
+			<input onclick="displayMembers()" type="checkbox" id="member-male" checked>M</span>
+			<input onclick="displayMembers()" type="checkbox" id="member-female" checked>F</span>
 			</span>
 		</div>
 		<div id="member-scroller">
@@ -126,6 +126,14 @@
 </model-layout>
 
 <div id="report" class="tabcontent">
+	<div id="report-select" class="no-print">
+		<label id="report-select-label" for="reports">Select Report: </label>
+		<select name="reports" id="reports" onchange="generateReport()">
+			<option value="relsus">Releases and Sustainings</option>
+			<option value="memrep">Member Report</option>
+		</select>
+	</div>
+
 	<report-cont>
 		<input type="button" class="print-button no-print" onclick="window.print()" value="Print">
 		<div id="report-canvas"></div>
@@ -399,7 +407,7 @@
 			Releases column. (See Releases)
 		</div>
 
-		<div class="sub-heading">Print Report</div>
+		<div class="sub-heading">Print Reports</div>
 		<div class="help-paragraph">
 			This tab shows a printable summary report of the Releases and Sustainings
 			in this model. This report may be helpful to those conducting and for the ward membership

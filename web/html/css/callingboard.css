@@ -309,6 +309,19 @@ li.proposed {
 
 /* REPORT */
 
+#report-select {
+	margin-top: 10px;
+	margin-left: 20px;
+	width: 250px;
+}
+
+#report-select-label {
+	background-color: wheat;
+	padding: 5px;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+
 report-cont {
 	float: left;
 	margin: 10px;
