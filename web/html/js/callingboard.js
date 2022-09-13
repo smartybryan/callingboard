@@ -234,6 +234,9 @@ function drop(ev) {
 	if (liElement.tagName === "SPAN") {
 		liElement = liElement.parentElement;
 	}
+	if (liElement.tagName === "DIV") {
+		liElement = liElement.parentElement;
+	}
 	let dropTarget = liElement.parentElement;
 
 	// dragging from the member row to a vacant calling in the tree, or to trash
@@ -244,6 +247,7 @@ function drop(ev) {
 					notify(nSUCCESS, "Image deleted");
 					imageVersion++;
 					displayMembers("");
+					refreshTree()
 				})
 				.catch(error => {
 					notify(nERROR, error);
