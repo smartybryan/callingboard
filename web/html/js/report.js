@@ -6,18 +6,26 @@ function generateReport() {
 	let canvas = document.getElementById("report-canvas");
 	let reportType = document.getElementById("reports").value;
 
-	let releases = getCallingDataFromContainer("releases");
-	let sustainings = getCallingDataFromContainer("sustainings");
 	let content = "<div>Printed " + dateTime + " from Callingboard.org</div>"
-	content += buildReleaseReportTable(
-		"We have released the following.",
-		"Those who wish to express appreciation for their service, please raise your hand.",
-		"Release", releases);
-	content += "<br><br>";
-	content += buildSustainReportTable(
-		"We have called the following and ask that you stand when your name is read, and remain standing until the vote is taken.",
-		"We propose that they be sustained. All in favor, please raise your hand. [Wait] Those opposed by the same sign.",
-		"Sustain", sustainings);
+
+	if (reportType === "relsus") {
+		let releases = getCallingDataFromContainer("releases");
+		let sustainings = getCallingDataFromContainer("sustainings");
+		content += buildReleaseReportTable(
+			"We have released the following.",
+			"Those who wish to express appreciation for their service, please raise your hand.",
+			"Release", releases);
+		content += "<br><br>";
+		content += buildSustainReportTable(
+			"We have called the following and ask that you stand when your name is read, and remain standing until the vote is taken.",
+			"We propose that they be sustained. All in favor, please raise your hand. [Wait] Those opposed by the same sign.",
+			"Sustain", sustainings);
+	}
+
+	if (reportType === "memrep") {
+		content += "<br><br><h2>Report under construction.</h2>"
+	}
+
 	canvas.innerHTML = content;
 }
 

@@ -309,6 +309,16 @@ li.proposed {
 
 /* REPORT */
 
+report-man {
+	float: left;
+	height: 75px;
+	width: 400px;
+	margin: 10px;
+	padding: 15px;
+	border-radius: 20px;
+	background-color: lightgray;
+}
+
 #report-select {
 	margin-top: 10px;
 	margin-left: 20px;
@@ -316,7 +326,6 @@ li.proposed {
 }
 
 #report-select-label {
-	background-color: wheat;
 	padding: 5px;
 	margin-top: 10px;
 	border-radius: 5px;

@@ -126,13 +126,13 @@
 </model-layout>
 
 <div id="report" class="tabcontent">
-	<div id="report-select" class="no-print">
+	<report-man id="report-select" class="no-print">
 		<label id="report-select-label" for="reports">Select Report: </label>
 		<select name="reports" id="reports" onchange="generateReport()">
 			<option value="relsus">Releases and Sustainings</option>
 			<option value="memrep">Member Report</option>
 		</select>
-	</div>
+	</report-man>
 
 	<report-cont>
 		<input type="button" class="print-button no-print" onclick="window.print()" value="Print">
@@ -409,9 +409,10 @@
 
 		<div class="sub-heading">Print Reports</div>
 		<div class="help-paragraph">
-			This tab shows a printable summary report of the Releases and Sustainings
-			in this model. This report may be helpful to those conducting and for the ward membership
-			clerk to enter this information into LCR. The Print button sends the report to a printer.
+			You can print various reports from this tab. Simply select the report
+			from the drop-down list.
+			<br>
+			The Print button sends the report to a printer.
 		</div>
 
 		<div class="sub-heading">Model Management</div>
