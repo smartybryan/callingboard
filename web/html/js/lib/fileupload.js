@@ -96,7 +96,8 @@ function initImageForms(document) {
 						notify(nSUCCESS, "File uploaded");
 						imageVersion++;
 						displayMembers(currentMemberListEndpoint);
-						refreshTree()
+						refreshFromModel();
+						refreshTree();
 					} else {
 						errorMsg.textContent = data;
 					}

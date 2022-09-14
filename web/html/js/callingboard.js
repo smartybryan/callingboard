@@ -203,7 +203,7 @@ function callingInnards(callingName, holderName, timeInCalling) {
 	let wardId = getAuthValueFromCookie().wardid;
 	let memberName = encodeURI(holderName);
 	let memberImage = wardId + "/" + memberName + ".jpg";
-	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\""+memberImage+"?v=" + imageVersion + "\" alt></span>";
+	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "@img-calling\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\"" + memberImage + "?v=" + imageVersion + "\" alt></span>";
 
 	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "</div>";
 }
@@ -229,38 +229,56 @@ function drop(ev) {
 	let currentId = ev.dataTransfer.getData("calling");
 	let movedElement = document.getElementById(currentId);
 
-	// find the UL and LI elements based on the dropped element
-	let liElement = ev.target;
-	if (liElement.tagName === "SPAN") {
-		liElement = liElement.parentElement;
+	// keep moving up until dropTarget is a droppable element
+	let dropTarget = ev.target;
+	for (let i = 0; i < 10; i++) { // limit the attempts to find a droppable element
+		if (dropTarget.classList.contains("droppable")) {
+			break
+		}
+		dropTarget = dropTarget.parentElement
 	}
-	if (liElement.tagName === "DIV") {
-		liElement = liElement.parentElement;
-	}
-	let dropTarget = liElement.parentElement;
 
-	// dragging from the member row to a vacant calling in the tree, or to trash
-	if (movedElement.classList.contains("member-row") || movedElement.classList.contains("thumbnail")) {
-		if (ev.target.id === "trash") {
-			apiCall("image-delete", "member=" + encodeURI(movedElement.id))
-				.then(data => {
-					notify(nSUCCESS, "Image deleted");
-					imageVersion++;
-					displayMembers("");
-					refreshTree()
-				})
-				.catch(error => {
-					notify(nERROR, error);
-					imageVersion++;
-					displayMembers("");
-				});
+	if (!dropTarget.classList.contains("droppable")) {
+		notify(nINFO, "Cannot drop anything here.");
+		return
+	}
+
+	// drop image from member into trash
+	if (movedElement.id.endsWith("@img-member") && dropTarget.id === "trash") {
+		let imageNameParts = movedElement.id.split("@");
+		apiCall("image-delete", "member=" + encodeURI(imageNameParts[0]))
+			.then(data => {
+				notify(nSUCCESS, "Image deleted");
+				imageVersion++;
+				displayMembers("");
+				refreshFromModel();
+				refreshTree()
+			})
+			.catch(error => {
+				notify(nERROR, error);
+				imageVersion++;
+				displayMembers("");
+			});
+		return
+	}
+
+	// dragging image from a calling - ignore event
+	if (movedElement.id.endsWith("@img-calling")) {
+		notify(nALERT, MESSAGE_DELETE_IMAGE_DRAG_FROM_MEMBER)
+		return
+	}
+
+	// dragging from the member row to a vacant calling in the tree
+	if (movedElement.classList.contains("member-row")) {
+		if (dropTarget.tagName === "UL") {
+			notify(nALERT, MESSAGE_DRAG_ONTO_CALLING)
 			return
 		}
-		if (!liElement.classList.contains("vacant")) {
+		if (!dropTarget.classList.contains("vacant")) {
 			notify(nALERT, MESSAGE_MEMBER_ONLY_TO_TREE)
 			return
 		}
-		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, liElement))
+		apiCall("add-member-calling", createTransactionParmsForMemberElement(movedElement, dropTarget))
 			.then(data => {
 				refreshFromModel();
 				makeDirty()
@@ -292,19 +310,16 @@ function drop(ev) {
 		return
 	}
 
+	//TODO: allow dropping to releases list
+	
 	// dragging from ward tree to ward tree, cancel the operation
-	if (dropTarget.classList.contains("nested") && movedElement.parentElement.classList.contains("nested")) {
+	if (dropTarget.classList.contains("calling-row") && movedElement.classList.contains("calling-row")) {
 		notify(nALERT, MESSAGE_RELEASE_ONLY)
 		return
 	}
 
 	// dragging from member-callings list
 	if (movedElement.classList.contains("member-calling")) {
-		// only allow it to be moved to releases
-		if (dropTarget.id !== "releases") {
-			notify(nALERT, MESSAGE_RELEASE_ONLY);
-			return
-		}
 		movedElement.remove();
 	}
 

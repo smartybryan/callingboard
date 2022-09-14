@@ -83,6 +83,10 @@ tr:nth-child(even) {
 	visibility: visible;
 }
 
+input[type="checkbox"]:checked, input[type="radio"]:checked {
+	accent-color: darkslategrey;
+}
+
 /* LAYOUT */
 
 header {

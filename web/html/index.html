@@ -75,7 +75,7 @@
 	<call-release>
 		<label class="heading" for="releases">Releases</label>
 		<div class="release-sustain-scroller">
-			<ul id="releases" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<ul id="releases" class="droppable" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
 			</ul>
 		</div>
 
@@ -90,7 +90,7 @@
 		<div>
 			<input type="button" onclick="undoLast()" value="Undo Last">
 			<input type="button" onclick="redoLast()" value="Redo Last">
-			<span id="trash" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
+			<span id="trash" class="droppable" ondrop="drop(event)" ondragover="allowDrop(event)">&#128465;</span>
 		</div>
 	</call-release>
 

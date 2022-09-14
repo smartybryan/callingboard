@@ -68,7 +68,7 @@ function displayMembersImageUploader_do(response, endpoint) {
 		</span>
 		<span class='thumbnail-container'>
 			<img class="thumbnail" draggable="true" ondragstart="drag(event)" 
-			onload="this.style.display=''" style="display: none" id="` + memberParts[0] + `" 
+			onload="this.style.display=''" style="display: none" id="` + memberParts[0] + `@img-member"
 			src="` + memberImage + `?v=` + imageVersion + `">
 			<img class="box__uploading" alt="" src="loading.gif">
 		</span>

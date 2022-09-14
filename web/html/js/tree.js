@@ -131,6 +131,7 @@ function createCallingElement(calling, counter) {
 	callingInfo.setAttribute("data-org", calling.Org);
 	callingInfo.setAttribute("draggable", "true");
 	callingInfo.classList.add("calling-row");
+	callingInfo.classList.add("droppable");
 	if (calling.Holder === VACANT) {
 		callingInfo.classList.add("vacant");
 	}
