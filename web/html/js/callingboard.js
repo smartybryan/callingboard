@@ -310,23 +310,29 @@ function drop(ev) {
 		return
 	}
 
-	//TODO: allow dropping to releases list
-	
-	// dragging from ward tree to ward tree, cancel the operation
-	if (dropTarget.classList.contains("calling-row") && movedElement.classList.contains("calling-row")) {
-		notify(nALERT, MESSAGE_RELEASE_ONLY)
+	// dragging a vacant calling from the tree
+	if (movedElement.classList.contains("vacant")) {
+		notify(nALERT, MESSAGE_RELEASE_VACANT);
+		return
+	}
+
+	// last resort to verify a drop to releases
+	if (dropTarget.id !== "releases") {
+		for (let i = 0; i < 10; i++) { // limit the attempts to find a droppable element
+			if (dropTarget.id === "releases") {
+				break
+			}
+			dropTarget = dropTarget.parentElement
+		}
+	}
+	if (dropTarget.id !== "releases") {
+		notify(nALERT, MESSAGE_RELEASE_ONLY);
 		return
 	}
 
 	// dragging from member-callings list
 	if (movedElement.classList.contains("member-calling")) {
 		movedElement.remove();
-	}
-
-	// dragging a vacant calling from the tree
-	if (movedElement.classList.contains("vacant")) {
-		notify(nALERT, MESSAGE_RELEASE_VACANT);
-		return
 	}
 
 	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement))
