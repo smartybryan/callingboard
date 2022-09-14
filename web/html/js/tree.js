@@ -123,6 +123,7 @@ function toggleElement(element) {
 function refreshFromModel() {
 	refreshTree();
 	refreshCallingChanges();
+	displayMembers("");
 }
 
 function createCallingElement(calling, counter) {
