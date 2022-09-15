@@ -208,6 +208,12 @@ li.member-row {
 	border-radius: 15px;
 }
 
+.thumbnail-report {
+	height: 100px;
+	margin: 3px;
+	border-radius: 15px;
+}
+
 .indent-small {
 	margin-left: 5px;
 }

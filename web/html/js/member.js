@@ -38,7 +38,6 @@ function displayMembersImageUploader_do(response, endpoint) {
 	}
 
 	let wardId = getAuthValueFromCookie().wardid;
-	// wardId = "123";
 
 	if (document.getElementById("member-sort-firstname").checked) {
 		jsonObject.sort(function (a, b) {
