@@ -5,6 +5,8 @@ function displayMembers(endpoint) {
 		endpoint = currentMemberListEndpoint;
 	}
 
+	setButtonHighlight(endpoint);
+
 	apiCall(endpoint)
 		.then(data => {
 			displayMembersImageUploader_do(data, endpoint);
@@ -39,7 +41,7 @@ function displayMembersImageUploader_do(response, endpoint) {
 	// wardId = "123";
 
 	if (document.getElementById("member-sort-firstname").checked) {
-		jsonObject.sort(function(a, b){
+		jsonObject.sort(function (a, b) {
 			return compareFirstNames(a, b);
 		});
 	}
@@ -108,6 +110,35 @@ function buildFirstName(name) {
 	return name_parts[1] + " " + name_parts[0];
 }
 
+function setButtonHighlight(endpoint) {
+	let buttonIDs = ["ml-mem", "ml-new", "ml-foc", "ml-cal", "ml-awc"];
+	let highlightClass = "member-button-active";
+
+	for (let idx in buttonIDs) {
+		document.getElementById(buttonIDs[idx]).classList.remove(highlightClass);
+	}
+
+	let buttonID = "";
+	switch (endpoint) {
+		case "members":
+			buttonID = buttonIDs[0];
+			break;
+		case "newly-available":
+			buttonID = buttonIDs[1];
+			break;
+		case "focus-members":
+			buttonID = buttonIDs[2];
+			break;
+		case "members-with-callings":
+			buttonID = buttonIDs[3];
+			break;
+		case "adults-without-calling":
+			buttonID = buttonIDs[4];
+			break;
+	}
+	document.getElementById(buttonID).classList.add(highlightClass);
+}
+
 function memberTypeClass(memberType) {
 	switch (memberType) {
 		case "1":
@@ -139,8 +170,8 @@ function filterMembers() {
 	for (let i = 0; i < memberElements.length; i++) {
 		memberElements[i].classList.remove("filtered");
 		if ((!memberElements[i].id.toLowerCase().includes(filter)) ||
-		(!male && memberElements[i].classList.contains("male")) ||
-		(!female && memberElements[i].classList.contains("female"))) {
+			(!male && memberElements[i].classList.contains("male")) ||
+			(!female && memberElements[i].classList.contains("female"))) {
 			memberElements[i].classList.add("filtered");
 			count--
 		}

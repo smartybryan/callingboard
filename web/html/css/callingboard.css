@@ -87,6 +87,11 @@ input[type="checkbox"]:checked, input[type="radio"]:checked {
 	accent-color: darkslategrey;
 }
 
+.member-button-active {
+	background-color: darkslategray;
+	color: white;
+}
+
 /* LAYOUT */
 
 header {

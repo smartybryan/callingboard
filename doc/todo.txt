@@ -1,4 +1,3 @@
 Todo list
 
-* Highlight the member button currently active
 * Implement the member list report
