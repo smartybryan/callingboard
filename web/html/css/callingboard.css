@@ -52,6 +52,10 @@ body {
 	color: white;
 }
 
+tr.member-report-row:nth-child(even) {
+	background-color: inherit;
+}
+
 tr:nth-child(even) {
 	background-color: #f2f2f2;
 }

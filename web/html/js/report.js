@@ -173,6 +173,13 @@ function buildMemberReportTable(callingResponse, memberResponse, content, canvas
 
 	content += `
 	<h2>` + title + `</h2>
+	<span>
+		<span class="filter">Show:</span>
+		<input onclick="redisplayMemberReport()" type="checkbox" id="member-report-male" checked>M</span>
+		<input onclick="redisplayMemberReport()" type="checkbox" id="member-report-female" checked>F</span>
+	</span>
+	<br><br>
+	
 	<table class="report-table">
 	<thead>
 	<tr>
@@ -190,7 +197,7 @@ function buildMemberReportTable(callingResponse, memberResponse, content, canvas
 		let memberName = memberParts[0];
 		let memberImage = wardId + "/" + encodeURI(memberName) + ".jpg";
 
-		content += "<tr>";
+		content += "<tr class='member-report-row " + findGender(memberParts[1]) + "'>";
 		content += '<td class="report-table">' + memberName + "</td>";
 		content += '<td class="report-table" style="text-align:center;">' + '<img class="thumbnail-report" onload="this.style.display=\'\'" style="display: none;" src="' + memberImage + '?v=' + imageVersion + '" alt="">' + "</td>";
 		content += '<td class="report-table">' + getMemberCallings(callingMap, memberName) + "</td>";
@@ -222,4 +229,26 @@ function getMemberCallings(callingMap, memberName) {
 	});
 
 	return callingInfo;
+}
+
+function findGender(genderIdentifier) {
+	switch (genderIdentifier) {
+		case "1": return "male-report";
+		case "2": return "female-report";
+	}
+	return "";
+}
+
+function redisplayMemberReport() {
+	let includeFemale = document.getElementById("member-report-female").checked;
+	let includeMale = document.getElementById("member-report-male").checked;
+
+	let reportRows = document.getElementsByClassName("member-report-row");
+	for (let row of reportRows) {
+		if ((row.classList.contains("male-report") && includeMale) || (row.classList.contains("female-report") && includeFemale)) {
+			row.classList.remove("filtered");
+		} else {
+			row.classList.add("filtered");
+		}
+	}
 }
