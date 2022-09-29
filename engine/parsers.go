@@ -22,14 +22,16 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 
 	for idx := 0; idx < len(fileLines); idx++ {
 		if strings.HasPrefix(fileLines[idx], "Position") {
-			currentSubOrganization = string(fileLines[idx-1])
+			currentSubOrganization = fileLines[idx-1]
 			if org, found := OrganizationParseMap[currentSubOrganization]; found {
 				currentOrganization = org
 				if currentOrganization == "" {
 					currentOrganization = currentSubOrganization
 					currentSubOrganization = ""
 				}
-				this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
+				if !this.OrganizationExists(currentOrganization) {
+					this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
+				}
 			}
 			idx++
 			withinOrganization = true
@@ -82,6 +84,17 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 
 	return callingCount
 }
+
+func (this *Callings) OrganizationExists(org string) bool {
+	for _, orgOrder := range this.OrganizationOrder {
+		if orgOrder == org {
+			return true
+		}
+	}
+	return false
+}
+
+///////////////////////////////////////////////////////////////////
 
 const (
 	MemberRecordMinLength  = 3
