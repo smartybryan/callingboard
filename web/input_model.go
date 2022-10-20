@@ -26,8 +26,10 @@ type InputModel struct {
 	MemberName    string
 	ImageFileName string
 
-	Organization string
-	FromOrg      string
+	Organization    string
+	SubOrganization string
+	FromOrg         string
+	FromSubOrg      string
 
 	Calling       string
 	FromCalling   string
@@ -53,7 +55,9 @@ func (this *InputModel) Bind(request *http.Request) error {
 	this.ImageFileName = unescape(sanitize(request.Form.Get("file")))
 
 	this.Organization = sanitize(request.Form.Get("org"))
+	this.SubOrganization = sanitize(request.Form.Get("suborg"))
 	this.FromOrg = sanitize(request.Form.Get("from-org"))
+	this.FromSubOrg = sanitize(request.Form.Get("from-suborg"))
 
 	this.Calling = sanitize(request.Form.Get("calling"))
 	this.FromCalling = sanitize(request.Form.Get("from-calling"))

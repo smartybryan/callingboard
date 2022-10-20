@@ -130,6 +130,7 @@ function createCallingElement(calling, counter) {
 	let callingInfo = document.createElement("li");
 	callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
 	callingInfo.setAttribute("data-org", calling.Org);
+	callingInfo.setAttribute("data-suborg", calling.SubOrg);
 	callingInfo.setAttribute("draggable", "true");
 	callingInfo.classList.add("calling-row");
 	callingInfo.classList.add("droppable");

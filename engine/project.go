@@ -71,7 +71,7 @@ func (this *Project) Diff() DiffResult {
 				modelVacancies = append(modelVacancies, modelCalling)
 				continue
 			}
-			if this.originalCallings.doesMemberHoldCalling(modelCalling.Holder, organization, modelCalling.Name) {
+			if this.originalCallings.doesMemberHoldCalling(modelCalling.Holder, organization, modelCalling.SubOrg, modelCalling.Name) {
 				continue
 			}
 			this.diff.Sustainings = append(this.diff.Sustainings, modelCalling)
@@ -84,7 +84,7 @@ func (this *Project) Diff() DiffResult {
 				originalVacancies = append(originalVacancies, originalCalling)
 				continue
 			}
-			if this.Callings.doesMemberHoldCalling(originalCalling.Holder, organization, originalCalling.Name) {
+			if this.Callings.doesMemberHoldCalling(originalCalling.Holder, organization, originalCalling.SubOrg, originalCalling.Name) {
 				continue
 			}
 			this.diff.Releases = append(this.diff.Releases, originalCalling)
@@ -203,20 +203,20 @@ func (this *Project) UpdateCalling(org string, calling string, custom bool) erro
 	return this.Callings.updateCalling(org, calling, custom)
 }
 
-func (this *Project) AddMemberToACalling(member string, org string, calling string) error {
-	this.addTransaction("addMemberToACalling", member, org, calling)
-	return this.Callings.addMemberToACalling(member, org, calling)
+func (this *Project) AddMemberToACalling(member string, org string, suborg string, calling string) error {
+	this.addTransaction("addMemberToACalling", member, org, suborg, calling)
+	return this.Callings.addMemberToACalling(member, org, suborg, calling)
 }
 
 func (this *Project) MoveMemberToAnotherCalling(
-	member string, fromOrg string, fromCalling string, toOrg string, toCalling string) error {
-	this.addTransaction("moveMemberToAnotherCalling", member, fromOrg, fromCalling, toOrg, toCalling)
-	return this.Callings.moveMemberToAnotherCalling(member, fromOrg, fromCalling, toOrg, toCalling)
+	member string, fromOrg string, fromSubOrg string, fromCalling string, toOrg string, toSubOrg string, toCalling string) error {
+	this.addTransaction("moveMemberToAnotherCalling", member, fromOrg, fromSubOrg, fromCalling, toOrg, toSubOrg, toCalling)
+	return this.Callings.moveMemberToAnotherCalling(member, fromOrg, fromSubOrg, fromCalling, toOrg, toSubOrg, toCalling)
 }
 
-func (this *Project) RemoveMemberFromACalling(member string, org string, calling string) error {
-	this.addTransaction("removeMemberFromACalling", member, org, calling)
-	return this.Callings.removeMemberFromACalling(member, org, calling)
+func (this *Project) RemoveMemberFromACalling(member string, org string, suborg string, calling string) error {
+	this.addTransaction("removeMemberFromACalling", member, org, suborg, calling)
+	return this.Callings.removeMemberFromACalling(member, org, suborg, calling)
 }
 
 func (this *Project) RemoveTransaction(operation string, parameters []string) error {
@@ -289,15 +289,15 @@ func (this *Project) playTransactions() {
 				transaction.Parameters[0], transaction.Parameters[1], parseBool(transaction.Parameters[2]))
 		case "addMemberToACalling":
 			err = this.Callings.addMemberToACalling(
-				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2])
+				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3])
 		case "moveMemberToAnotherCalling":
 			_ = this.Callings.moveMemberToAnotherCalling(
 				transaction.Parameters[0],
-				transaction.Parameters[1], transaction.Parameters[2],
-				transaction.Parameters[1], transaction.Parameters[2])
+				transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3],
+				transaction.Parameters[4], transaction.Parameters[5], transaction.Parameters[6])
 		case "removeMemberFromACalling":
 			err = this.Callings.removeMemberFromACalling(
-				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2])
+				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3])
 		}
 		if err != nil {
 			irrelevantTransactions = append(irrelevantTransactions, idx)

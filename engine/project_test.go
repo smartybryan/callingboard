@@ -68,7 +68,7 @@ func (this *ProjectFixture) TestPlayTransactions() {
 	this.So(project.Callings.CallingList("org1")[3].Name, should.Equal, "calling4")
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, VACANT_CALLING)
 
-	_ = project.AddMemberToACalling("Last3, First3", "org1", "calling4")
+	_ = project.AddMemberToACalling("Last3, First3", "org1", "", "calling4")
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, "Last3, First3")
 
 	project.UndoTransaction()
@@ -78,11 +78,11 @@ func (this *ProjectFixture) TestPlayTransactions() {
 	this.So(project.Callings.CallingList("org1")[3].Holder, should.Equal, "Last3, First3")
 
 	this.So(len(project.transactions), should.Equal, 2)
-	_ = project.removeTransaction("sustainings", []string{"Last3, First3", "org1", "calling4"})
+	_ = project.removeTransaction("sustainings", []string{"Last3, First3", "org1", "", "calling4"})
 	this.So(len(project.transactions), should.Equal, 1)
 
-	_ = project.RemoveMemberFromACalling("Last3, First3", "org1", "calling4")
-	_ = project.removeTransaction("releases", []string{"Last3, First3", "org1", "calling4"})
+	_ = project.RemoveMemberFromACalling("Last3, First3", "org1", "", "calling4")
+	_ = project.removeTransaction("releases", []string{"Last3, First3", "org1", "", "calling4"})
 	this.So(len(project.transactions), should.Equal, 1)
 }
 
@@ -92,10 +92,10 @@ func (this *ProjectFixture) TestDiff() {
 	project := NewProject(&callings, &members, "")
 
 	_ = project.AddCalling("org2", "calling10", true)
-	_ = project.AddMemberToACalling("Last10, First10", "org2", "calling10")
-	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "calling1")
+	_ = project.AddMemberToACalling("Last10, First10", "org2", "", "calling10")
+	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "", "calling1")
 	_ = project.RemoveCalling("org1", "calling1")
-	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling2", "org2", "calling22")
+	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "", "calling2", "org2", "", "calling22")
 
 	diff := project.Diff()
 	this.So(len(diff.Sustainings), should.Equal, 1)
@@ -116,10 +116,10 @@ func (this *ProjectFixture) TestSaveLoadTransactions() {
 	project := NewProject(&callings, &members, "./")
 
 	_ = project.AddCalling("org2", "calling10", true)
-	_ = project.AddMemberToACalling("Last10, First10", "org2", "calling10")
-	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "calling1")
+	_ = project.AddMemberToACalling("Last10, First10", "org2", "", "calling10")
+	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "", "calling1")
 	_ = project.RemoveCalling("org1", "calling1")
-	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling2", "org2", "calling22")
+	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "", "calling2", "org2", "", "calling22")
 
 	tLastOp := project.transactions[len(project.transactions)-1].Operation
 	tLastPLength := len(project.transactions[len(project.transactions)-1].Parameters)
@@ -148,15 +148,15 @@ func (this *ProjectFixture) TestLoadTransactionsNoOverwrite() {
 	project := NewProject(&callings, &members, "./")
 
 	_ = project.AddCalling("org2", "calling10", true)
-	_ = project.AddMemberToACalling("Last3, First3", "org2", "calling10")
-	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "calling1")
-	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "calling2", "org2", "calling22")
+	_ = project.AddMemberToACalling("Last3, First3", "org2", "", "calling10")
+	_ = project.RemoveMemberFromACalling("Last1, First1", "org1", "", "calling1")
+	_ = project.MoveMemberToAnotherCalling("Last2, First2", "org1", "", "calling2", "org2", "", "calling22")
 	err := project.SaveTransactions(tempFile)
 	this.So(err, should.BeNil)
 
 	project.transactions = project.transactions[:0]
 	_ = project.AddCalling("org2", "calling11", true)
-	_ = project.AddMemberToACalling("Last4, First4", "org2", "calling11")
+	_ = project.AddMemberToACalling("Last4, First4", "org2", "", "calling11")
 	tLastOp := project.transactions[len(project.transactions)-1].Operation
 	tLastPLength := len(project.transactions[len(project.transactions)-1].Parameters)
 	err = project.SaveTransactions(tempFile1)

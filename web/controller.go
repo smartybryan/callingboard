@@ -439,7 +439,7 @@ func (this *Controller) AddMemberToCalling(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.AddMemberToACalling(input.MemberName, input.Organization, input.Calling),
+		Content:    project.AddMemberToACalling(input.MemberName, input.Organization, input.SubOrganization, input.Calling),
 	}
 }
 
@@ -450,8 +450,8 @@ func (this *Controller) MoveMemberToAnotherCalling(input *InputModel) detour.Ren
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content: project.MoveMemberToAnotherCalling(input.MemberName, input.FromOrg, input.FromCalling,
-			input.Organization, input.Calling),
+		Content: project.MoveMemberToAnotherCalling(input.MemberName, input.FromOrg, input.FromSubOrg, input.FromCalling,
+			input.Organization, input.SubOrganization, input.Calling),
 	}
 }
 
@@ -462,7 +462,7 @@ func (this *Controller) RemoveMemberFromCalling(input *InputModel) detour.Render
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.RemoveMemberFromACalling(input.MemberName, input.Organization, input.Calling),
+		Content:    project.RemoveMemberFromACalling(input.MemberName, input.Organization, input.SubOrganization, input.Calling),
 	}
 }
 
