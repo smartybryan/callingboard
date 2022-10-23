@@ -23,9 +23,6 @@
 	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
 	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Reports</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
-	<button class="tablinks" name="manage-focus-members" onclick="openTab(event, 'manage-focus-members')">Focus
-		Members
-	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
 	<button class="tablinks" name="authentication" onclick="openTab(event, 'authentication')">Login</button>
 	<button class="tablinks" name="help" onclick="openTab(event, 'help')">Help</button>
@@ -183,30 +180,6 @@
 			</model-man-right>
 		</model-man-footer>
 	</model-man>
-</div>
-
-<div id="manage-focus-members" class="tabcontent">
-	<member-list>
-		<div class="flex-row">
-			<span>
-				<input class="filter" id="member-filter-focus" size="20" onclick="this.select()"
-					   onkeyup="filterMembers()" placeholder="Member filter">
-				<span id="clear-filter-focus" class="pointer" onclick="clearFilter()">&#9447;</span>
-			</span>
-		</div>
-		<div id="focus-member-scroller">
-			<table>
-				<thead>
-				<tr>
-					<td><strong>Member</strong></td>
-					<td><strong>Focus</strong></td>
-				</tr>
-				</thead>
-				<tbody id="focus-member-list">
-				</tbody>
-			</table>
-		</div>
-	</member-list>
 </div>
 
 <div id="import" class="tabcontent">
@@ -444,14 +417,6 @@
 				<li><strong>Reset Model:</strong> Clears the current model in the Modeling tab.</li>
 			</ul>
 		</div>
-
-		<div class="sub-heading">Focus Members</div>
-		<div class="help-paragraph">
-			This tab allows you to build a list of members you wish to focus on with regard to callings.
-			The members you select in this tab will be listed in the <strong>Modeling</strong> tab
-			when you click the <strong>Focus Members</strong> button in the <strong>Members</strong> column.
-		</div>
-
 	</report-cont>
 </div>
 

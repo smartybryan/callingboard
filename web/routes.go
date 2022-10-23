@@ -20,7 +20,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/newly-available", detour.New(controller.NewlyAvailableMembers))
 	http.Handle("/v1/members-with-focus", detour.New(controller.GetMembersWithFocus))
 	http.Handle("/v1/focus-members", detour.New(controller.GetFocusMembers))
-	http.Handle("/v1/put-focus-members", detour.New(controller.PutFocusMembers)) // member (list sep by |)
+	http.Handle("/v1/set-member-focus", detour.New(controller.SetMemberFocus)) // member, custom (bool)
 	http.Handle("/v1/load-members", detour.New(controller.LoadMembers))
 	http.Handle("/v1/save-members", detour.New(controller.SaveMembers))
 	http.Handle("/v1/parse-raw-members", detour.New(controller.ParseRawMembers))
@@ -33,9 +33,9 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/callings-for-member", detour.New(controller.CallingListForMember)) // member
 	http.Handle("/v1/vacant-calling-list", detour.New(controller.VacantCallingList))    // org
 	http.Handle("/v1/members-with-callings", detour.New(controller.MembersWithCallings))
-	http.Handle("/v1/add-calling", detour.New(controller.AddCalling))                         // org, calling, custom-calling
+	http.Handle("/v1/add-calling", detour.New(controller.AddCalling))                         // org, calling, custom
 	http.Handle("/v1/remove-calling", detour.New(controller.RemoveCalling))                   // org, calling
-	http.Handle("/v1/update-calling", detour.New(controller.UpdateCalling))                   // org, calling, custom-calling
+	http.Handle("/v1/update-calling", detour.New(controller.UpdateCalling))                   // org, calling, custom
 	http.Handle("/v1/add-member-calling", detour.New(controller.AddMemberToCalling))          // member, org, calling
 	http.Handle("/v1/remove-member-calling", detour.New(controller.RemoveMemberFromCalling))  // member, org, calling
 	http.Handle("/v1/move-member-calling", detour.New(controller.MoveMemberToAnotherCalling)) // member, from-org, from-suborg, from-calling, org, suborg, calling

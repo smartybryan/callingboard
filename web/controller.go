@@ -206,14 +206,15 @@ func (this *Controller) GetFocusMembers(input *InputModel) detour.Renderer {
 	}
 }
 
-func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
+func (this *Controller) SetMemberFocus(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	if project == nil {
 		return this.AuthenticationError()
 	}
+	project.Members.SetMemberFocus(input.MemberName, input.Custom)
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.PutFocusMembers(strings.Split(input.MemberName, "|")),
+		Content:    "",
 	}
 }
 
@@ -406,7 +407,7 @@ func (this *Controller) AddCalling(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.AddCalling(input.Organization, input.Calling, input.CustomCalling),
+		Content:    project.AddCalling(input.Organization, input.Calling, input.Custom),
 	}
 }
 
@@ -428,7 +429,7 @@ func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.UpdateCalling(input.Organization, input.Calling, input.CustomCalling),
+		Content:    project.UpdateCalling(input.Organization, input.Calling, input.Custom),
 	}
 }
 

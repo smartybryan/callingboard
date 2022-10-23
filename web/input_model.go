@@ -31,9 +31,9 @@ type InputModel struct {
 	FromOrg         string
 	FromSubOrg      string
 
-	Calling       string
-	FromCalling   string
-	CustomCalling bool
+	Calling     string
+	FromCalling string
+	Custom      bool
 
 	TransactionName   string
 	TransactionParams string
@@ -61,7 +61,7 @@ func (this *InputModel) Bind(request *http.Request) error {
 
 	this.Calling = sanitize(request.Form.Get("calling"))
 	this.FromCalling = sanitize(request.Form.Get("from-calling"))
-	this.CustomCalling = atob(request.Form.Get("custom-calling"))
+	this.Custom = atob(request.Form.Get("custom"))
 
 	this.TransactionName = sanitize(request.Form.Get("name"))
 	this.TransactionParams = sanitize(request.Form.Get("params"))
