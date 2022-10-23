@@ -199,13 +199,13 @@ function callingId(callingName, callingHolder, counter) {
 	return callingName + "@" + callingHolder + "@" + counter;
 }
 
-function callingInnards(callingName, holderName, timeInCalling) {
+function callingInnards(callingName, holderName, timeInCalling, id) {
 	let wardId = getAuthValueFromCookie().wardid;
 	let memberName = encodeURI(holderName);
 	let memberImage = wardId + "/" + memberName + ".jpg";
 	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "@img-calling\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\"" + memberImage + "?v=" + imageVersion + "\" alt></span>";
 
-	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "</div>";
+	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "<input id=\"" + id + "-focus\"type=\"checkbox\"></div>";
 }
 
 function callingIdComponents(id) {

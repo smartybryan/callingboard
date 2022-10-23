@@ -41,13 +41,13 @@ function displayMembersImageUploader_do(response, endpoint) {
 
 	if (document.getElementById("member-sort-firstname").checked) {
 		jsonObject.sort(function (a, b) {
-			return compareFirstNames(a, b);
+			return compareFirstNames(a.Name, b.Name);
 		});
 	}
 
 	jsonObject.forEach(function (member) {
 		let memberElement = document.createElement('li');
-		let memberParts = member.split(";")
+		let memberParts = member.Name.split(";")
 		let memberName = encodeURI(memberParts[0]);
 		let memberImage = wardId + "/" + memberName + ".jpg";
 		let memberNameParts = memberParts[0].split(",");
@@ -75,6 +75,7 @@ function displayMembersImageUploader_do(response, endpoint) {
 		</span>
 		<input type="file" name="imageFile" id="file" class="box__file"/>
 		<button type="submit" class="box__button">Upload</button>
+		<input id="` + memberParts[0] + `-focus" type="checkbox"/>
 	</div>
 </form>		
 `

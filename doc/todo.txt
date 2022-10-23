@@ -1,3 +1,5 @@
 Todo list
 
-* Implement the member list report
+* Filter on focus members dialog
+* Add focus checkbox on callings
+

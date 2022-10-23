@@ -137,7 +137,7 @@ function createCallingElement(calling, counter) {
 	if (calling.Holder === VACANT) {
 		callingInfo.classList.add("vacant");
 	}
-	callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling);
+	callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling, callingInfo.id);
 	return callingInfo;
 }
 

@@ -456,16 +456,6 @@ td.selected {
 
 /* FOCUS MEMBERS */
 
-focus-member {
-	display: flex;
-	height: 85vh;
-	width: 290px;
-	margin: 10px;
-	padding: 15px;
-	border-radius: 20px;
-	background-color: lightgrey;
-}
-
 #focus-member-scroller {
 	overflow: auto;
 	position: relative;

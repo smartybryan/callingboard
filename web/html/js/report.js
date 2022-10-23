@@ -193,7 +193,7 @@ function buildMemberReportTable(callingResponse, memberResponse, content, canvas
 	let callingMap = parseCallingData(JSON.parse(callingResponse));
 	let memberJson = JSON.parse(memberResponse);
 	memberJson.forEach(function (member) {
-		let memberParts = member.split(";")
+		let memberParts = member.Name.split(";")
 		let memberName = memberParts[0];
 		let memberImage = wardId + "/" + encodeURI(memberName) + ".jpg";
 

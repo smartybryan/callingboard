@@ -92,11 +92,22 @@ func (this *Members) Save() (numObjects int, err error) {
 	return len(this.MemberMap), err
 }
 
-func (this *Members) GetMembersWithType(memberNames []string) (names []string) {
+//
+//func (this *Members) GetMembersWithType(memberNames []string) (names []string) {
+//	for _, name := range memberNames {
+//		names = append(names, this.GetMemberRecord(name).BuildMemberName())
+//	}
+//	return names
+//}
+
+func (this *Members) GetMembersWithType(memberNames []string) (focusMembers []MemberWithFocus) {
 	for _, name := range memberNames {
-		names = append(names, this.GetMemberRecord(name).BuildMemberName())
+		focusMembers = append(focusMembers, MemberWithFocus{
+			Name:  this.GetMemberRecord(name).BuildMemberName(),
+			Focus: this.isMemberFocused(name),
+		})
 	}
-	return names
+	return focusMembers
 }
 
 func (this *Members) GetMembersWithFocus() (focusMembers []MemberWithFocus) {

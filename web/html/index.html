@@ -56,9 +56,12 @@
 		</div>
 		<div style="margin-bottom: 8px;">Total: <span id="member-count"></span></div>
 		<div>
-			<input type="button" id="ml-mem" class="member-button" onclick="displayMembers('members')" value="All Members">
-			<input type="button" id="ml-new" class="member-button" onclick="displayMembers('newly-available')" value="Newly Available">
-			<input type="button" id="ml-foc" class="member-button" onclick="displayMembers('focus-members')" value="Focus">
+			<input type="button" id="ml-mem" class="member-button" onclick="displayMembers('members')"
+				   value="All Members">
+			<input type="button" id="ml-new" class="member-button" onclick="displayMembers('newly-available')"
+				   value="Newly Available">
+			<input type="button" id="ml-foc" class="member-button" onclick="displayMembers('focus-members')"
+				   value="Focus">
 			<input type="button" id="ml-cal" class="member-button" onclick="displayMembers('members-with-callings')"
 				   value="With Calling">
 			<input type="button" id="ml-awc" class="member-button" onclick="displayMembers('adults-without-calling')"
@@ -75,7 +78,8 @@
 	<call-release>
 		<label class="heading" for="releases">Releases</label>
 		<div class="release-sustain-scroller">
-			<ul id="releases" class="droppable" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<ul id="releases" class="droppable" ondragstart="drag(event)" ondrop="drop(event)"
+				ondragover="allowDrop(event)">
 			</ul>
 		</div>
 
@@ -182,7 +186,14 @@
 </div>
 
 <div id="manage-focus-members" class="tabcontent">
-	<focus-member>
+	<member-list>
+		<div class="flex-row">
+			<span>
+				<input class="filter" id="member-filter-focus" size="20" onclick="this.select()"
+					   onkeyup="filterMembers()" placeholder="Member filter">
+				<span id="clear-filter-focus" class="pointer" onclick="clearFilter()">&#9447;</span>
+			</span>
+		</div>
 		<div id="focus-member-scroller">
 			<table>
 				<thead>
@@ -195,7 +206,7 @@
 				</tbody>
 			</table>
 		</div>
-	</focus-member>
+	</member-list>
 </div>
 
 <div id="import" class="tabcontent">
