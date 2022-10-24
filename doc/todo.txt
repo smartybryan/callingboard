@@ -1,5 +1,7 @@
 Todo list
 
-* Filter on focus members dialog
+* Hide focus checkbox on releases, sustaining, and member callings (below member list)
 * Add focus checkbox on callings
+* Add focus filter on callings
+
 
