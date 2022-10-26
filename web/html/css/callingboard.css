@@ -248,6 +248,10 @@ li.member-row {
 	padding: 10px;
 }
 
+#member-callings input[type=checkbox] {
+	display: none;
+}
+
 /* CALLINGS COLUMN */
 
 .release-sustain-scroller {
@@ -324,6 +328,10 @@ li.proposed {
 
 .active {
 	display: block;
+}
+
+.release-sustain-scroller input[type=checkbox] {
+	display: none;
 }
 
 /* REPORT */

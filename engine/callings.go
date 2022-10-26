@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
 	"time"
@@ -69,6 +70,21 @@ func (this *Callings) MembersWithCallings() (names []string) {
 		return names[i] < names[j]
 	})
 	return names
+}
+
+func (this *Callings) SetCallingFocus(callingId string, focus bool) {
+	fmt.Printf("")
+	//for key, callings := range this.CallingMap {
+	//	if calling. == member {
+	//		this.FocusMembers = append(this.FocusMembers[:i], this.FocusMembers[i+1:]...)
+	//		_, _ = this.Save()
+	//		return
+	//	}
+	//	if focus {
+	//		this.FocusMembers = append(this.FocusMembers, member)
+	//		_, _ = this.Save()
+	//	}
+	//}
 }
 
 func (this *Callings) OrganizationList() (organizationList []string) {
@@ -276,6 +292,7 @@ type Calling struct {
 	Holder        string
 	CustomCalling bool
 	Sustained     time.Time
+	Focus         bool
 
 	PrintableSustained     string
 	PrintableTimeInCalling string

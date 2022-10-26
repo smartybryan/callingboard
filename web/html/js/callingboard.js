@@ -205,13 +205,25 @@ function callingInnards(callingName, holderName, timeInCalling, id) {
 	let memberImage = wardId + "/" + memberName + ".jpg";
 	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "@img-calling\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\"" + memberImage + "?v=" + imageVersion + "\" alt></span>";
 
-	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "<input id=\"" + id + "-focus\"type=\"checkbox\"></div>";
+	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement +
+		"<input id=\"" + id + "-focus\"type=\"checkbox\" onclick=\"setCallingFocus(\'" + id + "-focus\')\"></div>";
 }
 
 function callingIdComponents(id) {
 	let components = id.split("@");
 	let callingName = components[0], holderName = components[1];
 	return {callingName, holderName}
+}
+
+function setCallingFocus(id) {
+	let nameParts = id.split("-")
+	let focusState = document.getElementById(id).checked
+	apiCall("set-calling-focus", "calling=" + nameParts[0] + "&custom=" + focusState)
+		.then(data => {
+		})
+		.catch(error => {
+			console.log(error);
+		})
 }
 
 //// drag and drop ////

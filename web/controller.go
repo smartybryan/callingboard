@@ -349,6 +349,18 @@ func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) SetCallingFocus(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+	project.Callings.SetCallingFocus(input.Calling, input.Custom)
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    "",
+	}
+}
+
 func (this *Controller) LoadCallings(input *InputModel) detour.Renderer {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
