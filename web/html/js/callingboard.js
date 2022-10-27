@@ -199,14 +199,34 @@ function callingId(callingName, callingHolder, counter) {
 	return callingName + "@" + callingHolder + "@" + counter;
 }
 
-function callingInnards(callingName, holderName, timeInCalling, id) {
+function callingInnards(calling, id) {
+	let callingName = calling.Name;
+	let holderName = calling.Holder;
+	let focus = calling.Focus ? "checked" : "";
+	let timeInCalling = calling.PrintableTimeInCalling;
+	let org = calling.Org;
+	let suborg = calling.SubOrg;
+
 	let wardId = getAuthValueFromCookie().wardid;
 	let memberName = encodeURI(holderName);
 	let memberImage = wardId + "/" + memberName + ".jpg";
-	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "@img-calling\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\"" + memberImage + "?v=" + imageVersion + "\" alt></span>";
+	let imageElement = `
+		<span class="thumbnail-container">
+			<img id="` + holderName + `@img-calling" class="thumbnail" onload="this.style.display=''" 
+			style="display: none" src="` + memberImage + `?v=` + imageVersion + `" alt>
+		</span>
+	`
 
-	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement +
-		"<input id=\"" + id + "-focus\"type=\"checkbox\" onclick=\"setCallingFocus(\'" + id + "-focus\')\"></div>";
+	return `
+		<div class="calling-container">
+			<span class="calling-name-container">` + callingName + `<br>
+				<span class="member-name indent">` + holderName + `</span><br>
+				<span class="indent">(` + timeInCalling + `)</span>
+			</span>` + imageElement + `
+			<input id="` + id + `-focus" type="checkbox" title="Focus"
+				onclick="setCallingFocus('` + id + `-focus','` + org + `','` + suborg + `','` + callingName + `','` + holderName + `')" ` + focus + `>
+		</div>
+	`
 }
 
 function callingIdComponents(id) {
@@ -215,14 +235,14 @@ function callingIdComponents(id) {
 	return {callingName, holderName}
 }
 
-function setCallingFocus(id) {
-	let nameParts = id.split("-")
+function setCallingFocus(id, org, suborg, callingName, holderName) {
 	let focusState = document.getElementById(id).checked
-	apiCall("set-calling-focus", "calling=" + nameParts[0] + "&custom=" + focusState)
+	apiCall("set-calling-focus", "calling=" + callingName + "&member=" + holderName +
+		"&org=" + org + "&suborg=" + suborg + "&custom=" + focusState)
 		.then(data => {
 		})
 		.catch(error => {
-			console.log(error);
+			notify(nERROR, error);
 		})
 }
 

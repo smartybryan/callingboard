@@ -2,7 +2,6 @@ package engine
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"sort"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 type Callings struct {
 	CallingMap        map[string][]Calling
+	FocusCallings     map[string]struct{}
 	OrganizationOrder []string
 
 	initialSize int
@@ -20,9 +20,10 @@ type Callings struct {
 
 func NewCallings(numCallings int, path string) Callings {
 	return Callings{
-		CallingMap:  make(map[string][]Calling, numCallings),
-		initialSize: numCallings,
-		filePath:    path,
+		CallingMap:    make(map[string][]Calling, numCallings),
+		FocusCallings: make(map[string]struct{}, numCallings),
+		initialSize:   numCallings,
+		filePath:      path,
 	}
 }
 
@@ -38,7 +39,7 @@ func (this *Callings) CallingList(organization string) (callingList []Calling) {
 			callingList = this.getCallingListByOrganization(callings, callingList)
 		}
 	}
-	return callingList
+	return this.setFocusOnList(callingList)
 }
 
 func (this *Callings) CallingListForMember(member string) (callingList []Calling) {
@@ -72,19 +73,13 @@ func (this *Callings) MembersWithCallings() (names []string) {
 	return names
 }
 
-func (this *Callings) SetCallingFocus(callingId string, focus bool) {
-	fmt.Printf("")
-	//for key, callings := range this.CallingMap {
-	//	if calling. == member {
-	//		this.FocusMembers = append(this.FocusMembers[:i], this.FocusMembers[i+1:]...)
-	//		_, _ = this.Save()
-	//		return
-	//	}
-	//	if focus {
-	//		this.FocusMembers = append(this.FocusMembers, member)
-	//		_, _ = this.Save()
-	//	}
-	//}
+func (this *Callings) SetCallingFocus(org, subOrg, callingName, holderName string, focus bool) {
+	if focus {
+		this.insertFocusCalling(Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName, Focus: true})
+	} else {
+		this.removeFocusCalling(Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName})
+	}
+	_, _ = this.Save()
 }
 
 func (this *Callings) OrganizationList() (organizationList []string) {
@@ -98,7 +93,7 @@ func (this *Callings) VacantCallingList(organization string) (callingList []Call
 			callingList = append(callingList, calling)
 		}
 	}
-	return callingList
+	return this.setFocusOnList(callingList)
 }
 
 func (this *Callings) Load() error {
@@ -283,6 +278,23 @@ func (this *Callings) removeMemberFromACalling(member string, org string, suborg
 	return ERROR_INVALID_TRANSACTION
 }
 
+func (this *Callings) insertFocusCalling(calling Calling) {
+	this.FocusCallings[calling.FocusKey()] = struct{}{}
+}
+
+func (this *Callings) removeFocusCalling(calling Calling) {
+	delete(this.FocusCallings, calling.FocusKey())
+}
+
+func (this *Callings) setFocusOnList(callingList []Calling) []Calling {
+	for i, calling := range callingList {
+		if _, found := this.FocusCallings[calling.FocusKey()]; found {
+			callingList[i].Focus = true
+		}
+	}
+	return callingList
+}
+
 ///////////////////////////////////////////////////////
 
 type Calling struct {
@@ -291,8 +303,8 @@ type Calling struct {
 	Name          string
 	Holder        string
 	CustomCalling bool
-	Sustained     time.Time
 	Focus         bool
+	Sustained     time.Time
 
 	PrintableSustained     string
 	PrintableTimeInCalling string
@@ -347,6 +359,10 @@ func (this *Calling) DaysInCalling() int {
 		return 0
 	}
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
+}
+
+func (this *Calling) FocusKey() string {
+	return this.Org + this.SubOrg + this.Name + this.Holder
 }
 
 // OrganizationParseMap

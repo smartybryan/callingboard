@@ -1,5 +1,3 @@
 Todo list
 
-* Hide focus checkbox on releases, sustaining, and member callings (below member list)
-* Add focus checkbox on callings
-* Add focus filter on callings
+* Preserve calling focus after dragging out (becoming vacant) and dragging a member in (becoming non-vacant)

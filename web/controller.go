@@ -354,7 +354,7 @@ func (this *Controller) SetCallingFocus(input *InputModel) detour.Renderer {
 	if project == nil {
 		return this.AuthenticationError()
 	}
-	project.Callings.SetCallingFocus(input.Calling, input.Custom)
+	project.Callings.SetCallingFocus(input.Organization, input.SubOrganization, input.Calling, input.MemberName, input.Custom)
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    "",

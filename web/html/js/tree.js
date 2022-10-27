@@ -137,7 +137,7 @@ function createCallingElement(calling, counter) {
 	if (calling.Holder === VACANT) {
 		callingInfo.classList.add("vacant");
 	}
-	callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling, callingInfo.id);
+	callingInfo.innerHTML = callingInnards(calling, callingInfo.id);
 	return callingInfo;
 }
 
@@ -170,6 +170,7 @@ function refreshTree() {
 function refreshTree_do(response) {
 	let showNewVacancies = document.getElementById("new-vacancies").checked
 	let showAllVacancies = document.getElementById("all-vacancies").checked
+	let showFocusCallings = document.getElementById("focus-callings").checked
 
 	// clear all organizations
 	let leafContainers = document.getElementsByClassName("leaf-container");
@@ -192,6 +193,10 @@ function refreshTree_do(response) {
 		if (showAllVacancies && calling.Holder !== VACANT) {
 			return;
 		}
+		if (showFocusCallings && !calling.Focus) {
+			return;
+		}
+
 		counter++;
 		let container = findContainerFromCalling(calling);
 		container.appendChild(createCallingElement(calling, counter));

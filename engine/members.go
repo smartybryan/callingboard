@@ -134,7 +134,7 @@ func (this *Members) SetMemberFocus(member string, focus bool) {
 			return
 		}
 	}
-	if focus {
+	if focus && !this.isMemberFocused(member) {
 		this.FocusMembers = append(this.FocusMembers, member)
 		_, _ = this.Save()
 	}

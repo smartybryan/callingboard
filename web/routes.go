@@ -33,7 +33,7 @@ func SetupRoutes(appConfig config.Config, controller *Controller) {
 	http.Handle("/v1/callings-for-member", detour.New(controller.CallingListForMember)) // member
 	http.Handle("/v1/vacant-calling-list", detour.New(controller.VacantCallingList))    // org
 	http.Handle("/v1/members-with-callings", detour.New(controller.MembersWithCallings))
-	http.Handle("/v1/set-calling-focus", detour.New(controller.SetCallingFocus))              // calling, custom (bool)
+	http.Handle("/v1/set-calling-focus", detour.New(controller.SetCallingFocus))              // org, suborg, calling, member, custom (bool)
 	http.Handle("/v1/add-calling", detour.New(controller.AddCalling))                         // org, calling, custom
 	http.Handle("/v1/remove-calling", detour.New(controller.RemoveCalling))                   // org, calling
 	http.Handle("/v1/update-calling", detour.New(controller.UpdateCalling))                   // org, calling, custom
