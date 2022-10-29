@@ -367,6 +367,7 @@ function drop(ev) {
 		movedElement.remove();
 	}
 
+	// if we got here, it is a calling release drop
 	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement))
 		.then(data => {
 			refreshFromModel();

@@ -15,6 +15,13 @@ import (
 
 const (
 	TransactionFileSuffix = ".txf"
+
+	OpAddCalling                 = "addCalling"
+	OpRemoveCalling              = "removeCalling"
+	OpUpdateCalling              = "updateCalling"
+	OpAddMemberToACalling        = "addMemberToACalling"
+	OpRemoveMemberFromACalling   = "removeMemberFromACalling"
+	OpMoveMemberToAnotherCalling = "moveMemberToAnotherCalling"
 )
 
 type Project struct {
@@ -189,33 +196,33 @@ func (this *Project) ResetModel() error {
 ///// model modification stubs /////
 
 func (this *Project) AddCalling(org string, calling string, custom bool) error {
-	this.addTransaction("addCalling", org, calling, boolToString(custom))
+	this.addTransaction(OpAddCalling, org, calling, boolToString(custom))
 	return this.Callings.addCalling(org, calling, custom)
 }
 
 func (this *Project) RemoveCalling(org string, calling string) error {
-	this.addTransaction("removeCalling", org, calling)
+	this.addTransaction(OpRemoveCalling, org, calling)
 	return this.Callings.removeCalling(org, calling)
 }
 
 func (this *Project) UpdateCalling(org string, calling string, custom bool) error {
-	this.addTransaction("updateCalling", org, calling, boolToString(custom))
+	this.addTransaction(OpUpdateCalling, org, calling, boolToString(custom))
 	return this.Callings.updateCalling(org, calling, custom)
 }
 
 func (this *Project) AddMemberToACalling(member string, org string, suborg string, calling string) error {
-	this.addTransaction("addMemberToACalling", member, org, suborg, calling)
+	this.addTransaction(OpAddMemberToACalling, member, org, suborg, calling)
 	return this.Callings.addMemberToACalling(member, org, suborg, calling)
 }
 
 func (this *Project) MoveMemberToAnotherCalling(
 	member string, fromOrg string, fromSubOrg string, fromCalling string, toOrg string, toSubOrg string, toCalling string) error {
-	this.addTransaction("moveMemberToAnotherCalling", member, fromOrg, fromSubOrg, fromCalling, toOrg, toSubOrg, toCalling)
+	this.addTransaction(OpMoveMemberToAnotherCalling, member, fromOrg, fromSubOrg, fromCalling, toOrg, toSubOrg, toCalling)
 	return this.Callings.moveMemberToAnotherCalling(member, fromOrg, fromSubOrg, fromCalling, toOrg, toSubOrg, toCalling)
 }
 
 func (this *Project) RemoveMemberFromACalling(member string, org string, suborg string, calling string) error {
-	this.addTransaction("removeMemberFromACalling", member, org, suborg, calling)
+	this.addTransaction(OpRemoveMemberFromACalling, member, org, suborg, calling)
 	return this.Callings.removeMemberFromACalling(member, org, suborg, calling)
 }
 
@@ -255,6 +262,11 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 			}
 		}
 		if paramsMatched == len(transaction.Parameters) {
+			var transactionToRemove = this.transactions[i]
+			if transactionToRemove.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
+				this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
+			}
+
 			this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)
 		}
 	}
@@ -278,24 +290,24 @@ func (this *Project) playTransactions() {
 
 	for idx, transaction := range this.transactions {
 		switch transaction.Operation {
-		case "addCalling":
+		case OpAddCalling:
 			_ = this.Callings.addCalling(
 				transaction.Parameters[0], transaction.Parameters[1], parseBool(transaction.Parameters[2]))
-		case "removeCalling":
+		case OpRemoveCalling:
 			_ = this.Callings.removeCalling(
 				transaction.Parameters[0], transaction.Parameters[1])
-		case "updateCalling":
+		case OpUpdateCalling:
 			_ = this.Callings.updateCalling(
 				transaction.Parameters[0], transaction.Parameters[1], parseBool(transaction.Parameters[2]))
-		case "addMemberToACalling":
+		case OpAddMemberToACalling:
 			err = this.Callings.addMemberToACalling(
 				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3])
-		case "moveMemberToAnotherCalling":
+		case OpMoveMemberToAnotherCalling:
 			_ = this.Callings.moveMemberToAnotherCalling(
 				transaction.Parameters[0],
 				transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3],
 				transaction.Parameters[4], transaction.Parameters[5], transaction.Parameters[6])
-		case "removeMemberFromACalling":
+		case OpRemoveMemberFromACalling:
 			err = this.Callings.removeMemberFromACalling(
 				transaction.Parameters[0], transaction.Parameters[1], transaction.Parameters[2], transaction.Parameters[3])
 		}
@@ -313,10 +325,10 @@ func (this *Project) playTransactions() {
 func (this *Project) newlyAvailableMembers() []string {
 	var releasedMembers, sustainedMembers []string
 	for _, transaction := range this.transactions {
-		if transaction.Operation == "addMemberToACalling" {
+		if transaction.Operation == OpAddMemberToACalling {
 			sustainedMembers = append(sustainedMembers, transaction.Parameters[0])
 		}
-		if transaction.Operation == "removeMemberFromACalling" {
+		if transaction.Operation == OpRemoveMemberFromACalling {
 			releasedMembers = append(releasedMembers, transaction.Parameters[0])
 		}
 	}

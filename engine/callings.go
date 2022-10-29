@@ -74,12 +74,12 @@ func (this *Callings) MembersWithCallings() (names []string) {
 }
 
 func (this *Callings) SetCallingFocus(org, subOrg, callingName, holderName string, focus bool) {
+	calling := Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName}
 	if focus {
-		this.insertFocusCalling(Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName, Focus: true})
+		this.insertFocusCalling(calling)
 	} else {
-		this.removeFocusCalling(Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName})
+		this.removeFocusCalling(calling)
 	}
-	_, _ = this.Save()
 }
 
 func (this *Callings) OrganizationList() (organizationList []string) {
@@ -257,33 +257,51 @@ func (this *Callings) moveMemberToAnotherCalling(
 	return nil
 }
 
-func (this *Callings) removeMemberFromACalling(member string, org string, suborg string, calling string) error {
+func (this *Callings) removeMemberFromACalling(member string, org string, suborg string, callingName string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
-	if !this.doesMemberHoldCalling(member, org, suborg, calling) {
+	if !this.doesMemberHoldCalling(member, org, suborg, callingName) {
 		return ERROR_MEMBER_INVALID_CALLING
 	}
 
 	callingList := this.CallingMap[org]
 	for idx, call := range callingList {
-		if call.Holder == member && call.SubOrg == suborg && call.Name == calling {
+		if call.Holder == member && call.SubOrg == suborg && call.Name == callingName {
 			call.Holder = VACANT_CALLING
 			call.Sustained = time.Time{}
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
+
+			this.changeFocus(org, suborg, callingName, member, call.Holder)
 			return nil
 		}
 	}
 	return ERROR_INVALID_TRANSACTION
 }
 
+func (this *Callings) changeFocus(org string, suborg string, callingName string, fromMember string, toMember string) {
+	calling := Calling{Org: org, SubOrg: suborg, Name: callingName, Holder: fromMember}
+	if focused := this.isCallingFocused(calling); focused {
+		this.removeFocusCalling(calling)
+		calling.Holder = toMember
+		this.insertFocusCalling(calling)
+	}
+}
+
+func (this *Callings) isCallingFocused(calling Calling) bool {
+	_, found := this.FocusCallings[calling.FocusKey()]
+	return found
+}
+
 func (this *Callings) insertFocusCalling(calling Calling) {
 	this.FocusCallings[calling.FocusKey()] = struct{}{}
+	_, _ = this.Save()
 }
 
 func (this *Callings) removeFocusCalling(calling Calling) {
 	delete(this.FocusCallings, calling.FocusKey())
+	_, _ = this.Save()
 }
 
 func (this *Callings) setFocusOnList(callingList []Calling) []Calling {
