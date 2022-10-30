@@ -128,7 +128,7 @@ function generateMemberCallingReport(canvas, content) {
 		})
 		.catch(error => {
 			console.log(error);
-			if (error === 401) {
+			if (error === 401 || error === "Not logged in") {
 				logout();
 			}
 		});
