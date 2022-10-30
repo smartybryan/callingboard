@@ -12,8 +12,8 @@ function displayMembers(endpoint) {
 			displayMembersImageUploader_do(data, endpoint);
 		})
 		.catch(error => {
-			console.log(error);
-			if (error === 401) {
+			notify(nERROR, error);
+			if (error === 401 || error === "Not logged in") {
 				logout();
 			} else {
 				makeTabDefault("import");
@@ -23,9 +23,8 @@ function displayMembers(endpoint) {
 }
 
 function displayMembersImageUploader_do(response, endpoint) {
-	if (response === 401) {
-		makeTabDefault("authentication");
-		focusDefaultTab();
+	if (response === 401 || response === "Not logged in") {
+		logout();
 		return;
 	}
 	clearMembersPanel();
