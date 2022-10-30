@@ -221,21 +221,23 @@ func (this *Callings) updateCalling(org string, calling string, custom bool) err
 	return ERROR_UNKNOWN_CALLING
 }
 
-func (this *Callings) addMemberToACalling(member string, org string, suborg string, calling string) error {
+func (this *Callings) addMemberToACalling(member string, org string, suborg string, callingName string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
 
-	if this.doesMemberHoldCalling(member, org, suborg, calling) {
+	if this.doesMemberHoldCalling(member, org, suborg, callingName) {
 		return ERROR_MEMBER_HAS_CALLING
 	}
 
 	callingList := this.CallingMap[org]
 	for idx, call := range callingList {
-		if call.Name == calling && call.SubOrg == suborg && call.Holder == VACANT_CALLING {
+		if call.Name == callingName && call.SubOrg == suborg && call.Holder == VACANT_CALLING {
 			call.Holder = member
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
+
+			this.changeFocus(org, suborg, callingName, member, call.Holder)
 			return nil
 		}
 	}
@@ -296,12 +298,10 @@ func (this *Callings) isCallingFocused(calling Calling) bool {
 
 func (this *Callings) insertFocusCalling(calling Calling) {
 	this.FocusCallings[calling.FocusKey()] = struct{}{}
-	_, _ = this.Save()
 }
 
 func (this *Callings) removeFocusCalling(calling Calling) {
 	delete(this.FocusCallings, calling.FocusKey())
-	_, _ = this.Save()
 }
 
 func (this *Callings) setFocusOnList(callingList []Calling) []Calling {

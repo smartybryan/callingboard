@@ -112,6 +112,15 @@ func (this *Project) RedoTransaction() bool {
 		return false
 	}
 	this.transactions = append(this.transactions, this.undoHistory[len(this.undoHistory)-1])
+
+	// calling focus undo
+	transactionToRedo := this.transactions[len(this.transactions)-1]
+	parameters := transactionToRedo.Parameters
+	if transactionToRedo.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
+		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
+		this.SaveCallingFocusList()
+	}
+
 	this.undoHistory = this.undoHistory[:len(this.undoHistory)-1]
 	this.playTransactions()
 	return true
@@ -122,6 +131,15 @@ func (this *Project) UndoTransaction() bool {
 		return false
 	}
 	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
+
+	// calling focus undo
+	transactionToUndo := this.transactions[len(this.transactions)-1]
+	parameters := transactionToUndo.Parameters
+	if transactionToUndo.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
+		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
+		this.SaveCallingFocusList()
+	}
+
 	this.transactions = this.transactions[:len(this.transactions)-1]
 	this.playTransactions()
 	return true
@@ -193,6 +211,18 @@ func (this *Project) ResetModel() error {
 	return nil
 }
 
+func (this *Project) SetCallingFocus(org, suborg, callingName, member string, focus bool) {
+	this.Callings.SetCallingFocus(org, suborg, callingName, member, focus)
+	this.SaveCallingFocusList()
+}
+
+func (this *Project) SaveCallingFocusList() {
+	saveCallingMap := this.Callings.CallingMap
+	this.Callings.CallingMap = this.originalCallings.copy().CallingMap
+	_, _ = this.Callings.Save()
+	this.Callings.CallingMap = saveCallingMap
+}
+
 ///// model modification stubs /////
 
 func (this *Project) AddCalling(org string, calling string, custom bool) error {
@@ -212,7 +242,9 @@ func (this *Project) UpdateCalling(org string, calling string, custom bool) erro
 
 func (this *Project) AddMemberToACalling(member string, org string, suborg string, calling string) error {
 	this.addTransaction(OpAddMemberToACalling, member, org, suborg, calling)
-	return this.Callings.addMemberToACalling(member, org, suborg, calling)
+	err := this.Callings.addMemberToACalling(member, org, suborg, calling)
+	this.SaveCallingFocusList()
+	return err
 }
 
 func (this *Project) MoveMemberToAnotherCalling(
@@ -223,7 +255,9 @@ func (this *Project) MoveMemberToAnotherCalling(
 
 func (this *Project) RemoveMemberFromACalling(member string, org string, suborg string, calling string) error {
 	this.addTransaction(OpRemoveMemberFromACalling, member, org, suborg, calling)
-	return this.Callings.removeMemberFromACalling(member, org, suborg, calling)
+	err := this.Callings.removeMemberFromACalling(member, org, suborg, calling)
+	this.SaveCallingFocusList()
+	return err
 }
 
 func (this *Project) RemoveTransaction(operation string, parameters []string) error {
@@ -285,7 +319,7 @@ func (this *Project) deleteIrrelevantTransactions(invalidTransactions []int) {
 func (this *Project) playTransactions() {
 	var err error
 	freshCallings := this.originalCallings.copy()
-	this.Callings = &freshCallings
+	this.Callings.CallingMap = freshCallings.CallingMap
 	var irrelevantTransactions []int
 
 	for idx, transaction := range this.transactions {
