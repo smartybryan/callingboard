@@ -139,6 +139,10 @@ func (this *Project) UndoTransaction() bool {
 		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
 		this.SaveCallingFocusList()
 	}
+	if transactionToUndo.Operation == OpAddMemberToACalling && len(parameters) >= 4 {
+		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
+		this.SaveCallingFocusList()
+	}
 
 	this.transactions = this.transactions[:len(this.transactions)-1]
 	this.playTransactions()
@@ -299,6 +303,9 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 			var transactionToRemove = this.transactions[i]
 			if transactionToRemove.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
 				this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
+			}
+			if transactionToRemove.Operation == OpAddMemberToACalling && len(parameters) >= 4 {
+				this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
 			}
 
 			this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)

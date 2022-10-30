@@ -237,7 +237,7 @@ func (this *Callings) addMemberToACalling(member string, org string, suborg stri
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
 
-			this.changeFocus(org, suborg, callingName, member, call.Holder)
+			this.changeFocus(org, suborg, callingName, VACANT_CALLING, call.Holder)
 			return nil
 		}
 	}
