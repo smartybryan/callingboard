@@ -2,12 +2,16 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.org/smartybryan/callingboard/util"
 )
+
+var CallingIdCounter map[string]int
 
 type Callings struct {
 	CallingMap        map[string][]Calling
@@ -19,6 +23,8 @@ type Callings struct {
 }
 
 func NewCallings(numCallings int, path string) Callings {
+	CallingIdCounter = make(map[string]int, 30)
+
 	return Callings{
 		CallingMap:    make(map[string][]Calling, numCallings),
 		FocusCallings: make(map[string]struct{}, numCallings),
@@ -316,6 +322,7 @@ func (this *Callings) setFocusOnList(callingList []Calling) []Calling {
 ///////////////////////////////////////////////////////
 
 type Calling struct {
+	Id            string
 	Org           string
 	SubOrg        string
 	Name          string
@@ -363,6 +370,7 @@ func (this *Calling) Equal(calling Calling) bool {
 
 func (this *Calling) copy() Calling {
 	return Calling{
+		Id:            this.Id,
 		Org:           this.Org,
 		SubOrg:        this.SubOrg,
 		Name:          this.Name,
@@ -379,8 +387,20 @@ func (this *Calling) DaysInCalling() int {
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
 }
 
+func (this *Calling) GenerateId() string {
+	id := strings.ToUpper(this.Org[:min(2, len(this.Org))] +
+		this.SubOrg[:min(2, len(this.SubOrg))] +
+		this.Name[:min(2, len(this.Name))] +
+		fmt.Sprintf("%d", CallingIdCounter[this.Org]))
+
+	CallingIdCounter[this.Org] = CallingIdCounter[this.Org] + 1
+
+	return id
+}
+
 func (this *Calling) FocusKey() string {
-	return this.Org + this.SubOrg + this.Name + this.Holder
+	return this.Id
+	//return this.Org + this.SubOrg + this.Name + this.Holder
 }
 
 // OrganizationParseMap
@@ -400,4 +420,11 @@ var OrganizationParseMap = map[string]string{
 	"Full-Time Missionaries":               "",
 	"Temple and Family History":            "",
 	"Young Single Adult":                   "Other Callings",
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
 }
