@@ -64,7 +64,7 @@ function setupTreeStructure_do(response) {
 
 	startTreeListeners();
 	refreshFromModel();
-	expandCollapseTree('c');
+	expandCollapseTree('e');
 }
 
 function startTreeListeners() {
