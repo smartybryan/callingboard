@@ -50,9 +50,8 @@ function getCallingDataFromContainer(id) {
 		if (call.id.length === 0) {
 			continue;
 		}
-		let idInfo = callingIdComponents(call.id);
-		let calling = idInfo.callingName;
-		let holder = idInfo.holderName;
+		let calling = call.getAttribute("data-callname");
+		let holder = call.getAttribute("data-holder")
 		let org = call.getAttribute("data-org");
 		callingList.push({org, calling, holder});
 	}
@@ -128,7 +127,7 @@ function generateMemberCallingReport(canvas, content) {
 		})
 		.catch(error => {
 			console.log(error);
-			if (error === 401 || error === "Not logged in") {
+			if (error === 401 || error === NOT_LOGGED_IN) {
 				logout();
 			}
 		});

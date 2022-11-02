@@ -2,9 +2,9 @@ package engine
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,7 +23,7 @@ type Callings struct {
 }
 
 func NewCallings(numCallings int, path string) Callings {
-	CallingIdCounter = make(map[string]int, 30)
+	ResetCallingIdCounter()
 
 	return Callings{
 		CallingMap:    make(map[string][]Calling, numCallings),
@@ -31,6 +31,10 @@ func NewCallings(numCallings int, path string) Callings {
 		initialSize:   numCallings,
 		filePath:      path,
 	}
+}
+
+func ResetCallingIdCounter() {
+	CallingIdCounter = make(map[string]int, 30)
 }
 
 func (this *Callings) CallingList(organization string) (callingList []Calling) {
@@ -79,12 +83,11 @@ func (this *Callings) MembersWithCallings() (names []string) {
 	return names
 }
 
-func (this *Callings) SetCallingFocus(org, subOrg, callingName, holderName string, focus bool) {
-	calling := Calling{Org: org, SubOrg: subOrg, Name: callingName, Holder: holderName}
+func (this *Callings) SetCallingFocus(callingId string, focus bool) {
 	if focus {
-		this.insertFocusCalling(calling)
+		this.insertFocusCalling(callingId)
 	} else {
-		this.removeFocusCalling(calling)
+		this.removeFocusCalling(callingId)
 	}
 }
 
@@ -242,8 +245,6 @@ func (this *Callings) addMemberToACalling(member string, org string, suborg stri
 			call.Holder = member
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
-
-			this.changeFocus(org, suborg, callingName, VACANT_CALLING, call.Holder)
 			return nil
 		}
 	}
@@ -281,20 +282,10 @@ func (this *Callings) removeMemberFromACalling(member string, org string, suborg
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
 
-			this.changeFocus(org, suborg, callingName, member, call.Holder)
 			return nil
 		}
 	}
 	return ERROR_INVALID_TRANSACTION
-}
-
-func (this *Callings) changeFocus(org string, suborg string, callingName string, fromMember string, toMember string) {
-	calling := Calling{Org: org, SubOrg: suborg, Name: callingName, Holder: fromMember}
-	if focused := this.isCallingFocused(calling); focused {
-		this.removeFocusCalling(calling)
-		calling.Holder = toMember
-		this.insertFocusCalling(calling)
-	}
 }
 
 func (this *Callings) isCallingFocused(calling Calling) bool {
@@ -302,17 +293,17 @@ func (this *Callings) isCallingFocused(calling Calling) bool {
 	return found
 }
 
-func (this *Callings) insertFocusCalling(calling Calling) {
-	this.FocusCallings[calling.FocusKey()] = struct{}{}
+func (this *Callings) insertFocusCalling(callingId string) {
+	this.FocusCallings[callingId] = struct{}{}
 }
 
-func (this *Callings) removeFocusCalling(calling Calling) {
-	delete(this.FocusCallings, calling.FocusKey())
+func (this *Callings) removeFocusCalling(callingId string) {
+	delete(this.FocusCallings, callingId)
 }
 
 func (this *Callings) setFocusOnList(callingList []Calling) []Calling {
 	for i, calling := range callingList {
-		if _, found := this.FocusCallings[calling.FocusKey()]; found {
+		if _, found := this.FocusCallings[calling.Id]; found {
 			callingList[i].Focus = true
 		}
 	}
@@ -387,20 +378,27 @@ func (this *Calling) DaysInCalling() int {
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
 }
 
-func (this *Calling) GenerateId() string {
-	id := strings.ToUpper(this.Org[:min(2, len(this.Org))] +
-		this.SubOrg[:min(2, len(this.SubOrg))] +
-		this.Name[:min(2, len(this.Name))] +
-		fmt.Sprintf("%d", CallingIdCounter[this.Org]))
-
+func (this *Calling) GenerateId() (id string) {
+	id = getInitials(this.Org) + getInitials(this.SubOrg) + getInitials(this.Name) + strconv.Itoa(CallingIdCounter[this.Org])
 	CallingIdCounter[this.Org] = CallingIdCounter[this.Org] + 1
-
 	return id
+}
+func getInitials(data string) (initials string) {
+	if len(data) == 0 {
+		return initials
+	}
+
+	if strings.Index(data, " ") > -1 {
+		parts := strings.Split(data, " ")
+		initials = parts[0][:1] + parts[1][:1]
+	} else {
+		initials = data[:1] + data[len(data)-1:]
+	}
+	return strings.ToUpper(initials)
 }
 
 func (this *Calling) FocusKey() string {
 	return this.Id
-	//return this.Org + this.SubOrg + this.Name + this.Holder
 }
 
 // OrganizationParseMap

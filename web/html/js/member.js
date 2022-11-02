@@ -13,7 +13,7 @@ function displayMembers(endpoint) {
 		})
 		.catch(error => {
 			notify(nERROR, error);
-			if (error === 401 || error === "Not logged in") {
+			if (error === 401 || error === NOT_LOGGED_IN) {
 				logout();
 			} else {
 				makeTabDefault("import");
@@ -23,7 +23,7 @@ function displayMembers(endpoint) {
 }
 
 function displayMembersImageUploader_do(response, endpoint) {
-	if (response === 401 || response === "Not logged in") {
+	if (response === 401 || response === NOT_LOGGED_IN) {
 		logout();
 		return;
 	}

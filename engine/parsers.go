@@ -86,6 +86,8 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		*this = saveCallings.copy()
 	}
 
+	ResetCallingIdCounter()
+
 	return callingCount
 }
 

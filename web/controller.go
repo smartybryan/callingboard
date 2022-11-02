@@ -15,6 +15,8 @@ import (
 	"github.org/smartybryan/callingboard/engine"
 )
 
+const NotLoggedIn = "Not logged in"
+
 type Controller struct {
 	appConfig config.Config
 	projects  map[string]*engine.Project
@@ -110,7 +112,7 @@ func (this *Controller) Logout(input *InputModel) detour.Renderer {
 func (this *Controller) AuthenticationError() detour.Renderer {
 	return detour.ContentResult{
 		StatusCode: 401,
-		Content:    "Not logged in",
+		Content:    NotLoggedIn,
 	}
 }
 
@@ -354,7 +356,7 @@ func (this *Controller) SetCallingFocus(input *InputModel) detour.Renderer {
 	if project == nil {
 		return this.AuthenticationError()
 	}
-	project.SetCallingFocus(input.Organization, input.SubOrganization, input.Calling, input.MemberName, input.Custom)
+	project.SetCallingFocus(input.Calling, input.Custom)
 	return detour.JSONResult{
 		StatusCode: 200,
 		Content:    "",
@@ -393,6 +395,7 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 		return this.AuthenticationError()
 	}
 	numCallings := project.Callings.ParseCallingsFromRawData(input.RawData)
+	project.FinishCallingImport()
 	if numCallings < 10 {
 		return detour.ContentResult{
 			StatusCode: 422,

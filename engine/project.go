@@ -112,15 +112,6 @@ func (this *Project) RedoTransaction() bool {
 		return false
 	}
 	this.transactions = append(this.transactions, this.undoHistory[len(this.undoHistory)-1])
-
-	// calling focus undo
-	transactionToRedo := this.transactions[len(this.transactions)-1]
-	parameters := transactionToRedo.Parameters
-	if transactionToRedo.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
-		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
-		this.SaveCallingFocusList()
-	}
-
 	this.undoHistory = this.undoHistory[:len(this.undoHistory)-1]
 	this.playTransactions()
 	return true
@@ -131,19 +122,6 @@ func (this *Project) UndoTransaction() bool {
 		return false
 	}
 	this.undoHistory = append(this.undoHistory, this.transactions[len(this.transactions)-1])
-
-	// calling focus undo
-	transactionToUndo := this.transactions[len(this.transactions)-1]
-	parameters := transactionToUndo.Parameters
-	if transactionToUndo.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
-		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
-		this.SaveCallingFocusList()
-	}
-	if transactionToUndo.Operation == OpAddMemberToACalling && len(parameters) >= 4 {
-		this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
-		this.SaveCallingFocusList()
-	}
-
 	this.transactions = this.transactions[:len(this.transactions)-1]
 	this.playTransactions()
 	return true
@@ -215,8 +193,12 @@ func (this *Project) ResetModel() error {
 	return nil
 }
 
-func (this *Project) SetCallingFocus(org, suborg, callingName, member string, focus bool) {
-	this.Callings.SetCallingFocus(org, suborg, callingName, member, focus)
+func (this *Project) FinishCallingImport() {
+	this.originalCallings = this.Callings.copy()
+}
+
+func (this *Project) SetCallingFocus(callingId string, focus bool) {
+	this.Callings.SetCallingFocus(callingId, focus)
 	this.SaveCallingFocusList()
 }
 
@@ -300,14 +282,6 @@ func (this *Project) removeTransaction(operation string, parameters []string) er
 			}
 		}
 		if paramsMatched == len(transaction.Parameters) {
-			var transactionToRemove = this.transactions[i]
-			if transactionToRemove.Operation == OpRemoveMemberFromACalling && len(parameters) >= 4 {
-				this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], VACANT_CALLING, parameters[0])
-			}
-			if transactionToRemove.Operation == OpAddMemberToACalling && len(parameters) >= 4 {
-				this.Callings.changeFocus(parameters[1], parameters[2], parameters[3], parameters[0], VACANT_CALLING)
-			}
-
 			this.transactions = append(this.transactions[:i], this.transactions[i+1:]...)
 		}
 	}
