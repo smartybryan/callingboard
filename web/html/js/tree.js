@@ -199,9 +199,8 @@ function refreshTree_do(response) {
 			return;
 		}
 
-		counter++;
 		let container = findContainerFromCalling(calling);
-		container.appendChild(createCallingElement(calling, counter));
+		container.appendChild(createCallingElement(calling));
 	});
 }
 
@@ -226,12 +225,14 @@ function refreshCallingChanges_do(response) {
 
 	let container = document.getElementById("releases");
 	jsonObject.Releases.forEach(function (calling) {
-		container.appendChild(createCallingElement(calling, 0));
+		calling.Id = calling.Id + "-rel";
+		container.appendChild(createCallingElement(calling));
 	});
 
 	container = document.getElementById("sustainings");
 	jsonObject.Sustainings.forEach(function (calling) {
-		container.appendChild(createCallingElement(calling, 0));
+		calling.Id = calling.Id + "-sus";
+		container.appendChild(createCallingElement(calling));
 	});
 }
 

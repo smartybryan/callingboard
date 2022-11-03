@@ -211,7 +211,7 @@ function displayMemberCallings_do(response) {
 
 	let jsonObject = JSON.parse(response)
 	jsonObject.forEach(function (calling) {
-		let callingInfo = createCallingElement(calling, 0);
+		let callingInfo = createCallingElement(calling);
 		callingInfo.classList.add("member-calling");
 		container.appendChild(callingInfo);
 	});

@@ -181,7 +181,7 @@ func (this *Project) SaveTransactions(name string) error {
 
 func (this *Project) DeleteTransactions(name string) error {
 	dataPath := filepath.Join(this.dataPath, name+TransactionFileSuffix)
-	return os.Remove(dataPath)
+	return os.RemoveAll(dataPath)
 }
 
 func (this *Project) ResetModel() error {
