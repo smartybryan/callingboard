@@ -24,7 +24,6 @@ function initialize() {
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
-	populateFocusList();
 }
 
 function registerDefaultEvents() {
