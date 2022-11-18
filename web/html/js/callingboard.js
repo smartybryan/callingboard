@@ -3,6 +3,7 @@ const ALL_ORGS = "All Organizations";
 const RELEASE_DROP_ENABLER = "[Drop a calling here] &#x2935;";
 const SUSTAIN_DROP_MESSAGE = "[Drop member on a vacant calling] &#x2192;";
 const MEMBER_CALLING_MESSAGE = "[Click on member] &#x2191;";
+const NOT_LOGGED_IN = "Not logged in"
 let currentMemberListEndpoint = ""; // the last member query endpoint
 // We use the image version in the member list img tag to assure
 // the cache is not misrepresenting the current state of the images on the server.
@@ -23,7 +24,6 @@ function initialize() {
 	setupTreeStructure();
 	displayMembers("members-with-callings");
 	listModels();
-	populateFocusList();
 }
 
 function registerDefaultEvents() {
@@ -195,23 +195,42 @@ function getAuthValueFromCookie() {
 
 //// calling id functions ////
 
-function callingId(callingName, callingHolder, counter) {
-	return callingName + "@" + callingHolder + "@" + counter;
-}
+function callingInnards(calling, id) {
+	let callingName = calling.Name;
+	let holderName = calling.Holder;
+	let focus = calling.Focus ? "checked" : "";
+	let timeInCalling = calling.PrintableTimeInCalling;
 
-function callingInnards(callingName, holderName, timeInCalling) {
 	let wardId = getAuthValueFromCookie().wardid;
 	let memberName = encodeURI(holderName);
 	let memberImage = wardId + "/" + memberName + ".jpg";
-	let imageElement = "<span class=\"thumbnail-container\"><img id=\"" + holderName + "@img-calling\" class=\"thumbnail\" onload=\"this.style.display=''\" style=\"display: none\" src=\"" + memberImage + "?v=" + imageVersion + "\" alt></span>";
+	let imageElement = `
+		<span class="thumbnail-container">
+			<img id="` + holderName + `@img-calling" class="thumbnail" onload="this.style.display=''" 
+			style="display: none" src="` + memberImage + `?v=` + imageVersion + `" alt>
+		</span>
+	`
 
-	return "<div class=\"calling-container\"><span class=\"calling-name-container\">" + callingName + "<br><span class=\"member-name indent\">" + holderName + "</span><br><span class=\"indent\">(" + timeInCalling + ")</span></span>" + imageElement + "</div>";
+	return `
+		<div class="calling-container">
+			<span class="calling-name-container">` + callingName + `<br>
+				<span class="member-name indent">` + holderName + `</span><br>
+				<span class="indent">(` + timeInCalling + `)</span>
+			</span>` + imageElement + `
+			<input id="` + id + `-focus" type="checkbox" title="Focus"
+				onclick="setCallingFocus('` + id + `')" ` + focus + `>
+		</div>
+	`
 }
 
-function callingIdComponents(id) {
-	let components = id.split("@");
-	let callingName = components[0], holderName = components[1];
-	return {callingName, holderName}
+function setCallingFocus(id) {
+	let focusState = document.getElementById(id + "-focus").checked
+	apiCall("set-calling-focus", "calling=" + id + "&custom=" + focusState)
+		.then(data => {
+		})
+		.catch(error => {
+			notify(nERROR, error);
+		})
 }
 
 //// drag and drop ////
@@ -296,8 +315,11 @@ function drop(ev) {
 			notify(nALERT, MESSAGE_RELEASE_SUSTAINED_DROP);
 			return
 		}
-		let idComponents = callingIdComponents(movedElement.id);
-		let params = "name=" + movedElement.parentElement.id + "&params=" + idComponents.holderName + ":" + movedElement.getAttribute("data-org") + ":" + movedElement.getAttribute("data-suborg") + ":" + idComponents.callingName;
+		let params = "name=" + movedElement.parentElement.id + "&params=" +
+			movedElement.getAttribute("data-holder") + ":" +
+			movedElement.getAttribute("data-org") + ":" +
+			movedElement.getAttribute("data-suborg") + ":" +
+			movedElement.getAttribute("data-callname");
 		apiCall("backout-transaction", params)
 			.then(data => {
 				refreshFromModel();
@@ -335,6 +357,7 @@ function drop(ev) {
 		movedElement.remove();
 	}
 
+	// if we got here, it is a calling release drop
 	apiCall("remove-member-calling", createTransactionParmsFromTreeElememt(movedElement))
 		.then(data => {
 			refreshFromModel();
@@ -367,13 +390,11 @@ function _manageSaveButtons(op) {
 //// transactions ////
 
 function createTransactionParmsFromTreeElememt(element) {
-	let callingIdParts = element.id.split("@");
-	return "org=" + element.getAttribute("data-org") + "&suborg=" + element.getAttribute("data-suborg") + "&calling=" + callingIdParts[0] + "&member=" + callingIdParts[1];
+	return "org=" + element.getAttribute("data-org") + "&suborg=" + element.getAttribute("data-suborg") + "&calling=" + element.getAttribute("data-callname") + "&member=" + element.getAttribute("data-holder");
 }
 
 function createTransactionParmsForMemberElement(memberElement, callingElement) {
-	let callingIdParts = callingElement.id.split("@");
-	return "org=" + callingElement.getAttribute("data-org") + "&suborg=" + callingElement.getAttribute("data-suborg") + "&calling=" + callingIdParts[0] + "&member=" + memberElement.id;
+	return "org=" + callingElement.getAttribute("data-org") + "&suborg=" + callingElement.getAttribute("data-suborg") + "&calling=" + callingElement.getAttribute("data-callname") + "&member=" + memberElement.id;
 }
 
 function undoLast() {

@@ -92,11 +92,22 @@ func (this *Members) Save() (numObjects int, err error) {
 	return len(this.MemberMap), err
 }
 
-func (this *Members) GetMembersWithType(memberNames []string) (names []string) {
+//
+//func (this *Members) GetMembersWithType(memberNames []string) (names []string) {
+//	for _, name := range memberNames {
+//		names = append(names, this.GetMemberRecord(name).BuildMemberName())
+//	}
+//	return names
+//}
+
+func (this *Members) GetMembersWithType(memberNames []string) (focusMembers []MemberWithFocus) {
 	for _, name := range memberNames {
-		names = append(names, this.GetMemberRecord(name).BuildMemberName())
+		focusMembers = append(focusMembers, MemberWithFocus{
+			Name:  this.GetMemberRecord(name).BuildMemberName(),
+			Focus: this.isMemberFocused(name),
+		})
 	}
-	return names
+	return focusMembers
 }
 
 func (this *Members) GetMembersWithFocus() (focusMembers []MemberWithFocus) {
@@ -115,10 +126,18 @@ func (this *Members) GetFocusMembers() []string {
 	return this.FocusMembers
 }
 
-func (this *Members) PutFocusMembers(names []string) error {
-	this.FocusMembers = names
-	_, err := this.Save()
-	return err
+func (this *Members) SetMemberFocus(member string, focus bool) {
+	for i := 0; i < len(this.FocusMembers); i++ {
+		if this.FocusMembers[i] == member {
+			this.FocusMembers = append(this.FocusMembers[:i], this.FocusMembers[i+1:]...)
+			_, _ = this.Save()
+			return
+		}
+	}
+	if focus && !this.isMemberFocused(member) {
+		this.FocusMembers = append(this.FocusMembers, member)
+		_, _ = this.Save()
+	}
 }
 
 func (this *Members) UploadMemberImage(imagePath, originalFile string, imageBytes []byte) error {

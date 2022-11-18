@@ -1,4 +1,3 @@
-
 function parseRawData(endpoint) {
 	const rawData = document.getElementById("rawdata");
 	const xhttp = new XMLHttpRequest();
@@ -11,14 +10,11 @@ function parseRawData(endpoint) {
 
 				initialize();
 				resetModel();
+			} else if (msg === NOT_LOGGED_IN) {
+				notify(nERROR, NOT_AUTHENTICATED);
+				logout();
 			} else {
-				if (!authCookieExists()) {
-					notify(nERROR, NOT_AUTHENTICATED);
-					makeTabDefault("authentication");
-					focusDefaultTab();
-				} else {
-					notify(nERROR, MESSAGE_IMPORT_FAILURE);
-				}
+				notify(nERROR, MESSAGE_IMPORT_FAILURE);
 			}
 		}
 	};

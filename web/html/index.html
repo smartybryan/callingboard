@@ -23,9 +23,6 @@
 	<button class="tablinks default" name="modeling" onclick="openTab(event, 'modeling')">Modeling</button>
 	<button class="tablinks" name="report" onclick="openTab(event, 'report')">Reports</button>
 	<button class="tablinks" name="manage-models" onclick="openTab(event, 'manage-models')">Model Management</button>
-	<button class="tablinks" name="manage-focus-members" onclick="openTab(event, 'manage-focus-members')">Focus
-		Members
-	</button>
 	<button class="tablinks" name="import" onclick="openTab(event, 'import')">Import</button>
 	<button class="tablinks" name="authentication" onclick="openTab(event, 'authentication')">Login</button>
 	<button class="tablinks" name="help" onclick="openTab(event, 'help')">Help</button>
@@ -56,9 +53,12 @@
 		</div>
 		<div style="margin-bottom: 8px;">Total: <span id="member-count"></span></div>
 		<div>
-			<input type="button" id="ml-mem" class="member-button" onclick="displayMembers('members')" value="All Members">
-			<input type="button" id="ml-new" class="member-button" onclick="displayMembers('newly-available')" value="Newly Available">
-			<input type="button" id="ml-foc" class="member-button" onclick="displayMembers('focus-members')" value="Focus">
+			<input type="button" id="ml-mem" class="member-button" onclick="displayMembers('members')"
+				   value="All Members">
+			<input type="button" id="ml-new" class="member-button" onclick="displayMembers('newly-available')"
+				   value="Newly Available">
+			<input type="button" id="ml-foc" class="member-button" onclick="displayMembers('focus-members')"
+				   value="Focus">
 			<input type="button" id="ml-cal" class="member-button" onclick="displayMembers('members-with-callings')"
 				   value="With Calling">
 			<input type="button" id="ml-awc" class="member-button" onclick="displayMembers('adults-without-calling')"
@@ -75,7 +75,8 @@
 	<call-release>
 		<label class="heading" for="releases">Releases</label>
 		<div class="release-sustain-scroller">
-			<ul id="releases" class="droppable" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<ul id="releases" class="droppable" ondragstart="drag(event)" ondrop="drop(event)"
+				ondragover="allowDrop(event)">
 			</ul>
 		</div>
 
@@ -110,7 +111,10 @@
 			<label for="all-vacancies">All Vacant&nbsp;</label>
 			<input id="new-vacancies" name="tree-filter" type="radio" onclick="refreshFromModel()"
 				   value="new-vacancies">
-			<label for="new-vacancies">New Vacant</label>
+			<label for="new-vacancies">New Vacant&nbsp;</label>
+			<input id="focus-callings" name="tree-filter" type="radio" onclick="refreshFromModel()"
+				   value="focus-callings">
+			<label for="focus-callings">Focus&nbsp;</label>
 		</div>
 		<div>&nbsp;</div>
 		<div id="ward-scroller">
@@ -181,23 +185,6 @@
 	</model-man>
 </div>
 
-<div id="manage-focus-members" class="tabcontent">
-	<focus-member>
-		<div id="focus-member-scroller">
-			<table>
-				<thead>
-				<tr>
-					<td><strong>Member</strong></td>
-					<td><strong>Focus</strong></td>
-				</tr>
-				</thead>
-				<tbody id="focus-member-list">
-				</tbody>
-			</table>
-		</div>
-	</focus-member>
-</div>
-
 <div id="import" class="tabcontent">
 	<import-data>
 		<span class="heading">Instructions</span>
@@ -266,30 +253,45 @@
 		<br><br>
 		<div class="sub-heading">Overview</div>
 		<div class="help-paragraph">
-			Callingboard.org is a tool that models releases and sustainings
+			Callingboard.org is a tool that models Releases and Sustainings
 			during ward reorganizations.
 			It is designed to be similar to a physical calling board where you move magnets
 			labeled with member's names around on the board to simulate calling changes.
 			It helps you visualize the "ripple affect" that can occur
-			during this process so you know who still needs a calling and which callings
-			need to be filled.
+			during this process.
+			<br><br>
+			During these ward reorganization sessions you typically need to focus on a few
+			members who need callings, and a few callings that need to be filled.
+			This is accomplished by ticking the checkboxes of members and callings
+			that need "focus", then display only ones that are focused.
+			(See <a href="#members-column-help-label">Members</a> and
+			<a href="#callings-column-help-label">Callings</a>)
+			<br><br>
+			To model releases and callings, simply drag callings into the Releases column, or drag
+			members into a vacant calling. To discard any modeled release or calling, drag it
+			into the trash. To save a model, select the Model Management tab and save it.
 			<br><br>
 			At least one person in your unit will be responsible for importing data from
 			Leader and Clerk Resources (LCR)
-			on ChurchOfJesusChrist.org so you will always be working with the latest information
-			available. Once you have this data, you may begin to model calling changes. Once
-			you have completed modeling, the Reports page has a report that contains a summary of your
-			changes so the ward membership clerk can enter them into LCR.
-			There is no way provided by the church to directly import data or make changes
-			to LCR data outside of the church website, so some manual processes are required.
+			on ChurchOfJesusChrist.org. This will allow you to always be working with the latest information
+			available. Once you have this data, you may begin to model calling changes.
+			You can re-import the current data from LCR at any time without affecting the models.
+			Once you have completed modeling, the Reports page has a report that contains a
+			summary of your changes that can be used during ward business in sacrament meeting,
+			as well as by the ward membership clerk who will enter the changes into LCR.
+			(Unfortunately there is no way provided by the church to directly make changes
+			to LCR data outside of the church website, thus the manual process of entering changes
+			is required.)
+			<br><br>
+			I sincerely hope you find Callingboard.org useful. If you have feedback or need support, email me at bryan.amundson@gmail.com.
 		</div>
 
 		<div class="sub-heading">Login</div>
 		<div class="help-paragraph">
 			Logging in to Callingboard.org is not for security, but rather so everyone in your unit
 			can share information. There is no registration process, so the username you choose is arbitrary.
-			The unit number is also arbitrary, but you must use the same value as others in your
-			unit so you can share the imported data and saved models.
+			The unit number is also arbitrary, but you must use the same unit number so others in your
+			unit can share the imported data and saved models.
 			<br><br>
 			If you are concerned about other users of Callingboard.org seeing your unit's member names and
 			calling data, you may use a secret value as your unit number, much like a shared password,
@@ -307,7 +309,7 @@
 			At least one person in your unit must import the data from ChurchOfJesusChrist.org.
 			Select the <strong>Import</strong> tab, then follow the instructions to
 			import the member data, then import the calling data.
-			Repeat this process to refresh the data when changes have been made using LCR.
+			You can re-import the current data from LCR at any time without affecting the models.
 			<br><br>
 			<strong>Tip:</strong> When importing Members information you must scroll all the way to the bottom of the
 			page.
@@ -321,7 +323,7 @@
 			Modeling is the process of building a list of releases and sustainings.
 		</div>
 
-		<div class="sub-sub-heading">Members</div>
+		<div id="members-column-help-label" class="sub-sub-heading">Members</div>
 		<div class="sub-help-paragraph">
 			The Members column allows you to search for and list members. To find a member
 			quickly, start typing in the Filter box.<br>
@@ -348,10 +350,13 @@
 					and they were not released from all of them, they will not be in this list.
 				</li>
 				<br>
-				<li><strong>Focus Members:</strong> This lists members who have been setup in the Focus Members
-					tab. These are members who have your focus as they could use a calling.
+				<li><strong>Focus Members:</strong> This lists members who are currently focused (checked in the member list).
+					These are members who have your focus as they need a calling.
 				</li>
 			</ul>
+			<br>
+			To <strong>focus</strong> on a particular set of members, check the box on the right side of the member card.
+			You may list all focused members by clicking the <strong>Focus</strong> button at the bottom of the member list.
 			<br>
 			To <strong>add</strong> a <strong>thumbnail</strong> image to a member, simply drag a JPG or PNG image (10MB
 			limit) onto a member tile.
@@ -392,26 +397,34 @@
 			made vacant in the Calling Board and it no longer appears in the Sustainings column.
 		</div>
 
-		<div class="sub-sub-heading">Calling Board</div>
+		<div id="callings-column-help-label" class="sub-sub-heading">Calling Board</div>
 		<div class="sub-help-paragraph">
 			This lists all callings for your unit as defined in LCR and have been imported.
 			You may navigate this tree by expanding and collapsing organizations,
 			or click the <strong>Expand All</strong> and <strong>Collapse All</strong> buttons.
 			<br><br>
 			To list all vacant callings which includes all callings flagged as vacant in LCR,
-			click the <strong>All Vacant</strong> button.
+			click the <strong>All Vacant</strong> button.<br>
 			You may also show only callings that were made vacant in this model as a result of Releases,
-			by clicking the <strong>New Vacant</strong> radio button.
+			by clicking the <strong>New Vacant</strong> radio button. <br>
+			To list all focused callings (callings whose box is checked),
+			click the <strong>Focus</strong> radio button.
 			<br><br>
 			To release a member from a calling, you may drag any filled calling into the
 			Releases column. (See Releases)
+			<br><br>
+			To focus on callings that need to be filled, check the box on the calling card. Use the Focus radio button
+			to list only Focused callings.
 		</div>
 
 		<div class="sub-heading">Reports</div>
 		<div class="help-paragraph">
 			You can print various reports from this tab. Simply select the report
 			from the drop-down list.
-			<br>
+			<br><br>
+			The Member report lists all members and their callings. Click the
+			<strong>Callings</strong> column to sort the list by time in calling.
+			<br><br>
 			The Print button sends the report to a printer.
 		</div>
 
@@ -433,14 +446,6 @@
 				<li><strong>Reset Model:</strong> Clears the current model in the Modeling tab.</li>
 			</ul>
 		</div>
-
-		<div class="sub-heading">Focus Members</div>
-		<div class="help-paragraph">
-			This tab allows you to build a list of members you wish to focus on with regard to callings.
-			The members you select in this tab will be listed in the <strong>Modeling</strong> tab
-			when you click the <strong>Focus Members</strong> button in the <strong>Members</strong> column.
-		</div>
-
 	</report-cont>
 </div>
 

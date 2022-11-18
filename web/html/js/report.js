@@ -50,9 +50,8 @@ function getCallingDataFromContainer(id) {
 		if (call.id.length === 0) {
 			continue;
 		}
-		let idInfo = callingIdComponents(call.id);
-		let calling = idInfo.callingName;
-		let holder = idInfo.holderName;
+		let calling = call.getAttribute("data-callname");
+		let holder = call.getAttribute("data-holder")
 		let org = call.getAttribute("data-org");
 		callingList.push({org, calling, holder});
 	}
@@ -128,7 +127,7 @@ function generateMemberCallingReport(canvas, content) {
 		})
 		.catch(error => {
 			console.log(error);
-			if (error === 401 || error === "Not logged in") {
+			if (error === 401 || error === NOT_LOGGED_IN) {
 				logout();
 			}
 		});
@@ -185,15 +184,16 @@ function buildMemberReportTable(callingResponse, memberResponse, content, canvas
 	<tr>
 	<th class="report-table"><strong>Name</strong></th>
 	<th class="report-table" style="width: 200px;"><strong>Photo</strong></th>
-	<th class="report-table" style="width: 600px;"><strong>Calling</strong></th>
+	<th class="report-table" style="width: 600px;" onclick="sortTableByTime(2)">
+		<strong class="pointer" style="text-decoration: underline">Calling</strong></th>
 	</tr>
 	</thead>
-	<tbody>`;
+	<tbody id="member-report-table">`;
 
 	let callingMap = parseCallingData(JSON.parse(callingResponse));
 	let memberJson = JSON.parse(memberResponse);
 	memberJson.forEach(function (member) {
-		let memberParts = member.split(";")
+		let memberParts = member.Name.split(";")
 		let memberName = memberParts[0];
 		let memberImage = wardId + "/" + encodeURI(memberName) + ".jpg";
 
@@ -233,8 +233,10 @@ function getMemberCallings(callingMap, memberName) {
 
 function findGender(genderIdentifier) {
 	switch (genderIdentifier) {
-		case "1": return "male-report";
-		case "2": return "female-report";
+		case "1":
+			return "male-report";
+		case "2":
+			return "female-report";
 	}
 	return "";
 }
@@ -251,4 +253,103 @@ function redisplayMemberReport() {
 			row.classList.add("filtered");
 		}
 	}
+}
+
+// based on https://www.w3schools.com/howto/howto_js_sort_table.asp
+function sortTableByTime(n) {
+	let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+	table = document.getElementById("member-report-table");
+	switching = true;
+	// Set the sorting direction to ascending:
+	dir = "desc";
+	/* Make a loop that will continue until
+	no switching has been done: */
+	while (switching) {
+		// Start by saying: no switching is done:
+		switching = false;
+		rows = table.rows;
+		/* Loop through all table rows (except the
+		first, which contains table headers): */
+		for (i = 0; i < (rows.length - 1); i++) {
+			// Start by saying there should be no switching:
+			shouldSwitch = false;
+			/* Get the two elements you want to compare,
+			one from current row and one from the next: */
+			x = rows[i].getElementsByTagName("TD")[n];
+			y = rows[i + 1].getElementsByTagName("TD")[n];
+			/* Check if the two rows should switch place,
+			based on the direction, asc or desc: */
+			if (dir === "asc") {
+				if (timeInCalling(x.innerHTML.toLowerCase()) > timeInCalling(y.innerHTML.toLowerCase())) {
+					// If so, mark as a switch and break the loop:
+					shouldSwitch = true;
+					break;
+				}
+			} else if (dir === "desc") {
+				if (timeInCalling(x.innerHTML.toLowerCase()) < timeInCalling(y.innerHTML.toLowerCase())) {
+					// If so, mark as a switch and break the loop:
+					shouldSwitch = true;
+					break;
+				}
+			}
+		}
+		if (shouldSwitch) {
+			/* If a switch has been marked, make the switch
+			and mark that a switch has been done: */
+			rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			switching = true;
+			// Each time a switch is done, increase this count by 1:
+			switchcount++;
+		} else {
+			/* If no switching has been done AND the direction is "asc",
+			set the direction to "desc" and run the while loop again. */
+			// if (switchcount === 0 && dir === "asc") {
+			// 	dir = "desc";
+			// 	switching = true;
+			// }
+		}
+	}
+}
+
+// convert readable time in calling to a days
+function timeInCalling(val) {
+	if (val.length === 0) {
+		return 0;
+	}
+
+	let valParts = val.split("<div>")
+	if (valParts.length < 4) {
+		return 0;
+	}
+
+	let timeInCalling = 0;
+	for (let i = 3; i < valParts.length; i++) {
+		let tic = parseTimeField(valParts[i])
+		if (tic > timeInCalling) {
+			timeInCalling = tic;
+		}
+	}
+	return timeInCalling;
+}
+
+function parseTimeField(val) {
+	let timeInCalling = 0;
+	let valParts = val.split(", ");
+
+	for (let i = 0; i < valParts.length; i++) {
+		let timeParts = valParts[i].split(" ");
+		if (timeParts < 2) {
+			continue;
+		}
+		let num = parseInt(timeParts[0]);
+		let unit = timeParts[1];
+		if (unit && unit.startsWith("year")) {
+			timeInCalling += num * 365;
+		}
+		if (unit && unit.startsWith("month")) {
+			timeInCalling += num * 30
+		}
+	}
+
+	return timeInCalling;
 }

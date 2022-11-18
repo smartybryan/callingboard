@@ -29,6 +29,9 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 					currentOrganization = currentSubOrganization
 					currentSubOrganization = ""
 				}
+				if _, orgFound := CallingIdCounter[currentOrganization]; !orgFound {
+					CallingIdCounter[currentOrganization] = 1
+				}
 				if !this.OrganizationExists(currentOrganization) {
 					this.OrganizationOrder = append(this.OrganizationOrder, currentOrganization)
 				}
@@ -60,10 +63,10 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 		}
 
 		if fileLines[idx+1] == "Calling Vacant" {
-			calling.Holder = string(fileLines[idx+1])
+			calling.Holder = fileLines[idx+1]
 			idx++
 		} else {
-			calling.Holder = string(fileLines[idx+1])
+			calling.Holder = fileLines[idx+1]
 			sustained, err := time.Parse("2 Jan 2006", fileLines[idx+2])
 			if err == nil {
 				calling.Sustained = sustained
@@ -73,6 +76,7 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 
 		calling.Org = currentOrganization
 		calling.SubOrg = currentSubOrganization
+		calling.Id = calling.GenerateId()
 		(*this).CallingMap[currentOrganization] = append((*this).CallingMap[currentOrganization], calling)
 		callingCount++
 	}
@@ -81,6 +85,8 @@ func (this *Callings) ParseCallingsFromRawData(data []byte) (callingCount int) {
 	if callingCount == 0 {
 		*this = saveCallings.copy()
 	}
+
+	ResetCallingIdCounter()
 
 	return callingCount
 }

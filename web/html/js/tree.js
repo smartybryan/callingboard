@@ -10,7 +10,7 @@ function setupTreeStructure() {
 		})
 		.catch(error => {
 			console.log(error);
-			if (error === "Not logged in") {
+			if (error === NOT_LOGGED_IN) {
 				logout();
 			}
 		})
@@ -64,7 +64,7 @@ function setupTreeStructure_do(response) {
 
 	startTreeListeners();
 	refreshFromModel();
-	expandCollapseTree('c');
+	expandCollapseTree('e');
 }
 
 function startTreeListeners() {
@@ -128,16 +128,18 @@ function refreshFromModel() {
 
 function createCallingElement(calling, counter) {
 	let callingInfo = document.createElement("li");
-	callingInfo.setAttribute("id", callingId(calling.Name, calling.Holder, counter));
+	callingInfo.setAttribute("id", calling.Id);
 	callingInfo.setAttribute("data-org", calling.Org);
 	callingInfo.setAttribute("data-suborg", calling.SubOrg);
+	callingInfo.setAttribute("data-callname", calling.Name);
+	callingInfo.setAttribute("data-holder", calling.Holder);
 	callingInfo.setAttribute("draggable", "true");
 	callingInfo.classList.add("calling-row");
 	callingInfo.classList.add("droppable");
 	if (calling.Holder === VACANT) {
 		callingInfo.classList.add("vacant");
 	}
-	callingInfo.innerHTML = callingInnards(calling.Name, calling.Holder, calling.PrintableTimeInCalling);
+	callingInfo.innerHTML = callingInnards(calling, callingInfo.id);
 	return callingInfo;
 }
 
@@ -158,7 +160,7 @@ function refreshTree() {
 		})
 		.catch(error => {
 			console.log(error);
-			if (error === 401 || error === "Not logged in") {
+			if (error === 401 || error === NOT_LOGGED_IN) {
 				logout();
 			} else {
 				makeTabDefault("import");
@@ -170,6 +172,7 @@ function refreshTree() {
 function refreshTree_do(response) {
 	let showNewVacancies = document.getElementById("new-vacancies").checked
 	let showAllVacancies = document.getElementById("all-vacancies").checked
+	let showFocusCallings = document.getElementById("focus-callings").checked
 
 	// clear all organizations
 	let leafContainers = document.getElementsByClassName("leaf-container");
@@ -192,9 +195,12 @@ function refreshTree_do(response) {
 		if (showAllVacancies && calling.Holder !== VACANT) {
 			return;
 		}
-		counter++;
+		if (showFocusCallings && !calling.Focus) {
+			return;
+		}
+
 		let container = findContainerFromCalling(calling);
-		container.appendChild(createCallingElement(calling, counter));
+		container.appendChild(createCallingElement(calling));
 	});
 }
 
@@ -219,12 +225,14 @@ function refreshCallingChanges_do(response) {
 
 	let container = document.getElementById("releases");
 	jsonObject.Releases.forEach(function (calling) {
-		container.appendChild(createCallingElement(calling, 0));
+		calling.Id = calling.Id + "-rel";
+		container.appendChild(createCallingElement(calling));
 	});
 
 	container = document.getElementById("sustainings");
 	jsonObject.Sustainings.forEach(function (calling) {
-		container.appendChild(createCallingElement(calling, 0));
+		calling.Id = calling.Id + "-sus";
+		container.appendChild(createCallingElement(calling));
 	});
 }
 

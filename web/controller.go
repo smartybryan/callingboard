@@ -15,6 +15,8 @@ import (
 	"github.org/smartybryan/callingboard/engine"
 )
 
+const NotLoggedIn = "Not logged in"
+
 type Controller struct {
 	appConfig config.Config
 	projects  map[string]*engine.Project
@@ -110,7 +112,7 @@ func (this *Controller) Logout(input *InputModel) detour.Renderer {
 func (this *Controller) AuthenticationError() detour.Renderer {
 	return detour.ContentResult{
 		StatusCode: 401,
-		Content:    "Not logged in",
+		Content:    NotLoggedIn,
 	}
 }
 
@@ -206,14 +208,15 @@ func (this *Controller) GetFocusMembers(input *InputModel) detour.Renderer {
 	}
 }
 
-func (this *Controller) PutFocusMembers(input *InputModel) detour.Renderer {
+func (this *Controller) SetMemberFocus(input *InputModel) detour.Renderer {
 	project := this.getProject(input)
 	if project == nil {
 		return this.AuthenticationError()
 	}
+	project.Members.SetMemberFocus(input.MemberName, input.Custom)
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.Members.PutFocusMembers(strings.Split(input.MemberName, "|")),
+		Content:    "",
 	}
 }
 
@@ -348,6 +351,18 @@ func (this *Controller) VacantCallingList(input *InputModel) detour.Renderer {
 	}
 }
 
+func (this *Controller) SetCallingFocus(input *InputModel) detour.Renderer {
+	project := this.getProject(input)
+	if project == nil {
+		return this.AuthenticationError()
+	}
+	project.SetCallingFocus(input.Calling, input.Custom)
+	return detour.JSONResult{
+		StatusCode: 200,
+		Content:    "",
+	}
+}
+
 func (this *Controller) LoadCallings(input *InputModel) detour.Renderer {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
@@ -380,6 +395,7 @@ func (this *Controller) ParseRawCallings(input *InputModel) detour.Renderer {
 		return this.AuthenticationError()
 	}
 	numCallings := project.Callings.ParseCallingsFromRawData(input.RawData)
+	project.FinishCallingImport()
 	if numCallings < 10 {
 		return detour.ContentResult{
 			StatusCode: 422,
@@ -406,7 +422,7 @@ func (this *Controller) AddCalling(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.AddCalling(input.Organization, input.Calling, input.CustomCalling),
+		Content:    project.AddCalling(input.Organization, input.Calling, input.Custom),
 	}
 }
 
@@ -428,7 +444,7 @@ func (this *Controller) UpdateCalling(input *InputModel) detour.Renderer {
 	}
 	return detour.JSONResult{
 		StatusCode: 200,
-		Content:    project.UpdateCalling(input.Organization, input.Calling, input.CustomCalling),
+		Content:    project.UpdateCalling(input.Organization, input.Calling, input.Custom),
 	}
 }
 

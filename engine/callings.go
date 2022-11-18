@@ -4,13 +4,18 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.org/smartybryan/callingboard/util"
 )
 
+var CallingIdCounter map[string]int
+
 type Callings struct {
 	CallingMap        map[string][]Calling
+	FocusCallings     map[string]struct{}
 	OrganizationOrder []string
 
 	initialSize int
@@ -18,11 +23,18 @@ type Callings struct {
 }
 
 func NewCallings(numCallings int, path string) Callings {
+	ResetCallingIdCounter()
+
 	return Callings{
-		CallingMap:  make(map[string][]Calling, numCallings),
-		initialSize: numCallings,
-		filePath:    path,
+		CallingMap:    make(map[string][]Calling, numCallings),
+		FocusCallings: make(map[string]struct{}, numCallings),
+		initialSize:   numCallings,
+		filePath:      path,
 	}
+}
+
+func ResetCallingIdCounter() {
+	CallingIdCounter = make(map[string]int, 30)
 }
 
 func (this *Callings) CallingList(organization string) (callingList []Calling) {
@@ -37,7 +49,7 @@ func (this *Callings) CallingList(organization string) (callingList []Calling) {
 			callingList = this.getCallingListByOrganization(callings, callingList)
 		}
 	}
-	return callingList
+	return this.setFocusOnList(callingList)
 }
 
 func (this *Callings) CallingListForMember(member string) (callingList []Calling) {
@@ -71,6 +83,14 @@ func (this *Callings) MembersWithCallings() (names []string) {
 	return names
 }
 
+func (this *Callings) SetCallingFocus(callingId string, focus bool) {
+	if focus {
+		this.insertFocusCalling(callingId)
+	} else {
+		this.removeFocusCalling(callingId)
+	}
+}
+
 func (this *Callings) OrganizationList() (organizationList []string) {
 	return this.OrganizationOrder
 }
@@ -82,7 +102,7 @@ func (this *Callings) VacantCallingList(organization string) (callingList []Call
 			callingList = append(callingList, calling)
 		}
 	}
-	return callingList
+	return this.setFocusOnList(callingList)
 }
 
 func (this *Callings) Load() error {
@@ -210,18 +230,18 @@ func (this *Callings) updateCalling(org string, calling string, custom bool) err
 	return ERROR_UNKNOWN_CALLING
 }
 
-func (this *Callings) addMemberToACalling(member string, org string, suborg string, calling string) error {
+func (this *Callings) addMemberToACalling(member string, org string, suborg string, callingName string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
 
-	if this.doesMemberHoldCalling(member, org, suborg, calling) {
+	if this.doesMemberHoldCalling(member, org, suborg, callingName) {
 		return ERROR_MEMBER_HAS_CALLING
 	}
 
 	callingList := this.CallingMap[org]
 	for idx, call := range callingList {
-		if call.Name == calling && call.SubOrg == suborg && call.Holder == VACANT_CALLING {
+		if call.Name == callingName && call.SubOrg == suborg && call.Holder == VACANT_CALLING {
 			call.Holder = member
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
@@ -246,35 +266,60 @@ func (this *Callings) moveMemberToAnotherCalling(
 	return nil
 }
 
-func (this *Callings) removeMemberFromACalling(member string, org string, suborg string, calling string) error {
+func (this *Callings) removeMemberFromACalling(member string, org string, suborg string, callingName string) error {
 	if !this.isValidOrganization(org) {
 		return ERROR_UNKNOWN_ORGANIZATION
 	}
-	if !this.doesMemberHoldCalling(member, org, suborg, calling) {
+	if !this.doesMemberHoldCalling(member, org, suborg, callingName) {
 		return ERROR_MEMBER_INVALID_CALLING
 	}
 
 	callingList := this.CallingMap[org]
 	for idx, call := range callingList {
-		if call.Holder == member && call.SubOrg == suborg && call.Name == calling {
+		if call.Holder == member && call.SubOrg == suborg && call.Name == callingName {
 			call.Holder = VACANT_CALLING
 			call.Sustained = time.Time{}
 			callingList[idx] = call
 			this.CallingMap[org] = callingList
+
 			return nil
 		}
 	}
 	return ERROR_INVALID_TRANSACTION
 }
 
+func (this *Callings) isCallingFocused(calling Calling) bool {
+	_, found := this.FocusCallings[calling.FocusKey()]
+	return found
+}
+
+func (this *Callings) insertFocusCalling(callingId string) {
+	this.FocusCallings[callingId] = struct{}{}
+}
+
+func (this *Callings) removeFocusCalling(callingId string) {
+	delete(this.FocusCallings, callingId)
+}
+
+func (this *Callings) setFocusOnList(callingList []Calling) []Calling {
+	for i, calling := range callingList {
+		if _, found := this.FocusCallings[calling.Id]; found {
+			callingList[i].Focus = true
+		}
+	}
+	return callingList
+}
+
 ///////////////////////////////////////////////////////
 
 type Calling struct {
+	Id            string
 	Org           string
 	SubOrg        string
 	Name          string
 	Holder        string
 	CustomCalling bool
+	Focus         bool
 	Sustained     time.Time
 
 	PrintableSustained     string
@@ -316,6 +361,7 @@ func (this *Calling) Equal(calling Calling) bool {
 
 func (this *Calling) copy() Calling {
 	return Calling{
+		Id:            this.Id,
 		Org:           this.Org,
 		SubOrg:        this.SubOrg,
 		Name:          this.Name,
@@ -330,6 +376,29 @@ func (this *Calling) DaysInCalling() int {
 		return 0
 	}
 	return int(time.Now().Sub(this.Sustained).Hours() / 24)
+}
+
+func (this *Calling) GenerateId() (id string) {
+	id = getInitials(this.Org) + getInitials(this.SubOrg) + getInitials(this.Name) + strconv.Itoa(CallingIdCounter[this.Org])
+	CallingIdCounter[this.Org] = CallingIdCounter[this.Org] + 1
+	return id
+}
+func getInitials(data string) (initials string) {
+	if len(data) == 0 {
+		return initials
+	}
+
+	if strings.Index(data, " ") > -1 {
+		parts := strings.Split(data, " ")
+		initials = parts[0][:1] + parts[1][:1]
+	} else {
+		initials = data[:1] + data[len(data)-1:]
+	}
+	return strings.ToUpper(initials)
+}
+
+func (this *Calling) FocusKey() string {
+	return this.Id
 }
 
 // OrganizationParseMap
@@ -349,4 +418,11 @@ var OrganizationParseMap = map[string]string{
 	"Full-Time Missionaries":               "",
 	"Temple and Family History":            "",
 	"Young Single Adult":                   "Other Callings",
+}
+
+func min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
 }

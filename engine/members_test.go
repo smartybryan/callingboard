@@ -29,13 +29,20 @@ func (this *MembersFixture) TestGetMembers() {
 func (this *MembersFixture) TestFocusMembers() {
 	members := createTestMembers("")
 
-	data := []string{"Last2, First2", "Last4, First4"}
+	data := []string{"Last2, First2", "Last3, First3", "Last4, First4"}
 	expected := []MemberWithFocus{
 		{Name: "Last2, First2", Focus: true},
 		{Name: "Last3, First3", Focus: false},
 		{Name: "Last4, First4", Focus: true},
 	}
-	_ = members.PutFocusMembers(data)
+
+	// test add
+	members.SetMemberFocus(data[0], true)
+	members.SetMemberFocus(data[1], true)
+	members.SetMemberFocus(data[2], true)
+	// test remove
+	members.SetMemberFocus(data[1], false)
+
 	this.So(members.GetMembersWithFocus(), should.Resemble, expected)
 }
 
@@ -49,7 +56,8 @@ func (this *MembersFixture) TestAdultsWithoutACalling() {
 func (this *MembersFixture) TestSaveLoad() {
 	tempFile := "testmembers"
 	members := createTestMembers(tempFile)
-	_ = members.PutFocusMembers([]string{"Focus, One;Focus, Two"})
+	members.SetMemberFocus("Focus, One", true)
+	members.SetMemberFocus("Focus, Two", true)
 	mLength := len(members.MemberMap)
 	fLength := len(members.FocusMembers)
 	_, err := members.Save()
